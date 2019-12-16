@@ -1,2 +1,3 @@
 add_subdirectory(qjsonrpcprotocol)
 add_subdirectory(typedjson)
+add_subdirectory(qlanguageserver)
