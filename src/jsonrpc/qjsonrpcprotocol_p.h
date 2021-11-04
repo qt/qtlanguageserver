@@ -60,6 +60,7 @@
 
 QT_BEGIN_NAMESPACE
 
+class QLaguageServer;
 class QJsonRpcTransport;
 class QJsonRpcProtocolPrivate;
 class Q_JSONRPC_EXPORT QJsonRpcProtocol
@@ -101,7 +102,7 @@ public:
         // Don't use them for your own protocol. We cannot enforce this here.
         QJsonValue errorCode = QJsonValue::Undefined;
 
-        QString errorMessage;
+        QString errorMessage = QString();
     };
 
     template<typename T>
@@ -124,10 +125,11 @@ public:
         virtual void handleRequest(const Request &request, const ResponseHandler &handler);
         virtual void handleNotification(const Notification &notification);
 
-    protected:
         static Response error(ErrorCode code);
         static Response error(int code, const QString &message,
                               const QJsonValue &data = QJsonValue::Undefined);
+
+    protected:
         static Response result(const QJsonValue &result);
 
         template<typename Function>
@@ -182,6 +184,13 @@ public:
     // For responses with unknown IDs
     void setInvalidResponseHandler(const ResponseHandler &handler);
     ResponseHandler invalidResponseHandler() const;
+
+    enum class Processing { Continue, Stop };
+    using MessagePreprocessor =
+            std::function<Processing(const QJsonDocument &, const QJsonParseError &,
+                                     const QJsonRpcProtocol::Handler<Response> &handler)>;
+    MessagePreprocessor messagePreprocessor() const;
+    void installMessagePreprocessor(const MessagePreprocessor &preHandler);
 
 private:
     std::unique_ptr<QJsonRpcProtocolPrivate> d;

@@ -1,1 +1,2 @@
 add_subdirectory(qjsonrpcprotocol)
+add_subdirectory(typedjson)

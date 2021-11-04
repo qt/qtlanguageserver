@@ -257,6 +257,27 @@ QJsonRpcProtocol::ResponseHandler QJsonRpcProtocol::invalidResponseHandler() con
     return d->invalidResponseHandler();
 }
 
+/*!
+ * \internal
+ * \typealias QJsonRpcProtocol::MessagePreprocessor
+ * \brief A function preprocessing incoming messages
+ *
+ * A type representing a function receiving a const QJsonDocument &doc, const QJsonParseError
+ * &error, const QJsonRpcProtocol::Handler<Response> &responseHandler) and returning either
+ * Processing::Continue or Processing::Stop. Handler can be used to return a response when
+ * Processing::Stop is returned and doc is a request, i.e. doc.object().contains(u"id") is true.
+ */
+
+QJsonRpcProtocol::MessagePreprocessor QJsonRpcProtocol::messagePreprocessor() const
+{
+    return d->messagePreprocessor();
+}
+
+void QJsonRpcProtocol::installMessagePreprocessor(const QJsonRpcProtocol::MessagePreprocessor &h)
+{
+    return d->installMessagePreprocessor(h);
+}
+
 void QJsonRpcProtocolPrivate::setTransport(QJsonRpcTransport *newTransport)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -413,6 +434,15 @@ void QJsonRpcProtocolPrivate::processNotification(const QJsonObject &object)
 void QJsonRpcProtocolPrivate::processMessage(const QJsonDocument &message,
                                              const QJsonParseError &error)
 {
+    if (m_messagePreprocessor
+        && m_messagePreprocessor(message, error,
+                                 [message, this](const QJsonRpcProtocol::Response &r) {
+                                     Q_ASSERT(message.object().contains(u"id"));
+                                     this->sendMessage(createResponse(message.object()[u"id"], r));
+                                 })
+                != QJsonRpcProtocol::Processing::Continue) {
+        return;
+    }
     if (error.error != QJsonParseError::NoError) {
         sendMessage(createParseErrorResponse());
     } else if (message.isObject()) {

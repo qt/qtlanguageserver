@@ -7,6 +7,8 @@ qt_internal_add_module(JsonRpc
         qjsonrpcprotocol.cpp qjsonrpcprotocol_p.h qjsonrpcprotocol_p_p.h
         qjsonrpctransport_p.h
         qtjsonrpcglobal.h
+        qjsontypedrpc_p.h qjsontypedrpc.cpp
+        qtypedjson_p.h qtypedjson.cpp
     DEFINES
         QT_BUILD_JSONRPC_LIB
     PUBLIC_LIBRARIES

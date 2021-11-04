@@ -143,6 +143,15 @@ public:
     std::mutex *mutex() { return &m_mutex; }
     const std::mutex *mutex() const { return &m_mutex; }
 
+    QJsonRpcProtocol::MessagePreprocessor messagePreprocessor() const
+    {
+        return m_messagePreprocessor;
+    }
+    void installMessagePreprocessor(QJsonRpcProtocol::MessagePreprocessor preHandler)
+    {
+        m_messagePreprocessor = preHandler;
+    }
+
 private:
     ResponseMap m_pendingRequests;
     MessageHandlerMap m_messageHandlers;
@@ -154,6 +163,7 @@ private:
 
     ResponseHandler m_protocolErrorHandler;
     ResponseHandler m_invalidResponseHandler;
+    QJsonRpcProtocol::MessagePreprocessor m_messagePreprocessor;
 };
 
 class QJsonRpcProtocol::BatchPrivate

@@ -36,62 +36,60 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
-#ifndef QJSONRPCTRANSPORT_H
-#define QJSONRPCTRANSPORT_H
-
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API. It exists purely as an
-// implementation detail. This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
-
-#include <QtJsonRpc/qtjsonrpcglobal.h>
-#include <QtCore/qjsondocument.h>
-#include <functional>
+#include "qjsontypedrpc_p.h"
+#include <QtCore/QtGlobal>
 
 QT_BEGIN_NAMESPACE
 
-class Q_JSONRPC_EXPORT QJsonRpcTransport
+namespace QJsonRpc {
+void TypedResponse::addOnCloseAction(const OnCloseAction &act)
 {
-    Q_DISABLE_COPY_MOVE(QJsonRpcTransport)
-public:
-    enum DiagnosticLevel { Warning, Error };
+    switch (m_status) {
+    case Status::Started:
+        m_onCloseActions.append(act);
+        break;
+    case Status::Invalid:
+        qCWarning(QTypedJson::jsonRpcLog)
+                << "addOnCloseAction called on moved QJsonTypedResponse" << idToString(m_id);
+        Q_ASSERT(false);
+        Q_FALLTHROUGH();
+    case Status::SentSuccess:
+    case Status::SentError:
+        act(m_status, m_id, *m_typedRpc);
+        break;
+    }
+}
 
-    using MessageHandler = std::function<void(const QJsonDocument &, const QJsonParseError &)>;
-    using DataHandler = std::function<void(const QByteArray &)>;
-    using DiagnosticHandler = std::function<void(DiagnosticLevel, const QString &)>;
+void TypedResponse::doOnCloseActions()
+{
+    m_typedRpc->doOnCloseAction(m_status, m_id);
+    for (const auto &a : m_onCloseActions) {
+        a(m_status, m_id, *m_typedRpc);
+    }
+    m_onCloseActions.clear();
+}
 
-    QJsonRpcTransport() = default;
-    virtual ~QJsonRpcTransport() = default;
+void TypedResponse::sendErrorResponse(int code, const QByteArray &message)
+{
+    sendErrorResponse<std::optional<int>>(code, message, std::optional<int>());
+}
 
-    // Parse data and call messageHandler for any messages found in it.
-    virtual void receiveData(const QByteArray &data) = 0;
+void TypedRpc::installOnCloseAction(const TypedResponse::OnCloseAction &closeAction)
+{
+    m_onCloseAction = closeAction;
+}
 
-    // serialize the message and call dataHandler for the resulting data.
-    // Needs to be guarded by a mutex if called  by different threads
-    virtual void sendMessage(const QJsonDocument &packet) = 0;
+TypedResponse::OnCloseAction TypedRpc::onCloseAction()
+{
+    return m_onCloseAction;
+}
 
-    void setMessageHandler(const MessageHandler &handler) { m_messageHandler = handler; }
-    MessageHandler messageHandler() const { return m_messageHandler; }
+void TypedRpc::doOnCloseAction(TypedResponse::Status status, const IdType &id)
+{
+    if (m_onCloseAction)
+        m_onCloseAction(status, id, *this);
+}
 
-    void setDataHandler(const DataHandler &handler) { m_dataHandler = handler; }
-    DataHandler dataHandler() const { return m_dataHandler; }
-
-    void setDiagnosticHandler(const DiagnosticHandler &handler) { m_diagnosticHandler = handler; }
-    DiagnosticHandler diagnosticHandler() const { return m_diagnosticHandler; }
-
-private:
-    MessageHandler m_messageHandler;
-    DataHandler m_dataHandler;
-    DiagnosticHandler m_diagnosticHandler;
-};
+} // namespace QJsonRpc
 
 QT_END_NAMESPACE
-
-#endif // QJSONRPCTRANSPORT_H
