@@ -67,7 +67,7 @@ template<typename T>
 struct QHasher
 {
     using argument_type = T;
-    using result_type = uint;
+    using result_type = size_t;
     result_type operator()(const argument_type &value) const { return qHash(value); }
 };
 

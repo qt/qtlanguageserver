@@ -37,6 +37,8 @@
 
 #include <queue>
 
+QT_BEGIN_NAMESPACE
+
 class EchoTransport : public QJsonRpcTransport
 {
 public:
@@ -658,6 +660,8 @@ ScopedConnection::~ScopedConnection()
 {
     QObject::disconnect(connection);
 }
+
+QT_END_NAMESPACE
 
 QTEST_MAIN(tst_QJsonRpcProtocol)
 

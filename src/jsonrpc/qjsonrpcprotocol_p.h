@@ -145,7 +145,7 @@ public:
     };
 
     class BatchPrivate;
-    class Batch
+    class Q_JSONRPC_EXPORT Batch
     {
         Q_DISABLE_COPY(Batch)
     public:
