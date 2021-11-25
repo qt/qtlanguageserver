@@ -269,12 +269,13 @@ static bool operator<(const QJsonValue &a, const QJsonValue &b)
     return false;
 }
 
-// This is strange, but apparently it does the right thing.
 void swap(QJsonValueRef a, QJsonValueRef b)
 {
-    const QJsonValueRef x = a;
-    a = b;
-    b = x;
+    // Note: Do not assign a QJsonValueRef to another one. It does not do what you think it does.
+    QJsonValue x = a;
+    QJsonValue y = b;
+    a = std::move(y);
+    b = std::move(x);
 }
 
 static QJsonDocument sortDocument(const QJsonDocument &doc)
@@ -296,9 +297,6 @@ void tst_QJsonRpcProtocol::specRequests()
 {
     QFETCH(QByteArray, request);
     QFETCH(QByteArray, response);
-    if (QLatin1String(QTest::currentDataTag()) == QLatin1String("rpc call Batch")
-        || QLatin1String(QTest::currentDataTag()) == QLatin1String("rpc call Batch (all valid)"))
-        QSKIP("currently failing (duplicated first non error req)");
 
     int responses = 0;
     transport.setEchoHandler([&](const QByteArray &received) {
