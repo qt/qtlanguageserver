@@ -59,7 +59,6 @@
 
 #include <unordered_map>
 #include <memory>
-#include <mutex>
 
 QT_BEGIN_NAMESPACE
 
@@ -89,7 +88,6 @@ public:
     template<typename JSON>
     void sendMessage(const JSON &value)
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
         m_transport->sendMessage(QJsonDocument(value));
     }
 
@@ -140,9 +138,6 @@ public:
         m_protocolErrorHandler = handler;
     }
 
-    std::mutex *mutex() { return &m_mutex; }
-    const std::mutex *mutex() const { return &m_mutex; }
-
     QJsonRpcProtocol::MessagePreprocessor messagePreprocessor() const
     {
         return m_messagePreprocessor;
@@ -159,7 +154,6 @@ private:
     OwnedMessageHandler m_defaultHandler;
 
     QJsonRpcTransport *m_transport;
-    std::mutex m_mutex;
 
     ResponseHandler m_protocolErrorHandler;
     ResponseHandler m_invalidResponseHandler;

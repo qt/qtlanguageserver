@@ -56,7 +56,6 @@
 #include <QtCore/qjsondocument.h>
 
 #include <memory>
-#include <thread>
 
 QT_BEGIN_NAMESPACE
 
@@ -131,19 +130,6 @@ public:
 
     protected:
         static Response result(const QJsonValue &result);
-
-        template<typename Function>
-        void asynchronous(Function processor, const Request &request,
-                          const ResponseHandler &handler)
-        {
-            std::thread([processor, request, handler]() { handler(processor(request)); }).detach();
-        }
-
-        template<typename Function>
-        void asynchronous(Function processor, const Notification &notification)
-        {
-            std::thread([processor, notification]() { processor(notification); }).detach();
-        }
     };
 
     class BatchPrivate;

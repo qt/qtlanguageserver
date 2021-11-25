@@ -138,7 +138,6 @@ public:
 private:
     QJsonArray m_finished;
     QJsonRpcTransport *m_transport = nullptr;
-    std::mutex *m_mutex = nullptr;
     uint m_pending = 0;
 };
 
@@ -280,7 +279,6 @@ void QJsonRpcProtocol::installMessagePreprocessor(const QJsonRpcProtocol::Messag
 
 void QJsonRpcProtocolPrivate::setTransport(QJsonRpcTransport *newTransport)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
     if (newTransport == m_transport)
         return;
 
@@ -317,9 +315,7 @@ static QJsonRpcProtocol::Notification parseNotification(const QJsonObject &objec
 void RequestBatchHandler::processMessages(QJsonRpcProtocolPrivate *protocol,
                                           const QJsonArray &messages)
 {
-    std::lock_guard<std::mutex> lock(*protocol->mutex());
     m_transport = protocol->transport();
-    m_mutex = protocol->mutex();
 
     for (const QJsonValue &value : messages) {
         if (!value.isObject()) {
@@ -353,7 +349,6 @@ void RequestBatchHandler::processMessages(QJsonRpcProtocolPrivate *protocol,
         ++m_pending;
         const QJsonValue id = request.id;
         handler->handleRequest(request, [this, id](const QJsonRpcProtocol::Response &response) {
-            std::lock_guard<std::mutex> lock(*m_mutex);
             m_finished.append(createResponse(id, response));
             bool found = false;
             for (QJsonValueRef entry : m_finished) {

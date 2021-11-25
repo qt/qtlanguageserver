@@ -29,10 +29,11 @@
 #include <QtJsonRpc/private/qjsonrpctransport_p.h>
 #include <QtJsonRpc/private/qjsonrpcprotocol_p.h>
 
-#include <QtCore/qobject.h>
 #include <QtCore/qjsonarray.h>
 #include <QtCore/qjsonobject.h>
+#include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
+#include <QtCore/qtimer.h>
 #include <QtTest/qtest.h>
 
 #include <queue>
@@ -555,7 +556,7 @@ void SumHandler::handleRequest(const QJsonRpcProtocol::Request &request,
     if (request.id.toInt() & 0x1)
         handler(plus(request));
     else
-        asynchronous(&SumHandler::plus, request, handler);
+        QTimer::singleShot(10, [handler, request]() { handler(plus(request)); });
 }
 
 QJsonRpcProtocol::Response SumHandler::plus(const QJsonRpcProtocol::Request &request)
@@ -583,7 +584,7 @@ void SubtractHandler::handleRequest(const QJsonRpcProtocol::Request &request,
     if (request.id.toInt() & 0x1)
         handler(minus(request));
     else
-        asynchronous(&SubtractHandler::minus, request, handler);
+        QTimer::singleShot(10, [handler, request]() { handler(minus(request)); });
 }
 
 QJsonRpcProtocol::Response SubtractHandler::minus(const QJsonRpcProtocol::Request &request)
@@ -621,19 +622,17 @@ void UpdateHandler::handleNotification(const QJsonRpcProtocol::Notification &not
 void GetDataHandler::handleRequest(const QJsonRpcProtocol::Request &request,
                                    const ResponseHandler &handler)
 {
-    asynchronous(
-            [](const QJsonRpcProtocol::Request &request) {
-                if (!request.params.isUndefined())
-                    return error(QJsonRpcProtocol::ErrorCode::InvalidParams);
+    QTimer::singleShot(10, [request, handler]() {
+        if (!request.params.isUndefined())
+            return handler(error(QJsonRpcProtocol::ErrorCode::InvalidParams));
 
-                QJsonRpcProtocol::Response response;
-                QJsonArray array;
-                array.append("hello");
-                array.append(5);
-                response.data = array;
-                return response;
-            },
-            request, handler);
+        QJsonRpcProtocol::Response response;
+        QJsonArray array;
+        array.append("hello");
+        array.append(5);
+        response.data = array;
+        return handler(response);
+    });
 }
 
 void EchoTransport::sendMessage(const QJsonDocument &message)
