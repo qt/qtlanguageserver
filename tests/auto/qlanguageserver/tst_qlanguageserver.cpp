@@ -176,6 +176,7 @@ private slots:
     void jsonRpcTransport();
     void jsonRpcTransportHeaderCase();
     void invalidHeaderField();
+    void protocolHandlesTransportErrors();
     void invalidJson();
     void protocolError();
 
@@ -383,6 +384,34 @@ void tst_QLanguageServer::invalidHeaderField()
 
         QTRY_COMPARE(messages, i + 1);
         QCOMPARE(warnings, i + 1);
+    }
+}
+
+void tst_QLanguageServer::protocolHandlesTransportErrors()
+{
+    static const QByteArray header = "Broken-Mess\r\n"
+                                     "Content-Length: 15\r\n\r\n";
+    static const QByteArray content = "{\"some\":\"json\"}";
+
+    QIOPipe pipe;
+
+    QVERIFY(pipe.open(QIODevice::ReadWrite));
+
+    auto device = pipe.end1();
+    QLanguageServerProtocol protocol([device](const QByteArray &data) { device->write(data); });
+
+    QObject::connect(device, &QIODevice::readyRead, device,
+                     [device, &protocol]() { protocol.receiveData(device->readAll()); });
+
+    int warnings = 0;
+    protocol.registerResponseErrorHandler(
+            [&](const QLspSpecification::ResponseError &) { ++warnings; });
+
+    QIODevice *end2 = pipe.end2();
+    for (int i = 0; i < 5; ++i) {
+        QCOMPARE(end2->write(header), header.length());
+        QCOMPARE(end2->write(content), content.length());
+        QTRY_COMPARE(warnings, i + 1);
     }
 }
 

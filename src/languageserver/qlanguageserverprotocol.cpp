@@ -41,6 +41,8 @@
 #include <QtLanguageServer/private/qlanguageserverprotocol_p.h>
 #include <QtLanguageServer/private/qlanguageservergen_p_p.h>
 
+#include <QtCore/qjsonobject.h>
+
 #include <memory>
 
 QT_BEGIN_NAMESPACE
@@ -78,6 +80,15 @@ QLanguageServerProtocol::QLanguageServerProtocol(const QJsonRpcTransport::DataHa
     : ProtocolGen(std::make_unique<ProtocolGenPrivate>())
 {
     transport()->setDataHandler(sender);
+    transport()->setDiagnosticHandler([this](QJsonRpcTransport::DiagnosticLevel l,
+                                             const QString &msg) {
+        handleResponseError(
+                ResponseError { int(ErrorCodes::InternalError), msg.toUtf8(),
+                                QJsonObject({ { u"errorLevel"_qs,
+                                                ((l == QJsonRpcTransport::DiagnosticLevel::Error)
+                                                         ? u"error"_qs
+                                                         : u"warning"_qs) } }) });
+    });
 }
 
 void QLanguageServerProtocol::receiveData(const QByteArray &data)
