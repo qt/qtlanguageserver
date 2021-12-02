@@ -362,7 +362,7 @@ class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEvent
 public:
     std::optional<Range> range = {};
     std::optional<int> rangeLength = {};
-    QString text = {};
+    QByteArray text = {};
 
     template<typename W>
     void walk(W &w)
@@ -408,7 +408,7 @@ class Q_LANGUAGESERVER_EXPORT RangePlaceHolder
 {
 public:
     Range range = {};
-    QString placeholder = {};
+    QByteArray placeholder = {};
 
     template<typename W>
     void walk(W &w)

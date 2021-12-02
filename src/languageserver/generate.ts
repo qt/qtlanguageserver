@@ -157,14 +157,6 @@ var specialStructs = {
 
 var specialEnums = { "ErrorCodes" : null, "InitializeError" : "InitializeErrorCode" }
 
-var toJsonMethods = {
-    "QString" : "QJsonValue",
-    "int" : "QJsonValue",
-    "bool" : "QJsonValue",
-    "QJsonValue" : "",
-    "QList" : "qListToJson"
-}
-
 var postStruct = {
     "DocumentFilter" : "using DocumentSelector = QList<DocumentFilter>;\n\n",
     "Range" : `class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEvent
@@ -172,7 +164,7 @@ var postStruct = {
 public:
     std::optional<Range> range = {};
     std::optional<int> rangeLength = {};
-    QString text = {};
+    QByteArray text = {};
 
     template <typename W> void walk(W &w) {
         field(w, "range", range);
@@ -216,7 +208,7 @@ class Q_LANGUAGESERVER_EXPORT RangePlaceHolder
 {
 public:
     Range range = {};
-    QString placeholder = {};
+    QByteArray placeholder = {};
 
     template <typename W> void walk(W &w) {
         field(w, "range", range);
