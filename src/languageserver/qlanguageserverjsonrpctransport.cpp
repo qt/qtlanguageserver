@@ -125,7 +125,7 @@ void QLanguageServerJsonRpcTransport::parseHeader()
                 const QByteArray fieldName = headerField.left(nameEnd);
                 const QByteArray fieldValue = headerField.mid(nameEnd + s_fieldSeparator.length());
 
-                if (fieldName == s_contentLengthFieldName) {
+                if (s_contentLengthFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
                     bool ok = false;
                     const int size = fieldValue.toInt(&ok);
                     if (ok) {
@@ -136,7 +136,7 @@ void QLanguageServerJsonRpcTransport::parseHeader()
                                         .arg(QString::fromUtf8(fieldName))
                                         .arg(QString::fromUtf8(fieldValue)));
                     }
-                } else if (fieldName == s_contentTypeFieldName) {
+                } else if (s_contentTypeFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
                     if (fieldValue != s_utf8 && fieldValue != s_brokenUtf8) {
                         if (auto handler = diagnosticHandler()) {
                             handler(Warning,
@@ -159,7 +159,7 @@ void QLanguageServerJsonRpcTransport::parseHeader()
             m_currentPacket.clear();
             m_contentStart = -1;
             if (auto handler = diagnosticHandler())
-                handler(Error, QString::fromLatin1("No valid Content-Size header found."));
+                handler(Error, QString::fromLatin1("No valid Content-Length header found."));
         }
     }
 }

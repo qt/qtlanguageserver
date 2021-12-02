@@ -174,6 +174,7 @@ class tst_QLanguageServer : public QObject
 
 private slots:
     void jsonRpcTransport();
+    void jsonRpcTransportHeaderCase();
     void invalidHeaderField();
     void invalidJson();
     void protocolError();
@@ -290,6 +291,58 @@ void tst_QLanguageServer::jsonRpcTransport()
         for (int i = 0; i < 5; ++i) {
             protocol.sendMessage(QJsonDocument::fromJson(content));
             QTRY_COMPARE(received, header + content);
+            received.clear();
+        }
+    }
+}
+
+void tst_QLanguageServer::jsonRpcTransportHeaderCase()
+{
+    static const QList<QByteArray> headers = { { "Content-Length: 15\r\n\r\n" },
+                                               { "content-length: 15\r\n\r\n" },
+                                               { "ConTEnt-lEngTh:  15 \r\n\r\n" },
+                                               { "CONTENT-LENGTH:  15\r\n\r\n" },
+                                               { "cONtENt-LENgTh: 15  \r\n\r\n" } };
+    static const QByteArray content = "{\"some\":\"json\"}";
+
+    {
+        QIOPipe pipe;
+        QVERIFY(pipe.open(QIODevice::WriteOnly));
+
+        QLanguageServerJsonRpcTransport transport;
+        setTransportDevice(&transport, pipe.end2());
+
+        int messages = 0;
+        transport.setMessageHandler(
+                [&](const QJsonDocument &message, const QJsonParseError &error) {
+                    QCOMPARE(error.error, QJsonParseError::NoError);
+                    QCOMPARE(message.toJson(QJsonDocument::Compact), content);
+                    ++messages;
+                });
+
+        for (int i = 0; i < 5; ++i) {
+            QCOMPARE(pipe.end1()->write(headers.at(i)), headers.at(i).length());
+            QCOMPARE(pipe.end1()->write(content), content.length());
+
+            QTRY_COMPARE(messages, i + 1);
+        }
+    }
+
+    {
+        QIOPipe pipe;
+        QVERIFY(pipe.open(QIODevice::ReadOnly));
+
+        QByteArray received;
+        QIODevice *end1 = pipe.end1();
+        connect(end1, &QIODevice::readyRead,
+                [&]() { received.append(end1->read(end1->bytesAvailable())); });
+
+        QLanguageServerJsonRpcTransport protocol;
+        setTransportDevice(&protocol, pipe.end2());
+
+        for (int i = 0; i < 5; ++i) {
+            protocol.sendMessage(QJsonDocument::fromJson(content));
+            QTRY_COMPARE(received, headers.at(0) + content);
             received.clear();
         }
     }
