@@ -408,8 +408,9 @@ void QJsonRpcProtocolPrivate::processResponse(const QJsonObject &object)
 
     auto pending = m_pendingRequests.find(response.id);
     if (pending != m_pendingRequests.end()) {
-        pending->second(response);
+        auto handler = pending->second;
         m_pendingRequests.erase(pending);
+        handler(response);
     } else if (response.id.isNull()) {
         if (m_protocolErrorHandler)
             m_protocolErrorHandler(response);
