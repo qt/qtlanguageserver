@@ -1124,14 +1124,14 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
                         ((resultType == "std::nullptr_t")
                                  ? "std::function<void()>"
                                  : `std::function<void(const ${resultType} &)>`);
-                sendDeclarations.push(`void request${rName}(const ${paramsType}&, const ${
-                        responseHandlerType} &responseHandler, ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);`);
+                sendDeclarations.push(`void request${rName}(const ${paramsType}&, ${
+                        responseHandlerType} responseHandler, ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);`);
                 sendImplementations.push(`void ProtocolGen::request${rName}(const ${
-                        paramsType} &params, const ${
-                        responseHandlerType} &responseHandler, ResponseErrorHandler errorHandler)
+                        paramsType} &params, ${
+                        responseHandlerType} responseHandler, ResponseErrorHandler errorHandler)
 {
     typedRpc()->sendRequest(QByteArray(Requests::${
-                        rName}Method), [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
+                        rName}Method), [responseHandler = std::move(responseHandler), errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
         if (response.errorCode.isDouble())
             errorHandler(ResponseError{response.errorCode.toInt(), response.errorMessage.toUtf8(), response.data});
         else
