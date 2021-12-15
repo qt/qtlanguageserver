@@ -1131,7 +1131,7 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
                         responseHandlerType} &responseHandler, ResponseErrorHandler errorHandler)
 {
     typedRpc()->sendRequest(QByteArray(Requests::${
-                        rName}Method), [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+                        rName}Method), [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
         if (response.errorCode.isDouble())
             errorHandler(ResponseError{response.errorCode.toInt(), response.errorMessage.toUtf8(), response.data});
         else
