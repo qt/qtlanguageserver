@@ -162,7 +162,7 @@ void ProtocolGen::requestInitialize(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::InitializeMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -183,7 +183,7 @@ void ProtocolGen::requestShutdown(const std::nullptr_t &params,
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ShutdownMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -221,7 +221,7 @@ void ProtocolGen::requestShowMessageRequest(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ShowMessageRequestMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -239,7 +239,7 @@ void ProtocolGen::requestShowDocument(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ShowDocumentMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -260,7 +260,7 @@ void ProtocolGen::requestWorkDoneProgressCreate(const WorkDoneProgressCreatePara
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::WorkDoneProgressCreateMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -286,7 +286,7 @@ void ProtocolGen::requestRegistration(const RegistrationParams &params,
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::RegistrationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -302,7 +302,7 @@ void ProtocolGen::requestUnregistration(const UnregistrationParams &params,
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::UnregistrationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -320,7 +320,7 @@ void ProtocolGen::requestWorkspaceWorkspaceFolders(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::WorkspaceWorkspaceFoldersMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -348,7 +348,7 @@ void ProtocolGen::requestConfiguration(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ConfigurationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -371,7 +371,7 @@ void ProtocolGen::requestWorkspaceSymbol(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::WorkspaceSymbolMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -390,7 +390,7 @@ void ProtocolGen::requestExecuteCommand(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ExecuteCommandMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -408,7 +408,7 @@ void ProtocolGen::requestApplyWorkspaceEdit(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ApplyWorkspaceEditMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -427,7 +427,7 @@ void ProtocolGen::requestCreateFiles(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CreateFilesMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -451,7 +451,7 @@ void ProtocolGen::requestRenameFiles(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::RenameFilesMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -475,7 +475,7 @@ void ProtocolGen::requestDeleteFiles(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DeleteFilesMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -514,7 +514,7 @@ void ProtocolGen::requestWillSaveTextDocument(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::WillSaveTextDocumentMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -548,7 +548,7 @@ void ProtocolGen::requestCompletion(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CompletionMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -567,7 +567,7 @@ void ProtocolGen::requestCompletionItemResolve(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CompletionItemResolveMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -584,7 +584,7 @@ void ProtocolGen::requestHover(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::HoverMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -603,7 +603,7 @@ void ProtocolGen::requestSignatureHelp(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::SignatureHelpMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -622,7 +622,7 @@ void ProtocolGen::requestDeclaration(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DeclarationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -642,7 +642,7 @@ void ProtocolGen::requestDefinition(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DefinitionMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -662,7 +662,7 @@ void ProtocolGen::requestTypeDefinition(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::TypeDefinitionMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -682,7 +682,7 @@ void ProtocolGen::requestImplementation(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ImplementationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -702,7 +702,7 @@ void ProtocolGen::requestReference(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ReferenceMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -721,7 +721,7 @@ void ProtocolGen::requestDocumentHighlight(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentHighlightMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -740,7 +740,7 @@ void ProtocolGen::requestDocumentSymbol(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentSymbolMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -760,7 +760,7 @@ void ProtocolGen::requestCodeAction(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CodeActionMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -778,7 +778,7 @@ void ProtocolGen::requestCodeActionResolve(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CodeActionResolveMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -796,7 +796,7 @@ void ProtocolGen::requestCodeLens(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CodeLensMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -813,7 +813,7 @@ void ProtocolGen::requestCodeLensResolve(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CodeLensResolveMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -829,7 +829,7 @@ void ProtocolGen::requestCodeLensRefresh(const std::nullptr_t &params,
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CodeLensRefreshMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -847,7 +847,7 @@ void ProtocolGen::requestDocumentLink(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentLinkMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -865,7 +865,7 @@ void ProtocolGen::requestDocumentLinkResolve(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentLinkResolveMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -882,7 +882,7 @@ void ProtocolGen::requestDocumentColor(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentColorMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -900,7 +900,7 @@ void ProtocolGen::requestColorPresentation(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::ColorPresentationMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -919,7 +919,7 @@ void ProtocolGen::requestDocumentFormatting(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentFormattingMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -938,7 +938,7 @@ void ProtocolGen::requestDocumentRangeFormatting(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentRangeFormattingMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -957,7 +957,7 @@ void ProtocolGen::requestDocumentOnTypeFormatting(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::DocumentOnTypeFormattingMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -976,7 +976,7 @@ void ProtocolGen::requestRename(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::RenameMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -995,7 +995,7 @@ void ProtocolGen::requestPrepareRename(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::PrepareRenameMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1015,7 +1015,7 @@ void ProtocolGen::requestFoldingRange(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::FoldingRangeMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1034,7 +1034,7 @@ void ProtocolGen::requestSelectionRange(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::SelectionRangeMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1053,7 +1053,7 @@ void ProtocolGen::requestCallHierarchyPrepare(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CallHierarchyPrepareMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1072,7 +1072,7 @@ void ProtocolGen::requestCallHierarchyIncomingCalls(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CallHierarchyIncomingCallsMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1091,7 +1091,7 @@ void ProtocolGen::requestCallHierarchyOutgoingCalls(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::CallHierarchyOutgoingCallsMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1110,7 +1110,7 @@ void ProtocolGen::requestSemanticTokens(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::SemanticTokensMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1129,7 +1129,7 @@ void ProtocolGen::requestSemanticTokensDelta(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::SemanticTokensDeltaMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1149,7 +1149,7 @@ void ProtocolGen::requestSemanticTokensRange(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::SemanticTokensRangeMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1166,7 +1166,7 @@ void ProtocolGen::requestRequestingARefreshOfAllSemanticTokens(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::RequestingARefreshOfAllSemanticTokensMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1184,7 +1184,7 @@ void ProtocolGen::requestLinkedEditingRange(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::LinkedEditingRangeMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
@@ -1203,7 +1203,7 @@ void ProtocolGen::requestMoniker(
 {
     typedRpc()->sendRequest(
             QByteArray(Requests::MonikerMethod),
-            [&responseHandler, &errorHandler](const QJsonRpcProtocol::Response &response) {
+            [responseHandler, errorHandler](const QJsonRpcProtocol::Response &response) {
                 if (response.errorCode.isDouble())
                     errorHandler(ResponseError { response.errorCode.toInt(),
                                                  response.errorMessage.toUtf8(), response.data });
