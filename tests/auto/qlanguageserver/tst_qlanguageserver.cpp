@@ -383,7 +383,7 @@ void tst_QLanguageServer::invalidHeaderField()
         QCOMPARE(end2->write(content), content.length());
 
         QTRY_COMPARE(messages, i + 1);
-        QCOMPARE(warnings, i + 1);
+        QCOMPARE(warnings, 2 * (i + 1));
     }
 }
 
@@ -411,7 +411,7 @@ void tst_QLanguageServer::protocolHandlesTransportErrors()
     for (int i = 0; i < 5; ++i) {
         QCOMPARE(end2->write(header), header.length());
         QCOMPARE(end2->write(content), content.length());
-        QTRY_COMPARE(warnings, i + 1);
+        QTRY_COMPARE(warnings, 2 * (i + 1));
     }
 }
 
@@ -459,15 +459,14 @@ void tst_QLanguageServer::protocolError()
 
     int messages = 0;
     transport.setMessageHandler([&](const QJsonDocument &doc, const QJsonParseError &error) {
-        Q_UNUSED(error);
-        QFAIL(doc.toJson());
+        Q_UNUSED(doc);
+        QVERIFY(error.error != QJsonParseError::NoError);
         ++messages;
     });
 
     QCOMPARE(pipe.end1()->write(header), header.length());
     QTRY_COMPARE(errors, 1);
-
-    QCOMPARE(messages, 0);
+    QTRY_COMPARE(messages, 1);
 }
 
 void tst_QLanguageServer::lifecycle()

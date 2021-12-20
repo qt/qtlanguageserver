@@ -28,6 +28,7 @@
 
 #include <QtJsonRpc/private/qjsonrpctransport_p.h>
 #include <QtJsonRpc/private/qjsonrpcprotocol_p.h>
+#include <QtJsonRpc/private/qhttpmessagestreamparser_p.h>
 
 #include <QtCore/qjsonarray.h>
 #include <QtCore/qjsonobject.h>
@@ -118,6 +119,9 @@ private slots:
 
     void clientNotifications_data();
     void clientNotifications();
+
+    void testHttpMessagesSplits_data();
+    void testHttpMessagesSplits();
 
     void badResponses();
 
@@ -548,6 +552,86 @@ void tst_QJsonRpcProtocol::badResponses()
 
     protocol.setInvalidResponseHandler(nullptr);
     protocol.setProtocolErrorHandler(nullptr);
+}
+
+void tst_QJsonRpcProtocol::testHttpMessagesSplits_data()
+{
+    static const QByteArray payload1 = "{\"some\":\"json\"}";
+    static const QByteArray msg1 = QByteArray { "Bla-bla: bla!bla!\r\n"
+                                                "  bla&bla\r\n"
+                                                "Content-Length: 15\r\n\r\n" }
+            + payload1;
+    static const QByteArray payload2 = "a message";
+    static const QByteArray msg2 = QByteArray { "Content-Length: 9\r\n"
+                                                "Bla-bla: bla!bla!\r\n"
+                                                "  bla&bla\r\n\r\n" }
+            + payload2;
+    static const QByteArray msg12 = msg1 + msg2;
+    QTest::addColumn<qsizetype>("offset");
+    QTest::addColumn<qsizetype>("splitSize");
+    QTest::addColumn<QList<QList<QByteArray>>>("splits");
+    QTest::addColumn<QList<QByteArray>>("payloads");
+
+    QList<QByteArray> payloads { payload1, payload2 };
+    for (qsizetype splitSize = 1; splitSize < 4; ++splitSize) {
+        for (qsizetype offset = 0; offset < splitSize; ++offset) {
+            char rowName[4] = { 'r', '0', '0', 0 };
+            rowName[1] = '0' + splitSize;
+            rowName[2] = '0' + offset;
+            QList<QList<QByteArray>> splits = { {}, {} };
+            qsizetype pos = 0;
+            if (offset != 0) {
+                splits[0].append(msg12.mid(0, offset));
+                pos = offset;
+            }
+            while (pos < msg1.size()) {
+                splits[0].append(msg12.mid(pos, splitSize));
+                pos += splitSize;
+            }
+            while (pos < msg12.size()) {
+                splits[1].append(msg12.mid(pos, splitSize));
+                pos += splitSize;
+            }
+            QTest::newRow(rowName) << offset << splitSize << splits << payloads;
+        }
+    }
+}
+
+void tst_QJsonRpcProtocol::testHttpMessagesSplits()
+{
+    QFETCH(qsizetype, offset);
+    QFETCH(qsizetype, splitSize);
+    QFETCH(QList<QList<QByteArray>>, splits);
+    QFETCH(QList<QByteArray>, payloads);
+    Q_UNUSED(offset);
+    Q_UNUSED(splitSize);
+    int nMessages = 0;
+    int nHeaders = 0;
+    int iMsg = 0;
+    QByteArray lastMessage;
+    QHttpMessageStreamParser parser(
+            [&nHeaders](const QByteArray &, const QByteArray &) { ++nHeaders; },
+            [&nMessages, &lastMessage](const QByteArray &body) {
+                ++nMessages;
+                lastMessage = body;
+            },
+            [](QtMsgType t, const QString &msg) {
+                QDebug(t) << "QHttpMessageStreamParser" << msg;
+            });
+    while (iMsg < splits.size()) {
+        QCOMPARE(nMessages, iMsg);
+        const auto pieces = splits.at(iMsg);
+        for (const auto &piece : pieces) {
+            QCOMPARE(nMessages, iMsg);
+            parser.receiveData(piece);
+        }
+        QCOMPARE(nMessages, ++iMsg);
+        QCOMPARE(nHeaders, 2 * iMsg);
+        QCOMPARE(lastMessage, payloads.at(iMsg - 1));
+    }
+    QCOMPARE(nMessages, 2);
+    QCOMPARE(lastMessage, payloads.last());
+    QVERIFY(parser.receiveEof());
 }
 
 void SumHandler::handleRequest(const QJsonRpcProtocol::Request &request,

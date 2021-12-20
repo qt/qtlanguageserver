@@ -4,6 +4,7 @@
 
 qt_internal_add_module(JsonRpc
     SOURCES
+        qhttpmessagestreamparser_p.h qhttpmessagestreamparser.cpp
         qjsonrpcprotocol.cpp qjsonrpcprotocol_p.h qjsonrpcprotocol_p_p.h
         qjsonrpctransport_p.h
         qtjsonrpcglobal.h
