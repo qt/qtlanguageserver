@@ -37,8 +37,8 @@
 **
 ****************************************************************************/
 
-#ifndef QLANGUAGESERVERJSONRPCTRANSPORT_P_H
-#define QLANGUAGESERVERJSONRPCTRANSPORT_P_H
+#ifndef QHTTPMESSAGESTREAMPARSER_P_H
+#define QHTTPMESSAGESTREAMPARSER_P_H
 
 //
 //  W A R N I N G
@@ -51,26 +51,51 @@
 // We mean it.
 //
 
-#include <QtLanguageServer/qtlanguageserverglobal.h>
-#include <QtJsonRpc/private/qhttpmessagestreamparser_p.h>
-#include <QtJsonRpc/private/qjsonrpctransport_p.h>
+#include <QtJsonRpc/qtjsonrpcglobal.h>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qstring.h>
+
+#include <functional>
 
 QT_BEGIN_NAMESPACE
 
-class Q_LANGUAGESERVER_EXPORT QLanguageServerJsonRpcTransport : public QJsonRpcTransport
+class Q_JSONRPC_EXPORT QHttpMessageStreamParser
 {
 public:
-    QLanguageServerJsonRpcTransport() noexcept;
-    void sendMessage(const QJsonDocument &packet) override;
-    void receiveData(const QByteArray &data) override;
+    enum class State {
+        PreHeader,
+        InHeaderField,
+        HeaderValueSpace,
+        InHeaderValue,
+        AfterCr,
+        AfterCrLf,
+        AfterCrLfCr,
+        InBody
+    };
+    QHttpMessageStreamParser(
+            std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
+            std::function<void(const QByteArray &body)> bodyHandler,
+            std::function<void(QtMsgType error, QString msg)> errorHandler);
+    void receiveData(QByteArray data);
+    bool receiveEof();
+
+    State state() const { return m_state; }
 
 private:
-    void hasHeader(const QByteArray &field, const QByteArray &value);
-    void hasBody(const QByteArray &body);
+    void callHasHeader();
+    void callHasBody();
+    void errorMessage(QtMsgType error, QString msg);
 
-    QHttpMessageStreamParser m_messageStreamParser;
+    std::function<void(const QByteArray &, const QByteArray &)> m_headerHandler;
+    std::function<void(const QByteArray &body)> m_bodyHandler;
+    std::function<void(QtMsgType error, QString msg)> m_errorHandler;
+
+    State m_state = State::PreHeader;
+    QByteArray m_currentHeaderField;
+    QByteArray m_currentHeaderValue;
+    QByteArray m_currentPacket;
+    int m_contentSize = -1;
 };
 
 QT_END_NAMESPACE
-
-#endif // QLANGUAGESERVERJSONRPCTRANSPORT_P_H
+#endif // QHTTPMESSAGESTREAMPARSER_P_H

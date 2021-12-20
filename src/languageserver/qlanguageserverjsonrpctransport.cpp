@@ -39,6 +39,8 @@
 
 #include "qlanguageserverjsonrpctransport_p.h"
 
+#include <QtCore/QtGlobal>
+
 #include <iostream>
 
 QT_BEGIN_NAMESPACE
@@ -50,6 +52,21 @@ static const QByteArray s_headerSeparator = "\r\n";
 static const QByteArray s_headerEnd = "\r\n\r\n";
 static const QByteArray s_utf8 = "utf-8";
 static const QByteArray s_brokenUtf8 = "utf8";
+
+QLanguageServerJsonRpcTransport::QLanguageServerJsonRpcTransport() noexcept
+    : m_messageStreamParser(
+            [this](const QByteArray &field, const QByteArray &value) { hasHeader(field, value); },
+            [this](const QByteArray &body) { hasBody(body); },
+            [this](QtMsgType error, QString msg) {
+                if (auto handler = diagnosticHandler()) {
+                    if (error == QtWarningMsg || error == QtInfoMsg || error == QtDebugMsg)
+                        handler(Warning, msg);
+                    else
+                        handler(Error, msg);
+                }
+            })
+{
+}
 
 void QLanguageServerJsonRpcTransport::sendMessage(const QJsonDocument &packet)
 {
@@ -68,99 +85,45 @@ void QLanguageServerJsonRpcTransport::sendMessage(const QJsonDocument &packet)
     }
 }
 
-bool QLanguageServerJsonRpcTransport::hasMessage() const
-{
-    return m_contentStart >= 0 && m_contentSize >= 0
-            && m_contentStart + m_contentSize <= m_currentPacket.length();
-}
-
-void QLanguageServerJsonRpcTransport::parseMessage()
-{
-    QJsonParseError error = { 0, QJsonParseError::NoError };
-    const QByteArray content = m_currentPacket.mid(m_contentStart, m_contentSize);
-    const QJsonDocument doc = QJsonDocument::fromJson(content, &error);
-
-    m_currentPacket = m_currentPacket.mid(m_contentStart + m_contentSize);
-    m_contentStart = m_contentSize = -1;
-    parseHeader();
-
-    if (auto handler = messageHandler())
-        handler(doc, error);
-}
-
 void QLanguageServerJsonRpcTransport::receiveData(const QByteArray &data)
 {
-    m_currentPacket.append(data);
-    parseHeader();
-    while (hasMessage())
-        parseMessage();
+    m_messageStreamParser.receiveData(data);
 }
 
-void QLanguageServerJsonRpcTransport::parseHeader()
+void QLanguageServerJsonRpcTransport::hasHeader(const QByteArray &fieldName,
+                                                const QByteArray &fieldValue)
 {
-    if (m_contentStart < 0) {
-        m_contentStart = m_currentPacket.indexOf(s_headerEnd);
-        if (m_contentStart < 0)
-            return;
-
-        m_contentStart += s_headerEnd.length();
-    }
-
-    if (m_contentSize < 0) {
-        int fieldStart = 0;
-        for (int fieldEnd = m_currentPacket.indexOf(s_headerSeparator);
-             fieldEnd >= 0 && fieldEnd <= m_contentStart - s_headerEnd.length();
-             fieldEnd = m_currentPacket.indexOf(s_headerSeparator, fieldStart)) {
-
-            const QByteArray headerField = m_currentPacket.mid(fieldStart, fieldEnd - fieldStart);
-            const int nameEnd = headerField.lastIndexOf(s_fieldSeparator);
-
-            if (nameEnd < 0) {
-                if (auto handler = diagnosticHandler()) {
-                    handler(Warning,
-                            QString::fromLatin1("Invalid header field: %1")
-                                    .arg(QString::fromUtf8(headerField)));
-                }
-            } else {
-                const QByteArray fieldName = headerField.left(nameEnd);
-                const QByteArray fieldValue = headerField.mid(nameEnd + s_fieldSeparator.length());
-
-                if (s_contentLengthFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
-                    bool ok = false;
-                    const int size = fieldValue.toInt(&ok);
-                    if (ok) {
-                        m_contentSize = size;
-                    } else if (auto handler = diagnosticHandler()) {
-                        handler(Warning,
-                                QString::fromLatin1("Invalid %1: %2")
-                                        .arg(QString::fromUtf8(fieldName))
-                                        .arg(QString::fromUtf8(fieldValue)));
-                    }
-                } else if (s_contentTypeFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
-                    if (fieldValue != s_utf8 && fieldValue != s_brokenUtf8) {
-                        if (auto handler = diagnosticHandler()) {
-                            handler(Warning,
-                                    QString::fromLatin1("Invalid %1: %2")
-                                            .arg(QString::fromUtf8(fieldName))
-                                            .arg(QString::fromUtf8(fieldValue)));
-                        }
-                    }
-                } else if (auto handler = diagnosticHandler()) {
-                    handler(Warning,
-                            QString::fromLatin1("Unknown header field: %1")
-                                    .arg(QString::fromUtf8(fieldName)));
-                }
+    if (s_contentLengthFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
+        // already handled by parser
+    } else if (s_contentTypeFieldName.compare(fieldName, Qt::CaseInsensitive) == 0) {
+        if (fieldValue != s_utf8 && fieldValue != s_brokenUtf8) {
+            if (auto handler = diagnosticHandler()) {
+                handler(Warning,
+                        QString::fromLatin1("Invalid %1: %2")
+                                .arg(QString::fromUtf8(fieldName))
+                                .arg(QString::fromUtf8(fieldValue)));
             }
-
-            fieldStart = fieldEnd + s_headerSeparator.length();
         }
+    } else if (auto handler = diagnosticHandler()) {
+        handler(Warning,
+                QString::fromLatin1("Unknown header field: %1").arg(QString::fromUtf8(fieldName)));
+    }
+}
 
-        if (m_contentSize < 0) {
-            m_currentPacket.clear();
-            m_contentStart = -1;
-            if (auto handler = diagnosticHandler())
-                handler(Error, QString::fromLatin1("No valid Content-Length header found."));
+void QLanguageServerJsonRpcTransport::hasBody(const QByteArray &body)
+{
+    QJsonParseError error = { 0, QJsonParseError::NoError };
+    const QJsonDocument doc = QJsonDocument::fromJson(body, &error);
+
+    if (error.error != QJsonParseError::NoError) {
+        if (auto handler = diagnosticHandler()) {
+            handler(Error,
+                    u"Error %1 decoding json: %2"_qs.arg(int(error.error))
+                            .arg(error.errorString()));
         }
+    }
+    if (auto handler = messageHandler()) {
+        handler(doc, error);
     }
 }
 
