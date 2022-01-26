@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2021 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -45,7 +45,7 @@ class QtLanguageServer(ConanFile):
     name = "qtlanguageserver"
     license = "LGPL-3.0, GPL-2.0+, Commercial Qt License Agreement"
     author = "The Qt Company <https://www.qt.io/contact-us>"
-    url = "https://code.qt.io/cgit/qt/qtimageformats.git"
+    url = "https://code.qt.io/cgit/qt/qtlanguageserver.git"
     description = "Language server protocol https://microsoft.github.io/language-server-protocol/specification implementation for Qt."
     topics = ("qt", "qt6", "addon", "LPS", "languageserver" )
     settings = "os", "compiler", "arch", "build_type"
