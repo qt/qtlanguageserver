@@ -2,7 +2,8 @@
 ## LanguageServer Module:
 #####################################################################
 
-qt_internal_add_module(LanguageServer
+qt_internal_add_module(LanguageServerPrivate
+    INTERNAL_MODULE
     SOURCES
       qlanguageserverprespectypes_p.h
       qlanguageserverspec_p.h
