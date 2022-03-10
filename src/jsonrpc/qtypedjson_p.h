@@ -55,6 +55,7 @@
 #include <QtCore/QJsonValue>
 #include <QtCore/QJsonObject>
 #include <QtCore/QScopeGuard>
+#include <QtCore/QSet>
 #include <QtCore/QByteArray>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QLoggingCategory>
