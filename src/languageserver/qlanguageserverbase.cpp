@@ -41,6 +41,8 @@
 
 QT_BEGIN_NAMESPACE
 
+using namespace Qt::StringLiterals;
+
 namespace QLspSpecification {
 
 Q_LOGGING_CATEGORY(lspLog, "qt.languageserver.protocol");
@@ -131,7 +133,7 @@ void ProtocolBase::defaultResponseErrorHandler(const QLspSpecification::Response
                                   ? QString::fromUtf8(QJsonDocument(err.data->toArray()).toJson())
                                   : (err.data->isDouble()) ? QString::number(err.data->toDouble())
                                   : (err.data->isString()) ? err.data->toString()
-                                  : (err.data->isNull())   ? u"null"_qs
+                                  : (err.data->isNull())   ? u"null"_s
                                                            : QString());
 }
 

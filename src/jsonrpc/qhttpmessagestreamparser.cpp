@@ -43,6 +43,8 @@
 
 QT_BEGIN_NAMESPACE
 
+using namespace Qt::StringLiterals;
+
 /*!
  * \class QHttpMessageStreamParser
  * \brief Decodes a stream of headers and payloads encoded according to rfc2616 (HTTP/1.1)
@@ -63,7 +65,7 @@ QHttpMessageStreamParser::QHttpMessageStreamParser(
 bool QHttpMessageStreamParser::receiveEof()
 {
     if (m_state != State::PreHeader) {
-        errorMessage(QtWarningMsg, u"Partial message at end of file"_qs);
+        errorMessage(QtWarningMsg, u"Partial message at end of file"_s);
         return false;
     }
     return true;
@@ -102,7 +104,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             case tab:
             case space:
                 errorMessage(QtWarningMsg,
-                             u"Unexpected space at start of headers, skipping"_qs.arg(
+                             u"Unexpected space at start of headers, skipping"_s.arg(
                                      QString::fromUtf8(m_currentHeaderField)));
                 while (dataPos < data.size()) {
                     char c = data.at(++dataPos);
@@ -128,7 +130,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                     m_currentHeaderField.append(data.mid(0, dataPos));
                     errorMessage(
                             QtWarningMsg,
-                            u"Unexpected carriage return without newline in unterminated header %1"_qs
+                            u"Unexpected carriage return without newline in unterminated header %1"_s
                                     .arg(QString::fromUtf8(m_currentHeaderField)));
 
                     m_state = State::AfterCrLf;
@@ -139,7 +141,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                     m_state = State::AfterCr;
                     m_currentHeaderField.append(data.mid(0, dataPos));
                     errorMessage(QtWarningMsg,
-                                 u"Newline before colon in header %1"_qs.arg(
+                                 u"Newline before colon in header %1"_s.arg(
                                          QString::fromUtf8(m_currentHeaderField)));
                     advance();
                     ++dataPos;
@@ -152,7 +154,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                     break;
                 case space:
                 case tab:
-                    errorMessage(QtWarningMsg, u"Space in header field name"_qs);
+                    errorMessage(QtWarningMsg, u"Space in header field name"_s);
                     Q_FALLTHROUGH();
                 default:
                     if (++dataPos == data.size()) {
@@ -228,7 +230,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             case tab:
                 errorMessage(
                         QtWarningMsg,
-                        u"Unexpected carriage return without following newline in header %1"_qs.arg(
+                        u"Unexpected carriage return without following newline in header %1"_s.arg(
                                 QString::fromUtf8(m_currentHeaderField)));
                 m_state = State::InHeaderValue;
                 // m_currentHeaderValue.append(data.mid(0,dataPos)) to preserve the (non
@@ -238,7 +240,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             default:
                 errorMessage(
                         QtWarningMsg,
-                        u"Unexpected carriage return without following newline in header %1"_qs.arg(
+                        u"Unexpected carriage return without following newline in header %1"_s.arg(
                                 QString::fromUtf8(m_currentHeaderField)));
                 m_state = State::InHeaderField;
                 advance();
@@ -251,7 +253,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             switch (c) {
             case lf:
                 errorMessage(QtWarningMsg,
-                             u"Newline without carriage return in header %1"_qs.arg(
+                             u"Newline without carriage return in header %1"_s.arg(
                                      QString::fromUtf8(m_currentHeaderField)));
                 // avoid seeing it as end of headers?
                 m_state = State::AfterCrLfCr;
@@ -287,7 +289,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             default:
                 errorMessage(
                         QtWarningMsg,
-                        u"crlfcr without final lf encountred, ignoring it (non clear terminator)"_qs);
+                        u"crlfcr without final lf encountred, ignoring it (non clear terminator)"_s);
                 m_state = State::InHeaderField;
                 advance();
                 callHasHeader();
@@ -296,7 +298,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
         } break;
         case State::InBody: {
             if (m_contentSize == -1) {
-                errorMessage(QtWarningMsg, u"missing valid Content-Length header"_qs);
+                errorMessage(QtWarningMsg, u"missing valid Content-Length header"_s);
                 m_state = State::PreHeader;
                 continue;
             }
@@ -317,7 +319,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
         // nothing to read, but emit empty body...
         m_state = State::PreHeader;
         if (m_contentSize == -1)
-            errorMessage(QtWarningMsg, u"missing valid Content-Length header"_qs);
+            errorMessage(QtWarningMsg, u"missing valid Content-Length header"_s);
         callHasBody();
     }
 }
@@ -339,7 +341,7 @@ void QHttpMessageStreamParser::callHasHeader()
         } else {
             errorMessage(
                     QtWarningMsg,
-                    u"Invalid %1: %2"_qs.arg(QString::fromUtf8(field), QString::fromUtf8(value)));
+                    u"Invalid %1: %2"_s.arg(QString::fromUtf8(field), QString::fromUtf8(value)));
         }
     }
     if (m_headerHandler)

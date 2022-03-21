@@ -62,6 +62,7 @@
 #include <memory>
 
 QT_BEGIN_NAMESPACE
+
 namespace QLspSpecification {
 
 Q_DECLARE_LOGGING_CATEGORY(lspLog);
@@ -120,13 +121,15 @@ void decodeAndCall(QJsonValue value, F funct,
                    ProtocolBase::ResponseErrorHandler errorHandler =
                            &ProtocolBase::defaultResponseErrorHandler)
 {
+    using namespace Qt::StringLiterals;
+
     T result;
     QTypedJson::Reader r(value);
     doWalk(r, result);
     if (!r.errorMessages().isEmpty()) {
         errorHandler(QLspSpecification::ResponseError {
                 int(QLspSpecification::ErrorCodes::ParseError),
-                u"Errors decoding data:\n    %1"_qs.arg(r.errorMessages().join(u"\n    ")).toUtf8(),
+                u"Errors decoding data:\n    %1"_s.arg(r.errorMessages().join(u"\n    ")).toUtf8(),
                 value });
         r.clearErrorMessages();
     } else {

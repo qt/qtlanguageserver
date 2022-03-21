@@ -59,6 +59,7 @@
 #include <variant>
 
 QT_BEGIN_NAMESPACE
+
 namespace QJsonRpc {
 class TypedRpc;
 
@@ -179,15 +180,17 @@ public:
     void handleRequest(const QJsonRpcProtocol::Request &request,
                        const QJsonRpcProtocol::ResponseHandler &handler) override
     {
+        using namespace Qt::StringLiterals;
+
         if (m_requestHandler) {
             m_requestHandler(request, handler);
             return;
         }
         QString msg;
         if (m_notificationHandler)
-            msg = u"Expected notification with method '%1', not request"_qs;
+            msg = u"Expected notification with method '%1', not request"_s;
         else
-            msg = u"Reached null handler for method '%1'"_qs;
+            msg = u"Reached null handler for method '%1'"_s;
         msg = msg.arg(request.method);
         handler(MessageHandler::error(int(QJsonRpcProtocol::ErrorCode::InvalidRequest), msg));
         qCWarning(QTypedJson::jsonRpcLog) << msg;

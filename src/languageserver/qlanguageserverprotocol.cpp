@@ -48,6 +48,7 @@
 QT_BEGIN_NAMESPACE
 
 using namespace QLspSpecification;
+using namespace Qt::StringLiterals;
 
 /*!
 \internal
@@ -84,10 +85,10 @@ QLanguageServerProtocol::QLanguageServerProtocol(const QJsonRpcTransport::DataHa
                                              const QString &msg) {
         handleResponseError(
                 ResponseError { int(ErrorCodes::InternalError), msg.toUtf8(),
-                                QJsonObject({ { u"errorLevel"_qs,
+                                QJsonObject({ { u"errorLevel"_s,
                                                 ((l == QJsonRpcTransport::DiagnosticLevel::Error)
-                                                         ? u"error"_qs
-                                                         : u"warning"_qs) } }) });
+                                                         ? u"error"_s
+                                                         : u"warning"_s) } }) });
     });
 }
 

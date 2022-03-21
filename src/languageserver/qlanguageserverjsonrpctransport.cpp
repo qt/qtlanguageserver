@@ -45,6 +45,8 @@
 
 QT_BEGIN_NAMESPACE
 
+using namespace Qt::StringLiterals;
+
 static const QByteArray s_contentLengthFieldName = "Content-Length";
 static const QByteArray s_contentTypeFieldName = "Content-Type";
 static const QByteArray s_fieldSeparator = ": ";
@@ -118,7 +120,7 @@ void QLanguageServerJsonRpcTransport::hasBody(const QByteArray &body)
     if (error.error != QJsonParseError::NoError) {
         if (auto handler = diagnosticHandler()) {
             handler(Error,
-                    u"Error %1 decoding json: %2"_qs.arg(int(error.error))
+                    u"Error %1 decoding json: %2"_s.arg(int(error.error))
                             .arg(error.errorString()));
         }
     }

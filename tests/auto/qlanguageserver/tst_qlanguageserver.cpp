@@ -39,6 +39,7 @@
 #include <QtTest/qsignalspy.h>
 #include <QtTest/qtest.h>
 
+using namespace Qt::StringLiterals;
 using namespace QLspSpecification;
 
 class TestRigEventHandler
@@ -76,7 +77,7 @@ public:
 
             responder(QJsonRpcProtocol::MessageHandler::error(
                           int(QLspSpecification::ErrorCodes::ServerNotInitialized),
-                          u"Method called on non initialized Language Server"_qs));
+                          u"Method called on non initialized Language Server"_s));
             return QJsonRpcProtocol::Processing::Stop;
         });
 
@@ -687,7 +688,7 @@ void tst_QLanguageServer::clientRegisterCapability()
     referencesRegistration.method = "textDocument/references";
     params.registrations = { referencesRegistration };
 
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression(u"ERROR -32601"_qs));
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression(u"ERROR -32601"_s));
     checkRequestInvalid(&test, params);
 
     QLspSpecification::ReferenceClientCapabilities references;
@@ -699,7 +700,7 @@ void tst_QLanguageServer::clientRegisterCapability()
 
     test.initialize(clientCapabilities);
 
-    QTest::ignoreMessage(QtWarningMsg, QRegularExpression(u"ERROR -32601"_qs));
+    QTest::ignoreMessage(QtWarningMsg, QRegularExpression(u"ERROR -32601"_s));
     checkRequestInvalid(&test, params);
 
     auto handler = [&](const QJsonRpcProtocol::Request &request) {

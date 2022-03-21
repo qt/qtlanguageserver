@@ -47,10 +47,12 @@
 
 QT_BEGIN_NAMESPACE
 
+using namespace Qt::StringLiterals;
+
 static QJsonObject createResponse(const QJsonValue &id, const QJsonRpcProtocol::Response &response)
 {
     QJsonObject object;
-    object.insert(u"jsonrpc", u"2.0"_qs);
+    object.insert(u"jsonrpc", u"2.0"_s);
     object.insert(u"id", id);
     if (response.errorCode.isDouble()) {
         QJsonObject error;
@@ -73,19 +75,19 @@ createPredefinedError(QJsonRpcProtocol::ErrorCode code,
     response.errorCode = static_cast<double>(code);
     switch (code) {
     case QJsonRpcProtocol::ErrorCode::ParseError:
-        response.errorMessage = u"Parse error"_qs;
+        response.errorMessage = u"Parse error"_s;
         break;
     case QJsonRpcProtocol::ErrorCode::InvalidRequest:
-        response.errorMessage = u"Invalid Request"_qs;
+        response.errorMessage = u"Invalid Request"_s;
         break;
     case QJsonRpcProtocol::ErrorCode::MethodNotFound:
-        response.errorMessage = u"Method not found"_qs;
+        response.errorMessage = u"Method not found"_s;
         break;
     case QJsonRpcProtocol::ErrorCode::InvalidParams:
-        response.errorMessage = u"Invalid Parameters"_qs;
+        response.errorMessage = u"Invalid Parameters"_s;
         break;
     case QJsonRpcProtocol::ErrorCode::InternalError:
-        response.errorMessage = u"Internal Error"_qs;
+        response.errorMessage = u"Internal Error"_s;
         break;
     }
     response.id = id;
@@ -118,7 +120,7 @@ template<typename Notification>
 static QJsonObject createNotification(const Notification &notification)
 {
     QJsonObject object;
-    object.insert(u"jsonrpc", u"2.0"_qs);
+    object.insert(u"jsonrpc", u"2.0"_s);
     object.insert(u"method", notification.method);
     object.insert(u"params", notification.params);
     return object;
@@ -172,7 +174,7 @@ template<typename Request>
 static QJsonObject createRequest(const Request &request)
 {
     QJsonObject object;
-    object.insert(u"jsonrpc", u"2.0"_qs);
+    object.insert(u"jsonrpc", u"2.0"_s);
     object.insert(u"id", request.id);
     object.insert(u"method", request.method);
     object.insert(u"params", request.params);
@@ -362,7 +364,7 @@ void RequestBatchHandler::processMessages(QJsonRpcProtocolPrivate *protocol,
                         id,
                         { id, QJsonValue::Undefined,
                           QJsonValue(static_cast<int>(QJsonRpcProtocol::ErrorCode::InternalError)),
-                          u"Message handler did not produce a result."_qs }));
+                          u"Message handler did not produce a result."_s }));
             }
 
             if (--m_pending == 0)
