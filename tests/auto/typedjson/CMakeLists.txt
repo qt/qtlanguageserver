@@ -12,11 +12,15 @@ qt_internal_add_test(tst_typedjson
         tst_typedjson.cpp tst_typedjson.h
     DEFINES
         QT_DEPRECATED_WARNINGS
-        QT_TYPEDJSON_DATADIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}/data\\\"
     PUBLIC_LIBRARIES
         Qt::JsonRpcPrivate
         Qt::Test
     TESTDATA ${test_data}
+)
+
+qt_internal_extend_target(tst_typedjson CONDITION NOT ANDROID AND NOT IOS
+    DEFINES
+        QT_TYPEDJSON_DATADIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}/data\\\"
 )
 
 qt_internal_extend_target(tst_typedjson CONDITION ANDROID OR IOS
