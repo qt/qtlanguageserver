@@ -591,7 +591,7 @@ class Q_LANGUAGESERVER_EXPORT OptionalVersionedTextDocumentIdentifier
     : public TextDocumentIdentifier
 {
 public:
-    std::variant<int, std::nullptr_t> version = {};
+    std::variant<int, std::nullptr_t> version = nullptr;
 
     template<typename W>
     void walk(W &w)
@@ -830,7 +830,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT TextDocumentRegistrationOptions
 {
 public:
-    std::variant<DocumentSelector, std::nullptr_t> documentSelector = {};
+    std::variant<DocumentSelector, std::nullptr_t> documentSelector = nullptr;
 
     template<typename W>
     void walk(W &w)
@@ -1495,15 +1495,15 @@ public:
 class Q_LANGUAGESERVER_EXPORT InitializeParams : public WorkDoneProgressParams
 {
 public:
-    std::variant<int, std::nullptr_t> processId = {};
+    std::variant<int, std::nullptr_t> processId = nullptr;
     std::optional<QJsonObject> clientInfo = {};
     std::optional<QByteArray> locale = {};
-    std::optional<std::variant<QByteArray, std::nullptr_t>> rootPath = {};
-    std::variant<QByteArray, std::nullptr_t> rootUri = {};
+    std::optional<std::variant<QByteArray, std::nullptr_t>> rootPath = nullptr;
+    std::variant<QByteArray, std::nullptr_t> rootUri = nullptr;
     std::optional<QJsonValue> initializationOptions = {};
     ClientCapabilities capabilities = {};
     std::optional<TraceValue> trace = {};
-    std::optional<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> workspaceFolders = {};
+    std::optional<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> workspaceFolders = nullptr;
 
     template<typename W>
     void walk(W &w)

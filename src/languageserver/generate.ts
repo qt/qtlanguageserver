@@ -331,6 +331,27 @@ function effectiveType(type: string)
     return type;
 }
 
+function isNullableVariant(typeStr: String)
+{
+    // variants containing either a or b are represented as a | b
+    // we look at the variants containing null as possible option
+    let nestedParentheses = 0;
+    let currentTypeStart = 0;
+    for (let i = 0; i < typeStr.length; ++i) {
+        let c = typeStr[i];
+        if (c == "(" || c == "[")
+            nestedParentheses += 1;
+        else if (c == ")" || c == "]")
+            nestedParentheses -= 1;
+        else if (c == "|" && nestedParentheses == 0) {
+            if (typeStr.slice(currentTypeStart, i).trim() == "null")
+                return true;
+            currentTypeStart = i + 1;
+        }
+    }
+    return typeStr.slice(currentTypeStart, typeStr.length).trim() == "null";
+}
+
 function generateEnum(e: Enum)
 {
     let output: string = "enum class " + e.name + "\n{\n";
@@ -425,18 +446,23 @@ function generateClass(struct: Struct, indent: string)
                       .map(function(member: Member) {
                           var members = "";
                           var type = "";
+                          let defaultValue = "{}";
                           if ((<Struct>member.type).members) {
                               members += "\n";
                               members += generateClass(<Struct>member.type, innerIndent);
                               type = (<Struct>member.type).name;
                           } else {
-                              type = effectiveType(<string>member.type);
+                              let t = <string>member.type;
+                              type = effectiveType(t);
+                              if (isNullableVariant(t))
+                                  defaultValue = "nullptr";
                           }
                           let upperCaseName: string = upperCase(member.name);
                           var rType: string = type;
                           if (member.isOptional)
                               rType = "std::optional<" + type + ">";
-                          members += innerIndent + rType + " " + member.name + " = {};\n";
+                          members += innerIndent + rType + " " + member.name + " = " + defaultValue
+                                  + ";\n";
                           return members;
                       })
                       .join("");
