@@ -298,12 +298,11 @@ public:
     template<typename T>
     bool handleOptional(T &el)
     {
-        using BaseT = std::decay_t<T>;
         bool isMissing = currentValue().isUndefined() || currentValue().isNull();
         if (isMissing)
             el.reset();
         else
-            el = typename BaseT::value_type {};
+            el.emplace();
         return bool(el);
     }
 
