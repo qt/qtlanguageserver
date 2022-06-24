@@ -19,10 +19,11 @@ using namespace Qt::StringLiterals;
 QHttpMessageStreamParser::QHttpMessageStreamParser(
         std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
         std::function<void(const QByteArray &body)> bodyHandler,
-        std::function<void(QtMsgType error, QString msg)> errorHandler)
+        std::function<void(QtMsgType error, QString msg)> errorHandler, Mode mode)
     : m_headerHandler(std::move(headerHandler)),
       m_bodyHandler(std::move(bodyHandler)),
-      m_errorHandler(std::move(errorHandler))
+      m_errorHandler(std::move(errorHandler)),
+      m_mode(mode)
 {
 }
 
@@ -185,6 +186,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                                             "header end after header %1")
                                      .arg(QString::fromUtf8(m_currentHeaderField)));
                 m_currentPacket.clear();
+                m_currentPacketSize = 0;
                 ++dataPos;
                 advance();
                 m_state = State::InBody;
@@ -245,6 +247,7 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
             switch (c) {
             case lf:
                 m_currentPacket.clear();
+                m_currentPacketSize = 0;
                 ++dataPos;
                 advance();
                 m_state = State::InBody;
@@ -266,13 +269,15 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                 m_state = State::PreHeader;
                 continue;
             }
-            qint64 missing = m_contentSize - m_currentPacket.size();
+            qint64 missing = m_contentSize - m_currentPacketSize;
             if (missing > 0) {
                 dataPos = qMin(qsizetype(missing), data.size());
-                m_currentPacket.append(data.mid(0, dataPos));
+                m_currentPacketSize += dataPos;
+                if (m_mode == BUFFERED)
+                    m_currentPacket.append(data.mid(0, dataPos));
                 advance();
             }
-            if (m_currentPacket.size() >= m_contentSize) {
+            if (m_currentPacketSize >= m_contentSize) {
                 m_state = State::PreHeader;
                 callHasBody();
             }
@@ -314,9 +319,18 @@ void QHttpMessageStreamParser::callHasHeader()
 
 void QHttpMessageStreamParser::callHasBody()
 {
+    // uses an empty QByteArray in callback for dry run
+    if (m_mode == UNBUFFERED) {
+        if (m_bodyHandler)
+            m_bodyHandler(QByteArray());
+        return;
+    }
+
     QByteArray body = m_currentPacket;
     m_currentPacket.clear();
+    m_currentPacketSize = 0;
     m_contentSize = -1;
+
     if (m_bodyHandler)
         m_bodyHandler(body);
 }
