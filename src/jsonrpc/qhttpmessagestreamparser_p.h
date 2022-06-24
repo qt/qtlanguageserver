@@ -36,10 +36,17 @@ public:
         AfterCrLfCr,
         InBody
     };
+
+    /*!
+     * \internal
+     * \brief Allows to run the FSM with or without keeping any buffers.
+     */
+    enum Mode { BUFFERED, UNBUFFERED };
+
     QHttpMessageStreamParser(
             std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
             std::function<void(const QByteArray &body)> bodyHandler,
-            std::function<void(QtMsgType error, QString msg)> errorHandler);
+            std::function<void(QtMsgType error, QString msg)> errorHandler, Mode mode = BUFFERED);
     void receiveData(QByteArray data);
     bool receiveEof();
 
@@ -59,6 +66,8 @@ private:
     QByteArray m_currentHeaderValue;
     QByteArray m_currentPacket;
     int m_contentSize = -1;
+    int m_currentPacketSize = 0;
+    Mode m_mode;
 };
 
 QT_END_NAMESPACE
