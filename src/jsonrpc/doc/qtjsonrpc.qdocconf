@@ -1,5 +1,4 @@
 include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
-include($QT_INSTALL_DOCS/config/exampleurl-qtjsonrpc.qdocconf)
 
 project                 = QtJsonRpc
 description             = Qt JsonRpc Reference Documentation
