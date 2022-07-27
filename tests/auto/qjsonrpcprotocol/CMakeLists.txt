@@ -9,7 +9,7 @@ qt_internal_add_test(tst_qjsonrpcprotocol
         tst_qjsonrpcprotocol.cpp
     DEFINES
         QT_DEPRECATED_WARNINGS
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::JsonRpcPrivate
         Qt::Test
     TESTDATA ${test_data}

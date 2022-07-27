@@ -15,7 +15,7 @@ qt_internal_add_test(tst_typedjson
         tst_typedjson.cpp tst_typedjson.h
     DEFINES
         QT_DEPRECATED_WARNINGS
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::JsonRpcPrivate
         Qt::Test
     TESTDATA ${test_data}

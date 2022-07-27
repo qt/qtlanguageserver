@@ -11,7 +11,7 @@ qt_internal_add_test(tst_qlanguageserver
         qiopipe.h qiopipe.cpp
     DEFINES
         QT_DEPRECATED_WARNINGS
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::CorePrivate
         Qt::LanguageServerPrivate
         Qt::Test
