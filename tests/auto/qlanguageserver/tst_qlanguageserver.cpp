@@ -245,8 +245,8 @@ void tst_QLanguageServer::jsonRpcTransport()
         });
 
         for (int i = 0; i < 5; ++i) {
-            QCOMPARE(pipe.end1()->write(header), header.length());
-            QCOMPARE(pipe.end1()->write(content), content.length());
+            QCOMPARE(pipe.end1()->write(header), header.size());
+            QCOMPARE(pipe.end1()->write(content), content.size());
 
             QTRY_COMPARE(messages, i + 1);
         }
@@ -298,8 +298,8 @@ void tst_QLanguageServer::jsonRpcTransportHeaderCase()
                 });
 
         for (int i = 0; i < 5; ++i) {
-            QCOMPARE(pipe.end1()->write(headers.at(i)), headers.at(i).length());
-            QCOMPARE(pipe.end1()->write(content), content.length());
+            QCOMPARE(pipe.end1()->write(headers.at(i)), headers.at(i).size());
+            QCOMPARE(pipe.end1()->write(content), content.size());
 
             QTRY_COMPARE(messages, i + 1);
         }
@@ -355,8 +355,8 @@ void tst_QLanguageServer::invalidHeaderField()
 
     QIODevice *end2 = pipe.end2();
     for (int i = 0; i < 5; ++i) {
-        QCOMPARE(end2->write(header), header.length());
-        QCOMPARE(end2->write(content), content.length());
+        QCOMPARE(end2->write(header), header.size());
+        QCOMPARE(end2->write(content), content.size());
 
         QTRY_COMPARE(messages, i + 1);
         QCOMPARE(warnings, 2 * (i + 1));
@@ -385,8 +385,8 @@ void tst_QLanguageServer::protocolHandlesTransportErrors()
 
     QIODevice *end2 = pipe.end2();
     for (int i = 0; i < 5; ++i) {
-        QCOMPARE(end2->write(header), header.length());
-        QCOMPARE(end2->write(content), content.length());
+        QCOMPARE(end2->write(header), header.size());
+        QCOMPARE(end2->write(content), content.size());
         QTRY_COMPARE(warnings, 2 * (i + 1));
     }
 }
@@ -411,8 +411,8 @@ void tst_QLanguageServer::invalidJson()
 
     QIODevice *end1 = pipe.end1();
     for (int i = 0; i < 5; ++i) {
-        QCOMPARE(end1->write(header), header.length());
-        QCOMPARE(end1->write(content), content.length());
+        QCOMPARE(end1->write(header), header.size());
+        QCOMPARE(end1->write(content), content.size());
         QTRY_COMPARE(messages, i + 1);
     }
 }
@@ -440,7 +440,7 @@ void tst_QLanguageServer::protocolError()
         ++messages;
     });
 
-    QCOMPARE(pipe.end1()->write(header), header.length());
+    QCOMPARE(pipe.end1()->write(header), header.size());
     QTRY_COMPARE(errors, 1);
     QTRY_COMPARE(messages, 1);
 }

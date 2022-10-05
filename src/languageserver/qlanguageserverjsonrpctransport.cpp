@@ -43,7 +43,7 @@ void QLanguageServerJsonRpcTransport::sendMessage(const QJsonDocument &packet)
         QByteArray msg;
         msg.append(s_contentLengthFieldName);
         msg.append(s_fieldSeparator);
-        msg.append(QByteArray::number(content.length()));
+        msg.append(QByteArray::number(content.size()));
         msg.append(s_headerSeparator);
         msg.append(s_headerSeparator);
         msg.append(content);
