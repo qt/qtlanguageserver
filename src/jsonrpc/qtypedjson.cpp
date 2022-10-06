@@ -215,7 +215,7 @@ void Reader::endArrayF(qint32 &) { }
 QString Reader::currentPath() const
 {
     QStringList res;
-    for (const auto &el : qAsConst(m_p->valuesStack)) {
+    for (const auto &el : std::as_const(m_p->valuesStack)) {
         if (el.indexPath != -1)
             res.append(QString::number(el.indexPath));
         else
