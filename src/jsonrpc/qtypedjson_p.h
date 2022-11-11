@@ -419,7 +419,7 @@ inline void doWalk(W &w, T &el)
             if (w.handleOptional(el) && el)
                 doWalk(w, *el);
         } else {
-            int size = el.length();
+            int size = el.size();
             if (!w.startArray(size, el))
                 return;
             int i = 0;

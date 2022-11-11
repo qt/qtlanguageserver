@@ -141,7 +141,7 @@ void Reader::warnNonNull()
 {
     QByteArray val = QJsonDocument(QJsonArray({ currentValue() })).toJson();
     warn(QStringLiteral(u"%1 is supposed to be null, but is %2")
-                 .arg(currentPath(), QString::fromUtf8(val.mid(1, val.length() - 2))));
+                 .arg(currentPath(), QString::fromUtf8(val.mid(1, val.size() - 2))));
 }
 
 void Reader::warn(const QString &msg)
@@ -160,7 +160,7 @@ void Reader::handleJson(QJsonObject &v)
     if (!currentValue().isObject() && !currentValue().isNull() && !currentValue().isUndefined()) {
         QByteArray val = QJsonDocument(QJsonArray({ currentValue() })).toJson();
         warn(QStringLiteral(u"Error: expected an object at %1, not %2")
-                     .arg(currentPath(), QString::fromUtf8(val.mid(1, val.length() - 2))));
+                     .arg(currentPath(), QString::fromUtf8(val.mid(1, val.size() - 2))));
     }
     v = currentValue().toObject();
 }
@@ -170,7 +170,7 @@ void Reader::handleJson(QJsonArray &v)
     if (!currentValue().isArray() && !currentValue().isNull() && !currentValue().isUndefined()) {
         QByteArray val = QJsonDocument(QJsonArray({ currentValue() })).toJson();
         warn(QStringLiteral(u"Error: expected an array at %1, not %2")
-                     .arg(currentPath(), QString::fromUtf8(val.mid(1, val.length() - 2))));
+                     .arg(currentPath(), QString::fromUtf8(val.mid(1, val.size() - 2))));
     }
     v = currentValue().toArray();
 }
@@ -263,34 +263,34 @@ void JsonBuilder::handleNullType()
 
 void JsonBuilder::handleMissingOptional()
 {
-    if (m_fieldLevel.isEmpty() || m_fieldLevel.last() != m_values.length())
+    if (m_fieldLevel.isEmpty() || m_fieldLevel.last() != m_values.size())
         handleNullType();
 }
 
 bool JsonBuilder::startField(const QString &)
 {
-    m_fieldLevel.append(m_values.length());
+    m_fieldLevel.append(m_values.size());
     return true;
 }
 
 bool JsonBuilder::startField(const char *)
 {
-    m_fieldLevel.append(m_values.length());
+    m_fieldLevel.append(m_values.size());
     return true;
 }
 
 void JsonBuilder::endField(const QString &v)
 {
     Q_ASSERT(!m_fieldLevel.isEmpty());
-    if (m_fieldLevel.last() < m_values.length()) {
-        Q_ASSERT(m_values.length() > 1);
-        if (QJsonObject *o = std::get_if<QJsonObject>(&m_values[m_values.length() - 2])) {
+    if (m_fieldLevel.last() < m_values.size()) {
+        Q_ASSERT(m_values.size() > 1);
+        if (QJsonObject *o = std::get_if<QJsonObject>(&m_values[m_values.size() - 2])) {
             o->insert(v, popLastValue());
         } else {
             Q_ASSERT(false);
         }
     }
-    Q_ASSERT(!m_fieldLevel.isEmpty() && m_fieldLevel.last() == m_values.length());
+    Q_ASSERT(!m_fieldLevel.isEmpty() && m_fieldLevel.last() == m_values.size());
     m_fieldLevel.removeLast();
 }
 
@@ -310,7 +310,7 @@ void JsonBuilder::endObjectF(const char *, ObjectOptions, quintptr) { }
 bool JsonBuilder::startArrayF(qint32 &)
 {
     m_values.append(QJsonArray());
-    m_arrayLevel.append(m_values.length());
+    m_arrayLevel.append(m_values.size());
     return true;
 }
 
@@ -321,8 +321,8 @@ bool JsonBuilder::startElement(qint32)
 
 void JsonBuilder::endElement(qint32)
 {
-    Q_ASSERT(m_values.length() > 1);
-    if (QJsonArray *a = std::get_if<QJsonArray>(&m_values[m_values.length() - 2])) {
+    Q_ASSERT(m_values.size() > 1);
+    if (QJsonArray *a = std::get_if<QJsonArray>(&m_values[m_values.size() - 2])) {
         a->append(popLastValue());
     } else {
         Q_ASSERT(false);
@@ -331,7 +331,7 @@ void JsonBuilder::endElement(qint32)
 
 void JsonBuilder::endArrayF(qint32 &)
 {
-    Q_ASSERT(!m_arrayLevel.isEmpty() && m_arrayLevel.last() == m_values.length());
+    Q_ASSERT(!m_arrayLevel.isEmpty() && m_arrayLevel.last() == m_values.size());
     m_arrayLevel.removeLast();
 }
 
