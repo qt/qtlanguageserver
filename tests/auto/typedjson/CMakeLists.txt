@@ -23,10 +23,10 @@ qt_internal_add_test(tst_typedjson
 
 qt_internal_extend_target(tst_typedjson CONDITION NOT ANDROID AND NOT IOS
     DEFINES
-        QT_TYPEDJSON_DATADIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}/data\\\"
+        QT_TYPEDJSON_DATADIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
 )
 
 qt_internal_extend_target(tst_typedjson CONDITION ANDROID OR IOS
     DEFINES
-        QT_TYPEDJSON_DATADIR=\\\":/data\\\"
+        QT_TYPEDJSON_DATADIR=":/data"
 )
