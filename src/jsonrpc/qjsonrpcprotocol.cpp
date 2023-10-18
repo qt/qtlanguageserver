@@ -58,12 +58,6 @@ createPredefinedError(QJsonRpcProtocol::ErrorCode code,
     return response;
 }
 
-std::exception_ptr createLocalInvalidRequestException(const QJsonValue &id = QJsonValue::Null)
-{
-    return std::make_exception_ptr(
-            createPredefinedError(QJsonRpcProtocol::ErrorCode::InvalidRequest, id));
-}
-
 static QJsonObject createParseErrorResponse()
 {
     return createResponse(QJsonValue::Null,
