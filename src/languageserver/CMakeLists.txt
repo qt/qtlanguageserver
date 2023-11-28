@@ -23,6 +23,7 @@ qt_internal_add_module(LanguageServerPrivate
     PUBLIC_LIBRARIES
         Qt::CorePrivate
         Qt::JsonRpcPrivate
+    NO_GENERATE_CPP_EXPORTS
 )
 
 if(MSVC)

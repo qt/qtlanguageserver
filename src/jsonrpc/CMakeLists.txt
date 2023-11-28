@@ -19,4 +19,5 @@ qt_internal_add_module(JsonRpcPrivate
         QT_NO_CONTEXTLESS_CONNECT
     PUBLIC_LIBRARIES
         Qt::Core
+    NO_GENERATE_CPP_EXPORTS
 )
