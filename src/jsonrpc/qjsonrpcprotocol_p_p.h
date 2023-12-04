@@ -117,7 +117,7 @@ private:
 
     OwnedMessageHandler m_defaultHandler;
 
-    QJsonRpcTransport *m_transport;
+    QJsonRpcTransport *m_transport = nullptr;
 
     ResponseHandler m_protocolErrorHandler;
     ResponseHandler m_invalidResponseHandler;
