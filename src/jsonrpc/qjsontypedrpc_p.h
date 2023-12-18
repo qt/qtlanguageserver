@@ -310,9 +310,10 @@ void TypedResponse::sendSuccessfullResponse(const T &result)
 {
     if (m_status == Status::Started) {
         m_status = Status::SentSuccess;
-        QJsonValue jsonId = QTypedJson::toJsonValue(m_id);
-        QJsonValue jsonResult = QTypedJson::toJsonValue(result);
-        m_responseHandler(QJsonRpcProtocol::Response { jsonId, jsonResult });
+        m_responseHandler(QJsonRpcProtocol::Response {
+            QTypedJson::toJsonValue(m_id),
+            QTypedJson::toJsonValue(result)
+        });
         doOnCloseActions();
     } else {
         qCWarning(QTypedJson::jsonRpcLog)
