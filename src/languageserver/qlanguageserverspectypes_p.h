@@ -393,7 +393,6 @@ public:
         field(w, "defaultBehavior", defaultBehavior);
     }
 };
-
 class Q_LANGUAGESERVER_EXPORT Location
 {
 public:
@@ -3201,7 +3200,7 @@ class Q_LANGUAGESERVER_EXPORT DocumentSymbol
 public:
     QByteArray name = {};
     std::optional<QByteArray> detail = {};
-    QJsonValue kind = {};
+    SymbolKind kind = {};
     std::optional<QList<int>> tags = {};
     std::optional<bool> deprecated = {};
     Range range = {};
@@ -3226,7 +3225,7 @@ class Q_LANGUAGESERVER_EXPORT SymbolInformation
 {
 public:
     QByteArray name = {};
-    QJsonValue kind = {};
+    SymbolKind kind = {};
     std::optional<QList<int>> tags = {};
     std::optional<bool> deprecated = {};
     Location location = {};
@@ -3714,7 +3713,7 @@ class Q_LANGUAGESERVER_EXPORT CallHierarchyItem
 {
 public:
     QByteArray name = {};
-    QJsonValue kind = {};
+    SymbolKind kind = {};
     std::optional<QList<int>> tags = {};
     std::optional<QByteArray> detail = {};
     QByteArray uri = {};
@@ -4227,7 +4226,7 @@ enumFromString<QLspSpecification::CodeActionKind>(const QString &string)
         return QLspSpecification::CodeActionKind::Source;
     else if (string.compare(QLatin1String("source.organizeImports"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::CodeActionKind::SourceOrganizeImports;
-    return QLspSpecification::CodeActionKind {};
+    return QLspSpecification::CodeActionKind{};
 }
 
 template<>
