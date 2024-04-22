@@ -147,6 +147,17 @@ public:
         field(w, "documentChanges", documentChanges);
     }
 };
+class PatchedWorkspaceEdit
+{
+public:
+    std::optional<QList<std::variant<TextDocumentEdit, Position>>> documentChanges = {};
+
+    template<typename W>
+    void walk(W &w)
+    {
+        field(w, "documentChanges", documentChanges);
+    }
+};
 } // namespace TestSpec
 
 QT_BEGIN_NAMESPACE
@@ -270,6 +281,39 @@ private slots:
             QCOMPARE(std::get<TestSpec::Position>(list[3]).line, 5);
             QCOMPARE(std::get<TestSpec::Position>(list[3]).character, 6);
         }
+    }
+
+    void equivalenceListAndListOfVariants()
+    {
+        const QString jsonList{ uR"({
+"documentChanges" : [
+    { "textDocument": { "uri": "a" } },
+    { "textDocument": { "uri": "b" } },
+    { "textDocument": { "uri": "c" } }
+] })"_s };
+
+        QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonList.toUtf8());
+        QVERIFY(!jsonDocument.isNull());
+
+        // show that the list of variant can serialize from the list of TextDocumentEdit
+        TestSpec::PatchedWorkspaceEdit hasListOfVariant;
+        QTypedJson::Reader r(jsonDocument.object());
+        QTypedJson::doWalk(r, hasListOfVariant);
+        QVERIFY(hasListOfVariant.documentChanges);
+        auto list = *hasListOfVariant.documentChanges;
+        QCOMPARE(list.size(), 3);
+        QVERIFY(std::holds_alternative<TestSpec::TextDocumentEdit>(list[0]));
+        QCOMPARE(std::get<TestSpec::TextDocumentEdit>(list[0]).textDocument.uri, u"a"_s);
+        QVERIFY(std::holds_alternative<TestSpec::TextDocumentEdit>(list[1]));
+        QCOMPARE(std::get<TestSpec::TextDocumentEdit>(list[1]).textDocument.uri, u"b"_s);
+        QVERIFY(std::holds_alternative<TestSpec::TextDocumentEdit>(list[2]));
+        QCOMPARE(std::get<TestSpec::TextDocumentEdit>(list[2]).textDocument.uri, u"c"_s);
+
+        // show that the list of variant can deserialize into the list of TextDocumentEdit
+        TestSpec::WorkspaceEdit hasListOfTextDocuments;
+        QTypedJson::Reader r2(jsonDocument.object());
+        QTypedJson::doWalk(r2, hasListOfTextDocuments);
+        QCOMPARE(toJsonValue(hasListOfVariant), toJsonValue(hasListOfTextDocuments));
     }
 };
 

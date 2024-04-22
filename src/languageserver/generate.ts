@@ -119,6 +119,18 @@ var specialStructs = {
     "SelectionRange" : null // recursive reference
 };
 
+const patchedStructMembers = new Map<string, Map<string, string>>([
+    // documentChanges has a weird type, so simplify it
+    [
+        "WorkspaceEdit",
+        new Map<string, string>([ [
+            "documentChanges",
+            `using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
+    std::optional<QList<DocumentChange>>`
+        ] ]),
+    ]
+]);
+
 var specialEnums = { "ErrorCodes" : null, "InitializeError" : "InitializeErrorCode" }
 
 var postStruct = {
@@ -408,6 +420,12 @@ function generateClass(struct: Struct, indent: string)
 
     output += struct.members
                       .map(function(member: Member) {
+                          if (patchedStructMembers.has(struct.name)
+                              && patchedStructMembers.get(struct.name)?.has(member.name)) {
+                              const rType = patchedStructMembers.get(struct.name)?.get(member.name);
+                              return innerIndent + rType + " " + member.name + " = {};\n";
+                          }
+
                           var members = "";
                           var type = "";
                           let defaultValue = "{}";

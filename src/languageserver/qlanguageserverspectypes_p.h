@@ -680,10 +680,8 @@ class Q_LANGUAGESERVER_EXPORT WorkspaceEdit
 {
 public:
     std::optional<QJsonObject> changes = {};
-    std::optional<
-            std::variant<QList<TextDocumentEdit>,
-                         QList<std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>>>>
-            documentChanges = {};
+    using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
+    std::optional<QList<DocumentChange>> documentChanges = {};
     std::optional<QJsonObject> changeAnnotations = {};
 
     template<typename W>
