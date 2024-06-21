@@ -7,6 +7,7 @@
 
 qt_internal_add_module(LanguageServerPrivate
     INTERNAL_MODULE
+    STATIC
     SOURCES
       qlanguageserverprespectypes_p.h
       qlanguageserverspec_p.h
@@ -23,7 +24,6 @@ qt_internal_add_module(LanguageServerPrivate
     PUBLIC_LIBRARIES
         Qt::CorePrivate
         Qt::JsonRpcPrivate
-    NO_GENERATE_CPP_EXPORTS
 )
 
 if(MSVC)
