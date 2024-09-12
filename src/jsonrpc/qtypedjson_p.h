@@ -419,7 +419,11 @@ inline void doWalk(W &w, T &el)
             if (w.handleOptional(el) && el)
                 doWalk(w, *el);
         } else {
+            // broken gcc warns about optional being uninitialized, QTBUG-128574
+            QT_WARNING_PUSH
+            QT_WARNING_DISABLE_GCC("-Wmaybe-uninitialized")
             int size = el.size();
+            QT_WARNING_POP
             if (!w.startArray(size, el))
                 return;
             int i = 0;
