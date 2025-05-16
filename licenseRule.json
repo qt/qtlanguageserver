@@ -47,6 +47,11 @@
             "": {
                 "comment": "Default",
                 "file type": "tools and utils",
+                "spdx": ["LicenseRef-Qt-Commercial"]
+            },
+            "conanfile.py": {
+                "comment": "Default",
+                "file type": "tools and utils",
                 "spdx": ["LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0"]
             },
             "(.*)(examples/|snippets/)": {
@@ -76,12 +81,12 @@
             "": {
                 "comment": "Default",
                 "file type": "module and plugin",
-                "spdx": ["LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"]
+                "spdx": ["LicenseRef-Qt-Commercial"]
             },
             "src/": {
                 "comment": "Default",
                 "file type": "module and plugin",
-                "spdx": ["LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"]
+                "spdx": ["LicenseRef-Qt-Commercial"]
             },
             "tests/": {
                 "comment": "Default",
