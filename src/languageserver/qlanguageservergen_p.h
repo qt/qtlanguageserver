@@ -39,6 +39,7 @@ public:
 
     // # Send protocol
     void notifyCancel(const CancelParams &params);
+    void notifyProgress(const ProgressParams &params);
 
     // ClientCapability::GeneralRegularExpressions
 
@@ -449,6 +450,8 @@ public:
     // # receive protocol
     void registerCancelNotificationHandler(
             const std::function<void(const QByteArray &, const CancelParams &)> &handler);
+    void registerProgressNotificationHandler(
+            const std::function<void(const QByteArray &, const ProgressParams &)> &handler);
 
     // ClientCapability::GeneralRegularExpressions
 

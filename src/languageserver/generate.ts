@@ -114,7 +114,6 @@ var specialStructs = {
     "RequestMessage" : null, // non templatized top level
     "ResponseMessage" : null, // non templatized top level
     "NotificationMessage" : null, // non templatized top level
-    "ProgressParams" : null, // text enum without named constants
     "TextDocumentContentChangeEvent" : null, // anonymous objects
     "SelectionRange" : null // recursive reference
 };
@@ -126,9 +125,34 @@ const patchedStructMembers = new Map<string, Map<string, string>>([
         new Map<string, string>([ [
             "documentChanges",
             `using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
-    std::optional<QList<DocumentChange>>`
+    std::optional<QList<DocumentChange>> %1 = {};`
         ] ]),
-    ]
+    ],
+    [
+        // hardcode the kind to begin
+        "WorkDoneProgressBegin",
+        new Map<string, string>([ [ "kind", "QByteArray %1 = \"begin\";" ] ]),
+    ],
+    [
+        // hardcode the kind to report
+        "WorkDoneProgressReport",
+        new Map<string, string>([ [ "kind", "QByteArray %1 = \"report\";" ] ]),
+    ],
+    [
+        // hardcode the kind to end
+        "WorkDoneProgressEnd",
+        new Map<string, string>([ [ "kind", "QByteArray %1 = \"end\";" ] ]),
+    ],
+    [
+        // The only type in the LSP specification that has a template member. Ignore the "generic"
+        // case for now and use a variant of all possible progress values found in the LSP
+        // specification.
+        "ProgressParams",
+        new Map<string, string>([ [
+            "value",
+            "std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> %1 = {};"
+        ] ]),
+    ],
 ]);
 
 var specialEnums = { "ErrorCodes" : null, "InitializeError" : "InitializeErrorCode" }
@@ -422,8 +446,9 @@ function generateClass(struct: Struct, indent: string)
                       .map(function(member: Member) {
                           if (patchedStructMembers.has(struct.name)
                               && patchedStructMembers.get(struct.name)?.has(member.name)) {
-                              const rType = patchedStructMembers.get(struct.name)?.get(member.name);
-                              return innerIndent + rType + " " + member.name + " = {};\n";
+                              const rType =
+                                      patchedStructMembers.get(struct.name)?.get(member.name)!;
+                              return innerIndent + rType.replace(/%1/, member.name) + "\n";
                           }
 
                           var members = "";
@@ -514,6 +539,13 @@ function generate(fileNames: string[], options: ts.CompilerOptions): GeneratedTy
         structs.forEach(function(other) {
             if (struct === other || generated[other.name] !== undefined)
                 return;
+
+            // special case: ProgressParams has member of type T, which we changed to
+            // std::variant<WorkDoneProgress(Begin|Report|End)>. Make sure the types
+            // inside the variant exist before writing out ProgressParams.
+            if (struct.name == "ProgressParams"
+                && other.name.match(/WorkDoneProgress(Begin|Report|End)/g))
+                doGenerateDeclarations(other);
 
             if (struct.extends.split(", ").includes(other.name)) {
                 doGenerateDeclarations(other);

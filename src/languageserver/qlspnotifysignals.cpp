@@ -23,6 +23,17 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
+    protocol->registerProgressNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::ProgressParamsType &params) {
+                static const QMetaMethod notificationSignal =
+                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedProgressNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedProgressNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
     protocol->registerInitializedNotificationHandler(
             [this,
              protocol](const QByteArray &method,

@@ -279,6 +279,72 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
+{
+public:
+    QByteArray kind = "begin";
+    QByteArray title = {};
+    std::optional<bool> cancellable = {};
+    std::optional<QByteArray> message = {};
+    std::optional<int> percentage = {};
+
+    template<typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "title", title);
+        field(w, "cancellable", cancellable);
+        field(w, "message", message);
+        field(w, "percentage", percentage);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressReport
+{
+public:
+    QByteArray kind = "report";
+    std::optional<bool> cancellable = {};
+    std::optional<QByteArray> message = {};
+    std::optional<int> percentage = {};
+
+    template<typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "cancellable", cancellable);
+        field(w, "message", message);
+        field(w, "percentage", percentage);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressEnd
+{
+public:
+    QByteArray kind = "end";
+    std::optional<QByteArray> message = {};
+
+    template<typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "message", message);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ProgressParams
+{
+public:
+    ProgressToken token = {};
+    std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> value = {};
+
+    template<typename W>
+    void walk(W &w)
+    {
+        field(w, "token", token);
+        field(w, "value", value);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT RegularExpressionsClientCapabilities
 {
 public:
@@ -393,6 +459,7 @@ public:
         field(w, "defaultBehavior", defaultBehavior);
     }
 };
+
 class Q_LANGUAGESERVER_EXPORT Location
 {
 public:
@@ -825,58 +892,6 @@ public:
     {
         field(w, "parser", parser);
         field(w, "version", version);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
-{
-public:
-    QByteArray kind = {};
-    QByteArray title = {};
-    std::optional<bool> cancellable = {};
-    std::optional<QByteArray> message = {};
-    std::optional<int> percentage = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "title", title);
-        field(w, "cancellable", cancellable);
-        field(w, "message", message);
-        field(w, "percentage", percentage);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressReport
-{
-public:
-    QByteArray kind = {};
-    std::optional<bool> cancellable = {};
-    std::optional<QByteArray> message = {};
-    std::optional<int> percentage = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "cancellable", cancellable);
-        field(w, "message", message);
-        field(w, "percentage", percentage);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressEnd
-{
-public:
-    QByteArray kind = {};
-    std::optional<QByteArray> message = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "message", message);
     }
 };
 

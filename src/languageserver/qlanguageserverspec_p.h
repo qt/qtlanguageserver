@@ -480,6 +480,7 @@ namespace Notifications {
 constexpr auto CancelMethod = "$/cancelRequest";
 using CancelParamsType = CancelParams;
 constexpr auto ProgressMethod = "$/progress";
+using ProgressParamsType = ProgressParams;
 constexpr auto InitializedMethod = "initialized";
 using InitializedParamsType = InitializedParams;
 constexpr auto ExitMethod = "exit";
@@ -536,13 +537,15 @@ using RequestParams = std::variant<
         CallHierarchyPrepareParams, CallHierarchyIncomingCallsParams,
         CallHierarchyOutgoingCallsParams, SemanticTokensParams, SemanticTokensDeltaParams,
         SemanticTokensRangeParams, LinkedEditingRangeParams, MonikerParams, QJsonValue>;
-using NotificationParams = std::variant<
-        CancelParams, InitializedParams, std::nullptr_t, LogTraceParams, SetTraceParams,
-        ShowMessageParams, LogMessageParams, WorkDoneProgressCancelParams, QJsonObject,
-        DidChangeWorkspaceFoldersParams, DidChangeConfigurationParams, DidChangeWatchedFilesParams,
-        CreateFilesParams, RenameFilesParams, DeleteFilesParams, DidOpenTextDocumentParams,
-        DidChangeTextDocumentParams, WillSaveTextDocumentParams, DidSaveTextDocumentParams,
-        DidCloseTextDocumentParams, PublishDiagnosticsParams, QJsonValue>;
+using NotificationParams =
+        std::variant<CancelParams, ProgressParams, InitializedParams, std::nullptr_t,
+                     LogTraceParams, SetTraceParams, ShowMessageParams, LogMessageParams,
+                     WorkDoneProgressCancelParams, QJsonObject, DidChangeWorkspaceFoldersParams,
+                     DidChangeConfigurationParams, DidChangeWatchedFilesParams, CreateFilesParams,
+                     RenameFilesParams, DeleteFilesParams, DidOpenTextDocumentParams,
+                     DidChangeTextDocumentParams, WillSaveTextDocumentParams,
+                     DidSaveTextDocumentParams, DidCloseTextDocumentParams,
+                     PublishDiagnosticsParams, QJsonValue>;
 
 } // namespace QLspSpecification
 

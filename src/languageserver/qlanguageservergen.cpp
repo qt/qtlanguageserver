@@ -119,6 +119,11 @@ void ProtocolGen::notifyCancel(const CancelParams &params)
     typedRpc()->sendNotification(Notifications::CancelMethod, params);
 }
 
+void ProtocolGen::notifyProgress(const ProgressParams &params)
+{
+    typedRpc()->sendNotification(Notifications::ProgressMethod, params);
+}
+
 void ProtocolGen::requestInitialize(const InitializeParams &params,
                                     std::function<void(const InitializeResult &)> responseHandler,
                                     ResponseErrorHandler errorHandler)
@@ -1226,6 +1231,13 @@ void ProtocolGen::registerCancelNotificationHandler(
 {
     typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::CancelParamsType>(
             QByteArray(QLspSpecification::Notifications::CancelMethod), handler);
+}
+
+void ProtocolGen::registerProgressNotificationHandler(
+        const std::function<void(const QByteArray &, const ProgressParams &)> &handler)
+{
+    typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::ProgressParamsType>(
+            QByteArray(QLspSpecification::Notifications::ProgressMethod), handler);
 }
 
 void ProtocolGen::registerInitializeRequestHandler(

@@ -29,6 +29,7 @@ public:
     void registerHandlers(QLanguageServerProtocol *protocol);
 signals:
     void receivedCancelNotification(const QLspSpecification::Notifications::CancelParamsType &);
+    void receivedProgressNotification(const QLspSpecification::Notifications::ProgressParamsType &);
     void receivedInitializedNotification(
             const QLspSpecification::Notifications::InitializedParamsType &);
     void receivedExitNotification(const QLspSpecification::Notifications::ExitParamsType &);
