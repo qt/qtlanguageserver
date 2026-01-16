@@ -132,17 +132,17 @@ const patchedStructMembers = new Map<string, Map<string, string>>([
     [
         // hardcode the kind to begin
         "WorkDoneProgressBegin",
-        new Map<string, string>([ [ "kind", "QByteArray %1 = \"begin\";" ] ]),
+        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"begin\";" ] ]),
     ],
     [
         // hardcode the kind to report
         "WorkDoneProgressReport",
-        new Map<string, string>([ [ "kind", "QByteArray %1 = \"report\";" ] ]),
+        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"report\";" ] ]),
     ],
     [
         // hardcode the kind to end
         "WorkDoneProgressEnd",
-        new Map<string, string>([ [ "kind", "QByteArray %1 = \"end\";" ] ]),
+        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"end\";" ] ]),
     ],
     [
         // The only type in the LSP specification that has a template member. Ignore the "generic"

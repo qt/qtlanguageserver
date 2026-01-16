@@ -283,7 +283,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
 {
 public:
-    QByteArray kind = "begin";
+    static constexpr QByteArrayView kind = "begin";
     QByteArray title = {};
     std::optional<bool> cancellable = {};
     std::optional<QByteArray> message = {};
@@ -303,7 +303,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WorkDoneProgressReport
 {
 public:
-    QByteArray kind = "report";
+    static constexpr QByteArrayView kind = "report";
     std::optional<bool> cancellable = {};
     std::optional<QByteArray> message = {};
     std::optional<int> percentage = {};
@@ -321,7 +321,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WorkDoneProgressEnd
 {
 public:
-    QByteArray kind = "end";
+    static constexpr QByteArrayView kind = "end";
     std::optional<QByteArray> message = {};
 
     template<typename W>

@@ -53,6 +53,12 @@ void Reader::handleBasic(QByteArray &el)
         warnMissing(u"string");
 }
 
+void Reader::handleConstString(QByteArrayView el)
+{
+    if (!currentValue().isString() || el != currentValue().toString().toUtf8())
+        warnMissing(u"string");
+}
+
 void Reader::handleBasic(int &el)
 {
     if (currentValue().isDouble())
@@ -245,6 +251,11 @@ void JsonBuilder::handleBasic(const bool &v)
 }
 
 void JsonBuilder::handleBasic(const QByteArray &v)
+{
+    handleConstString(v);
+}
+
+void JsonBuilder::handleConstString(QByteArrayView v)
 {
     m_values.append(QJsonValue(QString::fromUtf8(v)));
 }

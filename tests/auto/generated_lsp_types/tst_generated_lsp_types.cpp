@@ -38,8 +38,12 @@ static void tst_types_impl(const T &expectedValue, QByteArrayView expectedJson)
 
 void tst_generated_lsp_types::tst_types()
 {
-    tst_types_impl(ProgressParams{ "myToken", WorkDoneProgressBegin{ "begin", "hello world!" } },
+    tst_types_impl(ProgressParams{ "myToken", WorkDoneProgressBegin{ "hello world!" } },
                    R"({"token":"myToken","value":{"kind":"begin","title":"hello world!"}})");
+    tst_types_impl(ProgressParams{ "myToken", WorkDoneProgressReport{} },
+                   R"({"token":"myToken","value":{"kind":"report"}})");
+    tst_types_impl(ProgressParams{ "myToken", WorkDoneProgressEnd{ "hello world!" } },
+                   R"({"token":"myToken","value":{"kind":"end","message":"hello world!"}})");
 }
 
 QTEST_MAIN(tst_generated_lsp_types)

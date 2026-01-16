@@ -333,6 +333,7 @@ public:
     //  serialization callbacks
     void handleBasic(bool &);
     void handleBasic(QByteArray &);
+    void handleConstString(QByteArrayView);
     void handleBasic(int &);
     void handleBasic(double &);
     void handleNullType();
@@ -384,15 +385,26 @@ void field(W &w, const C &fieldName, T &el)
     }
 }
 
+template <typename W, typename T>
+inline void doWalk(W &w, const T &el)
+{
+    using BaseT = std::decay_t<T>;
+    if constexpr (std::is_same_v<BaseT, QByteArrayView>) {
+        w.handleConstString(el);
+    } else {
+        qFatal() << "Unhandled type" << typeid(T).name();
+    }
+}
+
 template<typename W, typename T>
 inline void doWalk(W &w, T &el)
 {
     using BaseT = std::decay_t<T>;
-    if constexpr (
-            std::is_same_v<
-                    BaseT,
-                    int> || std::is_same_v<BaseT, double> || std::is_same_v<BaseT, bool> || std::is_same_v<BaseT, QByteArray>) {
+    if constexpr (std::is_same_v<BaseT, int> || std::is_same_v<BaseT, double>
+                  || std::is_same_v<BaseT, bool> || std::is_same_v<BaseT, QByteArray>) {
         w.handleBasic(el);
+    } else if constexpr (std::is_same_v<BaseT, QByteArrayView>) {
+        w.handleConstString(el);
     } else if constexpr (HasWalk<BaseT>::value) {
         const char *type = typeName<BaseT>();
         ObjectOptions options = JsonObjectOptions<BaseT>::value;
@@ -401,10 +413,8 @@ inline void doWalk(W &w, T &el)
             el.walk(w);
             w.endObject(type, options, id, el);
         }
-    } else if constexpr (
-            std::is_same_v<
-                    BaseT,
-                    QJsonValue> || std::is_same_v<BaseT, QJsonObject> || std::is_same_v<BaseT, QJsonArray>) {
+    } else if constexpr (std::is_same_v<BaseT, QJsonValue> || std::is_same_v<BaseT, QJsonObject>
+                         || std::is_same_v<BaseT, QJsonArray>) {
         w.handleJson(el);
     } else if constexpr (std::is_enum_v<BaseT>) {
         w.handleEnum(el);
@@ -527,11 +537,12 @@ public:
         if (ok)
             this->handleBasic(value);
         else
-            this->handleBasic(eVal.toUtf8());
+            this->handleConstString(eVal.toUtf8());
     }
 
     // serialization callbacks
     void handleBasic(const bool &v);
+    void handleConstString(QByteArrayView v);
     void handleBasic(const QByteArray &v);
     void handleBasic(const int &v);
     void handleBasic(const double &v);
