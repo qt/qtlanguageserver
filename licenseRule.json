@@ -70,6 +70,28 @@
         }
     },
     {
+        "comment": "Script files in 3rdparty folder are 3rdparty licensed.",
+        "file_pattern_ending": [".ts"],
+        "location":{
+            "src/languageserver/3rdparty/": {
+                "comment": "",
+                "file type": "tools and utils",
+                "spdx": ["MIT"]
+            }
+        }
+    },
+    {
+        "comment": "JSON files in 3rdparty folder are 3rdparty licensed.",
+        "file_pattern_ending": [".json"],
+        "location":{
+            "src/languageserver/3rdparty/": {
+                "comment": "",
+                "file type": "tools and utils",
+                "spdx": ["CC-BY-4.0"]
+            }
+        }
+    },
+    {
         "comment": ["All other files",
                      "The licensing is defined only by the file location in the Qt module repository.",
                      "NO <file_pattern_ending> key for this case!",
