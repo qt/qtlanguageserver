@@ -128,7 +128,18 @@ struct IsList<T, void_t<typename T::value_type>> : std::true_type
 {
 };
 
-template<typename T>
+template <typename T, typename = void>
+struct IsQMap : std::false_type
+{
+};
+
+template <typename T>
+struct IsQMap<T, void_t<typename T::key_type, typename T::mapped_type>>
+    : std::is_same<QMap<QByteArray, typename T::mapped_type>, T>
+{
+};
+
+template <typename T>
 struct IsPointer : std::is_pointer<T>
 {
 };
@@ -258,6 +269,27 @@ public:
             assert(false); // currently unsupported
         }
         return true;
+    }
+
+    template <typename T>
+    bool startMap(T &el)
+    {
+        if (!currentValue().isObject()) {
+            warn(QStringLiteral(u"Error: expected an object at %1.").arg(currentPath()));
+            return false;
+        }
+        for (auto [key, _] : currentValue().toObject().asKeyValueRange())
+            el[key.toString().toUtf8()];
+
+        const char *type = typeName<T>();
+        return this->startObjectF(type, { }, { });
+    }
+
+    template <typename T>
+    void endMap(T &)
+    {
+        const char *type = typeName<T>();
+        return this->endObjectF(type, { }, { });
     }
 
     template<typename T>
@@ -425,6 +457,16 @@ inline void doWalk(W &w, T &el)
             doWalk(w, *el);
     } else if constexpr (IsVariant<BaseT>::value) {
         w.handleVariant(el);
+    } else if constexpr (IsQMap<BaseT>::value) {
+        if (!w.startMap(el))
+            return;
+        for (auto [key, subEl] : el.asKeyValueRange()) {
+            if (!w.startField(key.data()))
+                break;
+            doWalk(w, subEl);
+            w.endField(key.data());
+        }
+        w.endMap(el);
     } else if constexpr (IsList<BaseT>::value) {
         if constexpr (std::is_same_v<std::optional<typename BaseT::value_type>, BaseT>) {
             if (w.handleOptional(el) && el)
@@ -520,6 +562,20 @@ public:
     void endArray(qint32 &size, T &)
     {
         this->endArrayF(size);
+    }
+
+    template <typename T>
+    bool startMap(T &)
+    {
+        const char *type = typeName<T>();
+        return startObjectF(type, { }, { });
+    }
+
+    template <typename T>
+    void endMap(T &)
+    {
+        const char *type = typeName<T>();
+        endObjectF(type, { }, { });
     }
 
     template<typename T>

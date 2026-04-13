@@ -315,6 +315,44 @@ private slots:
         QTypedJson::doWalk(r2, hasListOfTextDocuments);
         QCOMPARE(toJsonValue(hasListOfVariant), toJsonValue(hasListOfTextDocuments));
     }
+
+    void testMap()
+    {
+        const QMap<QByteArray, bool> a{ { "a", true }, { "b", false }, { "c", true } };
+        const QMap<QByteArray, QMap<QByteArray, std::variant<QByteArray, int>>> b{
+            { "firstMap", { { "nestedKey", "nestedValue" }, { "nestedKey2", 42 } } },
+            { "secondMap",
+              { { "nestedKeyFromSecondMap", "nestedValueFromSecondMap" },
+                { "nestedKey2FromSecondMap", 12345 } } },
+        };
+        const QMap<QByteArray, QList<QMap<QByteArray, QList<int>>>> c{
+            {
+                    "firstMap",
+                    { { { "nestedMap", { 1 } } }, { }, { } },
+            },
+            {
+                    "secondMap",
+                    {
+                            { { "nestedMap", { 1, 2, 3 } } },
+                            { },
+                            { { "nestedMap2", { 3, 4, 5 } } },
+                    },
+            },
+        };
+
+        const auto runTest = [](auto &&arg) {
+            const QJsonValue json = toJsonValue(arg);
+            std::decay_t<decltype(arg)> populatedFromJson;
+            QTypedJson::Reader r(json);
+            QTypedJson::doWalk(r, populatedFromJson);
+
+            QCOMPARE(arg, populatedFromJson);
+            QCOMPARE(json, toJsonValue(populatedFromJson));
+        };
+        runTest(a);
+        runTest(b);
+        runTest(c);
+    }
 };
 
 } // namespace QTypedJson
