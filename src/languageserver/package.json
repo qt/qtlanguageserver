@@ -1,6 +1,10 @@
 {
-  "dependencies": {
-    "ts-node": "^10.2.1",
-    "typescript": "^4.4.2"
-  }
+    "dependencies": {
+        "ts-node": "^10.9.2",
+        "typescript": "^6.0.2"
+    },
+    "type": "module",
+    "scripts": {
+        "generate": "tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false ./generate.ts"
+    }
 }

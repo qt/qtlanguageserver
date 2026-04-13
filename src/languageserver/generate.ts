@@ -14,7 +14,7 @@ specification
 by the src/languageserver/generate.ts script.
 Use
   npm install
-  tsc --downlevelIteration --strictNullChecks generate.ts && node generate.js
+  tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false generate.ts && node generate.js
 to run it. Then git clang-format to reformat its output.
 It generates:
 
