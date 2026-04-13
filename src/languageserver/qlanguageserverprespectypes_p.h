@@ -19,6 +19,8 @@
 #include <QtJsonRpc/private/qjsontypedrpc_p.h>
 #include <QtLanguageServer/qtlanguageserverglobal.h>
 #include <QtCore/QByteArray>
+#include <QtCore/QList>
+#include <QtCore/QMap>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QString>
 
@@ -89,5 +91,6 @@ public:
 };
 
 } // namespace QLspSpecification
+
 QT_END_NAMESPACE
 #endif // QLANGUAGESERVERPRESPECTYPES_P_H

@@ -39,6 +39,7 @@ public:
     ~ProtocolGen();
 
     // Requests
+
     void requestCallHierarchyIncomingCalls(
             const CallHierarchyIncomingCallsParams &,
             std::function<
@@ -81,12 +82,6 @@ public:
     void registerCodeActionResolveRequestHandler(
             const std::function<void(const QByteArray &, const CodeAction &,
                                      LSPResponse<CodeAction> &&)> &handler);
-    void requestCodeLensRefresh(
-            const std::nullptr_t &, std::function<void()> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void registerCodeLensRefreshRequestHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestCodeLensResolve(
             const CodeLens &, std::function<void(const CodeLens &)> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
@@ -111,6 +106,12 @@ public:
     void registerInitializeRequestHandler(
             const std::function<void(const QByteArray &, const InitializeParams &,
                                      LSPResponse<InitializeResult> &&)> &handler);
+    void requestInlayHintResolve(
+            const InlayHint &, std::function<void(const InlayHint &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerInlayHintResolveRequestHandler(
+            const std::function<void(const QByteArray &, const InlayHint &,
+                                     LSPResponse<InlayHint> &&)> &handler);
     void
     requestShutdown(const std::nullptr_t &, std::function<void()> responseHandler,
                     ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
@@ -158,32 +159,39 @@ public:
                     const QByteArray &, const CompletionParams &,
                     LSPPartialResponse<
                             std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
-                            std::variant<CompletionList, QList<CompletionItem>>> &&)> &handler);
+                            QList<CompletionItem>> &&)> &handler);
     void requestDeclaration(
             const DeclarationParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
+            std::function<
+                    void(const std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerDeclarationRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const DeclarationParams &,
-                         LSPPartialResponse<std::variant<Location, QList<Location>,
-                                                         QList<LocationLink>, std::nullptr_t>,
-                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                    &handler);
+            const std::function<void(
+                    const QByteArray &, const DeclarationParams &,
+                    LSPPartialResponse<
+                            std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t>,
+                            std::variant<QList<Location>, QList<DeclarationLink>>> &&)> &handler);
     void requestDefinition(
             const DefinitionParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
+            std::function<
+                    void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerDefinitionRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const DefinitionParams &,
-                         LSPPartialResponse<std::variant<Location, QList<Location>,
-                                                         QList<LocationLink>, std::nullptr_t>,
-                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
+            const std::function<void(
+                    const QByteArray &, const DefinitionParams &,
+                    LSPPartialResponse<
+                            std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                            std::variant<QList<Location>, QList<DefinitionLink>>> &&)> &handler);
+    void requestDocumentDiagnostic(
+            const DocumentDiagnosticParams &,
+            std::function<void(const DocumentDiagnosticReport &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerDocumentDiagnosticRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentDiagnosticParams &,
+                                     LSPPartialResponse<DocumentDiagnosticReport,
+                                                        DocumentDiagnosticReportPartialResult> &&)>
                     &handler);
     void requestDocumentColor(
             const DocumentColorParams &,
@@ -215,17 +223,17 @@ public:
                                             QList<DocumentLink>> &&)> &handler);
     void requestDocumentSymbol(
             const DocumentSymbolParams &,
-            std::function<void(const std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
+            std::function<void(const std::variant<QList<SymbolInformation>, QList<DocumentSymbol>,
                                                   std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerDocumentSymbolRequestHandler(
             const std::function<
                     void(const QByteArray &, const DocumentSymbolParams &,
-                         LSPPartialResponse<std::variant<QList<DocumentSymbol>,
-                                                         QList<SymbolInformation>, std::nullptr_t>,
-                                            std::variant<QList<DocumentSymbol>,
-                                                         QList<SymbolInformation>>> &&)> &handler);
+                         LSPPartialResponse<std::variant<QList<SymbolInformation>,
+                                                         QList<DocumentSymbol>, std::nullptr_t>,
+                                            std::variant<QList<SymbolInformation>,
+                                                         QList<DocumentSymbol>>> &&)> &handler);
     void requestFoldingRange(
             const FoldingRangeParams &,
             std::function<void(const std::variant<QList<FoldingRange>, std::nullptr_t> &)>
@@ -255,17 +263,48 @@ public:
                     &handler);
     void requestImplementation(
             const ImplementationParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
+            std::function<
+                    void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerImplementationRequestHandler(
+            const std::function<void(
+                    const QByteArray &, const ImplementationParams &,
+                    LSPPartialResponse<
+                            std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                            std::variant<QList<Location>, QList<DefinitionLink>>> &&)> &handler);
+    void requestInlayHint(
+            const InlayHintParams &,
+            std::function<void(const std::variant<QList<InlayHint>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerInlayHintRequestHandler(
             const std::function<
-                    void(const QByteArray &, const ImplementationParams &,
-                         LSPPartialResponse<std::variant<Location, QList<Location>,
-                                                         QList<LocationLink>, std::nullptr_t>,
-                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                    &handler);
+                    void(const QByteArray &, const InlayHintParams &,
+                         LSPPartialResponse<std::variant<QList<InlayHint>, std::nullptr_t>,
+                                            QList<InlayHint>> &&)> &handler);
+    void requestInlineCompletion(
+            const InlineCompletionParams &,
+            std::function<void(const std::variant<InlineCompletionList, QList<InlineCompletionItem>,
+                                                  std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerInlineCompletionRequestHandler(
+            const std::function<void(
+                    const QByteArray &, const InlineCompletionParams &,
+                    LSPPartialResponse<std::variant<InlineCompletionList,
+                                                    QList<InlineCompletionItem>, std::nullptr_t>,
+                                       QList<InlineCompletionItem>> &&)> &handler);
+    void requestInlineValue(
+            const InlineValueParams &,
+            std::function<void(const std::variant<QList<InlineValue>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerInlineValueRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const InlineValueParams &,
+                         LSPPartialResponse<std::variant<QList<InlineValue>, std::nullptr_t>,
+                                            QList<InlineValue>> &&)> &handler);
     void requestLinkedEditingRange(
             const LinkedEditingRangeParams &,
             std::function<void(const std::variant<LinkedEditingRanges, std::nullptr_t> &)>
@@ -306,15 +345,23 @@ public:
                     &handler);
     void requestPrepareRename(
             const PrepareRenameParams &,
-            std::function<void(const std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                                  std::nullptr_t> &)>
+            std::function<void(const std::variant<PrepareRenameResult, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerPrepareRenameRequestHandler(
+            const std::function<void(
+                    const QByteArray &, const PrepareRenameParams &,
+                    LSPResponse<std::variant<PrepareRenameResult, std::nullptr_t>> &&)> &handler);
+    void requestTypeHierarchyPrepare(
+            const TypeHierarchyPrepareParams &,
+            std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerTypeHierarchyPrepareRequestHandler(
             const std::function<
-                    void(const QByteArray &, const PrepareRenameParams &,
-                         LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                                  std::nullptr_t>> &&)> &handler);
+                    void(const QByteArray &, const TypeHierarchyPrepareParams &,
+                         LSPResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>> &&)>
+                    &handler);
     void requestDocumentRangeFormatting(
             const DocumentRangeFormattingParams &,
             std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
@@ -322,6 +369,15 @@ public:
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerDocumentRangeFormattingRequestHandler(
             const std::function<void(const QByteArray &, const DocumentRangeFormattingParams &,
+                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                    &handler);
+    void requestDocumentRangesFormatting(
+            const DocumentRangesFormattingParams &,
+            std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerDocumentRangesFormattingRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentRangesFormattingParams &,
                                      LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
                     &handler);
     void requestReference(
@@ -374,7 +430,8 @@ public:
                     void(const QByteArray &, const SemanticTokensDeltaParams &,
                          LSPPartialResponse<
                                  std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
-                                 SemanticTokensDeltaPartialResult> &&)> &handler);
+                                 std::variant<SemanticTokensPartialResult,
+                                              SemanticTokensDeltaPartialResult>> &&)> &handler);
     void requestSemanticTokensRange(
             const SemanticTokensRangeParams &,
             std::function<void(const std::variant<SemanticTokens, std::nullptr_t> &)>
@@ -385,12 +442,6 @@ public:
                     void(const QByteArray &, const SemanticTokensRangeParams &,
                          LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
                                             SemanticTokensPartialResult> &&)> &handler);
-    void requestRequestingARefreshOfAllSemanticTokens(
-            const std::nullptr_t &, std::function<void()> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void registerRequestingARefreshOfAllSemanticTokensRequestHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestSignatureHelp(
             const SignatureHelpParams &,
             std::function<void(const std::variant<SignatureHelp, std::nullptr_t> &)>
@@ -402,17 +453,16 @@ public:
                     &handler);
     void requestTypeDefinition(
             const TypeDefinitionParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
+            std::function<
+                    void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerTypeDefinitionRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const TypeDefinitionParams &,
-                         LSPPartialResponse<std::variant<Location, QList<Location>,
-                                                         QList<LocationLink>, std::nullptr_t>,
-                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                    &handler);
+            const std::function<void(
+                    const QByteArray &, const TypeDefinitionParams &,
+                    LSPPartialResponse<
+                            std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                            std::variant<QList<Location>, QList<DefinitionLink>>> &&)> &handler);
     void requestWillSaveTextDocument(
             const WillSaveTextDocumentParams &,
             std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
@@ -422,6 +472,26 @@ public:
             const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &,
                                      LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
                     &handler);
+    void requestTypeHierarchySubtypes(
+            const TypeHierarchySubtypesParams &,
+            std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerTypeHierarchySubtypesRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const TypeHierarchySubtypesParams &,
+                         LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                                            QList<TypeHierarchyItem>> &&)> &handler);
+    void requestTypeHierarchySupertypes(
+            const TypeHierarchySupertypesParams &,
+            std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerTypeHierarchySupertypesRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const TypeHierarchySupertypesParams &,
+                         LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                                            QList<TypeHierarchyItem>> &&)> &handler);
     void requestShowDocument(
             const ShowDocumentParams &,
             std::function<void(const ShowDocumentResult &)> responseHandler,
@@ -446,11 +516,17 @@ public:
                                      LSPResponse<std::nullptr_t> &&)> &handler);
     void requestApplyWorkspaceEdit(
             const ApplyWorkspaceEditParams &,
-            std::function<void(const ApplyWorkspaceEditResponse &)> responseHandler,
+            std::function<void(const ApplyWorkspaceEditResult &)> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerApplyWorkspaceEditRequestHandler(
             const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
-                                     LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler);
+                                     LSPResponse<ApplyWorkspaceEditResult> &&)> &handler);
+    void requestWorkspaceCodeLensRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceCodeLensRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestConfiguration(
             const ConfigurationParams &,
             std::function<void(const QList<QJsonValue> &)> responseHandler,
@@ -458,6 +534,21 @@ public:
     void registerConfigurationRequestHandler(
             const std::function<void(const QByteArray &, const ConfigurationParams &,
                                      LSPResponse<QList<QJsonValue>> &&)> &handler);
+    void requestWorkspaceDiagnostic(
+            const WorkspaceDiagnosticParams &,
+            std::function<void(const WorkspaceDiagnosticReport &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceDiagnosticRequestHandler(
+            const std::function<void(const QByteArray &, const WorkspaceDiagnosticParams &,
+                                     LSPPartialResponse<WorkspaceDiagnosticReport,
+                                                        WorkspaceDiagnosticReportPartialResult> &&)>
+                    &handler);
+    void requestWorkspaceDiagnosticRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceDiagnosticRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestExecuteCommand(
             const ExecuteCommandParams &,
             std::function<void(const std::variant<QJsonValue, std::nullptr_t> &)> responseHandler,
@@ -466,16 +557,43 @@ public:
             const std::function<void(const QByteArray &, const ExecuteCommandParams &,
                                      LSPResponse<std::variant<QJsonValue, std::nullptr_t>> &&)>
                     &handler);
+    void requestWorkspaceFoldingRangeRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceFoldingRangeRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+    void requestWorkspaceInlayHintRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceInlayHintRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+    void requestWorkspaceInlineValueRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceInlineValueRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+    void requestWorkspaceSemanticTokensRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceSemanticTokensRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestWorkspaceSymbol(
             const WorkspaceSymbolParams &,
-            std::function<void(const std::variant<QList<SymbolInformation>, std::nullptr_t> &)>
+            std::function<void(const std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>,
+                                                  std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
     void registerWorkspaceSymbolRequestHandler(
             const std::function<
                     void(const QByteArray &, const WorkspaceSymbolParams &,
-                         LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
-                                            QList<SymbolInformation>> &&)> &handler);
+                         LSPPartialResponse<std::variant<QList<SymbolInformation>,
+                                                         QList<WorkspaceSymbol>, std::nullptr_t>,
+                                            std::variant<QList<SymbolInformation>,
+                                                         QList<WorkspaceSymbol>>> &&)> &handler);
     void requestCreateFiles(
             const CreateFilesParams &,
             std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
@@ -513,17 +631,18 @@ public:
                     void(const QByteArray &, const std::nullptr_t &,
                          LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> &&)>
                     &handler);
+    void requestWorkspaceSymbolResolve(
+            const WorkspaceSymbol &, std::function<void(const WorkspaceSymbol &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerWorkspaceSymbolResolveRequestHandler(
+            const std::function<void(const QByteArray &, const WorkspaceSymbol &,
+                                     LSPResponse<WorkspaceSymbol> &&)> &handler);
 
     // Notifications
+
     void registerCancelNotificationHandler(
             const std::function<void(const QByteArray &, const CancelParams &)> &handler);
     void notifyCancel(const CancelParams &params);
-    void registerExitNotificationHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler);
-    void notifyExit(const std::nullptr_t &params);
-    void registerInitializedNotificationHandler(
-            const std::function<void(const QByteArray &, const InitializedParams &)> &handler);
-    void notifyInitialized(const InitializedParams &params);
     void registerLogTraceNotificationHandler(
             const std::function<void(const QByteArray &, const LogTraceParams &)> &handler);
     void notifyLogTrace(const LogTraceParams &params);
@@ -533,9 +652,31 @@ public:
     void registerSetTraceNotificationHandler(
             const std::function<void(const QByteArray &, const SetTraceParams &)> &handler);
     void notifySetTrace(const SetTraceParams &params);
+    void registerExitNotificationHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler);
+    void notifyExit(const std::nullptr_t &params);
+    void registerInitializedNotificationHandler(
+            const std::function<void(const QByteArray &, const InitializedParams &)> &handler);
+    void notifyInitialized(const InitializedParams &params);
+    void registerDidChangeNotebookDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidChangeNotebookDocumentParams &)>
+                    &handler);
+    void notifyDidChangeNotebookDocument(const DidChangeNotebookDocumentParams &params);
+    void registerDidCloseNotebookDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidCloseNotebookDocumentParams &)>
+                    &handler);
+    void notifyDidCloseNotebookDocument(const DidCloseNotebookDocumentParams &params);
+    void registerDidOpenNotebookDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidOpenNotebookDocumentParams &)>
+                    &handler);
+    void notifyDidOpenNotebookDocument(const DidOpenNotebookDocumentParams &params);
+    void registerDidSaveNotebookDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidSaveNotebookDocumentParams &)>
+                    &handler);
+    void notifyDidSaveNotebookDocument(const DidSaveNotebookDocumentParams &params);
     void registerTelemetryEventNotificationHandler(
-            const std::function<void(const QByteArray &, const QJsonObject &)> &handler);
-    void notifyTelemetryEvent(const QJsonObject &params);
+            const std::function<void(const QByteArray &, const QJsonValue &)> &handler);
+    void notifyTelemetryEvent(const QJsonValue &params);
     void registerDidChangeTextDocumentNotificationHandler(
             const std::function<void(const QByteArray &, const DidChangeTextDocumentParams &)>
                     &handler);

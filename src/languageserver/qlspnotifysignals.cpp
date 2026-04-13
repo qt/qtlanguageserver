@@ -24,29 +24,6 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
-    protocol->registerExitNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::ExitParamsType &params) {
-                static const QMetaMethod notificationSignal =
-                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedExitNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedExitNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerInitializedNotificationHandler(
-            [this,
-             protocol](const QByteArray &method,
-                       const QLspSpecification::Notifications::InitializedParamsType &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedInitializedNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedInitializedNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
     protocol->registerLogTraceNotificationHandler(
             [this, protocol](const QByteArray &method,
                              const QLspSpecification::Notifications::LogTraceParamsType &params) {
@@ -76,6 +53,81 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                         QMetaMethod::fromSignal(&QLspNotifySignals::receivedSetTraceNotification);
                 if (isSignalConnected(notificationSignal))
                     emit receivedSetTraceNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerExitNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::ExitParamsType &params) {
+                static const QMetaMethod notificationSignal =
+                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedExitNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedExitNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerInitializedNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::InitializedParamsType &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedInitializedNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedInitializedNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidChangeNotebookDocumentNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::DidChangeNotebookDocumentParamsType
+                               &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidChangeNotebookDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidChangeNotebookDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidCloseNotebookDocumentNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::DidCloseNotebookDocumentParamsType
+                               &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidCloseNotebookDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidCloseNotebookDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidOpenNotebookDocumentNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::DidOpenNotebookDocumentParamsType
+                               &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidOpenNotebookDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidOpenNotebookDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidSaveNotebookDocumentNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::DidSaveNotebookDocumentParamsType
+                               &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidSaveNotebookDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidSaveNotebookDocumentNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });

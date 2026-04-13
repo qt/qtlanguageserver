@@ -24,530 +24,649 @@
 QT_BEGIN_NAMESPACE
 
 namespace QLspSpecification {
-namespace ClientCapabilitiesInfo {
-constexpr auto TextDocumentCodeActionResolveSupport = "textDocument.codeAction.resolveSupport";
-using TextDocumentCodeActionResolveSupportType = QJsonObject;
-constexpr auto WorkspaceCodeLens = "workspace.codeLens";
-using WorkspaceCodeLensType = CodeLensWorkspaceClientCapabilities;
-constexpr auto GeneralRegularExpressions = "general.regularExpressions";
-using GeneralRegularExpressionsType = RegularExpressionsClientCapabilities;
-constexpr auto TextDocumentCodeAction = "textDocument.codeAction";
-using TextDocumentCodeActionType = CodeActionClientCapabilities;
-constexpr auto TextDocumentCodeLens = "textDocument.codeLens";
-using TextDocumentCodeLensType = CodeLensClientCapabilities;
-constexpr auto TextDocumentCompletion = "textDocument.completion";
-using TextDocumentCompletionType = CompletionClientCapabilities;
-constexpr auto TextDocumentDeclaration = "textDocument.declaration";
-using TextDocumentDeclarationType = DeclarationClientCapabilities;
-constexpr auto TextDocumentDefinition = "textDocument.definition";
-using TextDocumentDefinitionType = DefinitionClientCapabilities;
-constexpr auto TextDocumentSynchronizationDidSave = "textDocument.synchronization.didSave";
-using TextDocumentSynchronizationDidSaveType = bool;
-constexpr auto TextDocumentColorProvider = "textDocument.colorProvider";
-using TextDocumentColorProviderType = DocumentColorClientCapabilities;
-constexpr auto TextDocumentDocumentHighlight = "textDocument.documentHighlight";
-using TextDocumentDocumentHighlightType = DocumentHighlightClientCapabilities;
-constexpr auto TextDocumentDocumentLink = "textDocument.documentLink";
-using TextDocumentDocumentLinkType = DocumentLinkClientCapabilities;
-constexpr auto TextDocumentDocumentSymbol = "textDocument.documentSymbol";
-using TextDocumentDocumentSymbolType = DocumentSymbolClientCapabilities;
-constexpr auto TextDocumentFoldingRange = "textDocument.foldingRange";
-using TextDocumentFoldingRangeType = FoldingRangeClientCapabilities;
-constexpr auto TextDocumentFormatting = "textDocument.formatting";
-using TextDocumentFormattingType = DocumentFormattingClientCapabilities;
-constexpr auto TextDocumentHover = "textDocument.hover";
-using TextDocumentHoverType = HoverClientCapabilities;
-constexpr auto TextDocumentImplementation = "textDocument.implementation";
-using TextDocumentImplementationType = ImplementationClientCapabilities;
-constexpr auto TextDocumentOnTypeFormatting = "textDocument.onTypeFormatting";
-using TextDocumentOnTypeFormattingType = DocumentOnTypeFormattingClientCapabilities;
-constexpr auto TextDocumentCallHierarchy = "textDocument.callHierarchy";
-using TextDocumentCallHierarchyType = CallHierarchyClientCapabilities;
-constexpr auto TextDocumentPublishDiagnostics = "textDocument.publishDiagnostics";
-using TextDocumentPublishDiagnosticsType = PublishDiagnosticsClientCapabilities;
-constexpr auto TextDocumentRangeFormatting = "textDocument.rangeFormatting";
-using TextDocumentRangeFormattingType = DocumentRangeFormattingClientCapabilities;
-constexpr auto TextDocumentReferences = "textDocument.references";
-using TextDocumentReferencesType = ReferenceClientCapabilities;
-constexpr auto TextDocumentRename = "textDocument.rename";
-using TextDocumentRenameType = RenameClientCapabilities;
-constexpr auto TextDocumentSelectionRange = "textDocument.selectionRange";
-using TextDocumentSelectionRangeType = SelectionRangeClientCapabilities;
-constexpr auto TextDocumentSemanticTokens = "textDocument.semanticTokens";
-using TextDocumentSemanticTokensType = SemanticTokensClientCapabilities;
-constexpr auto WorkspaceSemanticTokens = "workspace.semanticTokens";
-using WorkspaceSemanticTokensType = SemanticTokensWorkspaceClientCapabilities;
-constexpr auto TextDocumentSignatureHelp = "textDocument.signatureHelp";
-using TextDocumentSignatureHelpType = SignatureHelpClientCapabilities;
-constexpr auto TextDocumentSynchronizationDynamicRegistration =
-        "textDocument.synchronization.dynamicRegistration";
-using TextDocumentSynchronizationDynamicRegistrationType = bool;
-constexpr auto TextDocumentTypeDefinition = "textDocument.typeDefinition";
-using TextDocumentTypeDefinitionType = TypeDefinitionClientCapabilities;
-constexpr auto TextDocumentSynchronizationWillSave = "textDocument.synchronization.willSave";
-using TextDocumentSynchronizationWillSaveType = bool;
-constexpr auto TextDocumentSynchronizationWillSaveWaitUntil =
-        "textDocument.synchronization.willSaveWaitUntil";
-using TextDocumentSynchronizationWillSaveWaitUntilType = bool;
-constexpr auto WindowShowDocument = "window.showDocument";
-using WindowShowDocumentType = ShowDocumentClientCapabilities;
-constexpr auto WindowShowMessage = "window.showMessage";
-using WindowShowMessageType = ShowMessageRequestClientCapabilities;
-constexpr auto WorkspaceWorkspaceEdit = "workspace.workspaceEdit";
-using WorkspaceWorkspaceEditType = WorkspaceEditClientCapabilities;
-constexpr auto WorkspaceApplyEdit = "workspace.applyEdit";
-using WorkspaceApplyEditType = bool;
-constexpr auto WorkspaceConfiguration = "workspace.configuration";
-using WorkspaceConfigurationType = bool;
-constexpr auto WorkspaceDidChangeConfiguration = "workspace.didChangeConfiguration";
-using WorkspaceDidChangeConfigurationType = DidChangeConfigurationClientCapabilities;
-constexpr auto WorkspaceDidChangeWatchedFiles = "workspace.didChangeWatchedFiles";
-using WorkspaceDidChangeWatchedFilesType = DidChangeWatchedFilesClientCapabilities;
-constexpr auto WorkspaceFileOperationsDidCreate = "workspace.fileOperations.didCreate";
-using WorkspaceFileOperationsDidCreateType = bool;
-constexpr auto WorkspaceFileOperationsDidDelete = "workspace.fileOperations.didDelete";
-using WorkspaceFileOperationsDidDeleteType = bool;
-constexpr auto WorkspaceFileOperationsDidRename = "workspace.fileOperations.didRename";
-using WorkspaceFileOperationsDidRenameType = bool;
-constexpr auto WorkspaceExecuteCommand = "workspace.executeCommand";
-using WorkspaceExecuteCommandType = ExecuteCommandClientCapabilities;
-constexpr auto WorkspaceSymbol = "workspace.symbol";
-using WorkspaceSymbolType = WorkspaceSymbolClientCapabilities;
-constexpr auto WorkspaceFileOperationsWillCreate = "workspace.fileOperations.willCreate";
-using WorkspaceFileOperationsWillCreateType = bool;
-constexpr auto WorkspaceFileOperationsWillDelete = "workspace.fileOperations.willDelete";
-using WorkspaceFileOperationsWillDeleteType = bool;
-constexpr auto WorkspaceFileOperationsWillRename = "workspace.fileOperations.willRename";
-using WorkspaceFileOperationsWillRenameType = bool;
-constexpr auto WorkspaceWorkspaceFolders = "workspace.workspaceFolders";
-using WorkspaceWorkspaceFoldersType = bool;
-} // namespace ClientCapabilitiesInfo
-
-namespace ServerCapabilitiesInfo {
-constexpr auto CodeActionProvider = "codeActionProvider";
-using CodeActionProviderType = std::variant<bool, CodeActionOptions>;
-constexpr auto CodeLensProvider = "codeLensProvider";
-using CodeLensProviderType = CodeLensOptions;
-constexpr auto CompletionProvider = "completionProvider";
-using CompletionProviderType = CompletionOptions;
-constexpr auto DeclarationProvider = "declarationProvider";
-using DeclarationProviderType =
-        std::variant<bool, DeclarationOptions, DeclarationRegistrationOptions>;
-constexpr auto DefinitionProvider = "definitionProvider";
-using DefinitionProviderType = std::variant<bool, DefinitionOptions>;
-constexpr auto TextDocumentSyncSave = "textDocumentSync.save";
-using TextDocumentSyncSaveType = std::variant<bool, SaveOptions>;
-constexpr auto ColorProvider = "colorProvider";
-using ColorProviderType =
-        std::variant<bool, DocumentColorOptions, DocumentColorRegistrationOptions>;
-constexpr auto DocumentHighlightProvider = "documentHighlightProvider";
-using DocumentHighlightProviderType = std::variant<bool, DocumentHighlightOptions>;
-constexpr auto DocumentLinkProvider = "documentLinkProvider";
-using DocumentLinkProviderType = DocumentLinkOptions;
-constexpr auto DocumentSymbolProvider = "documentSymbolProvider";
-using DocumentSymbolProviderType = std::variant<bool, DocumentSymbolOptions>;
-constexpr auto FoldingRangeProvider = "foldingRangeProvider";
-using FoldingRangeProviderType =
-        std::variant<bool, FoldingRangeOptions, FoldingRangeRegistrationOptions>;
-constexpr auto DocumentFormattingProvider = "documentFormattingProvider";
-using DocumentFormattingProviderType = std::variant<bool, DocumentFormattingOptions>;
-constexpr auto HoverProvider = "hoverProvider";
-using HoverProviderType = std::variant<bool, HoverOptions>;
-constexpr auto ImplementationProvider = "implementationProvider";
-using ImplementationProviderType =
-        std::variant<bool, ImplementationOptions, ImplementationRegistrationOptions>;
-constexpr auto LinkedEditingRangeProvider = "linkedEditingRangeProvider";
-using LinkedEditingRangeProviderType =
-        std::variant<bool, LinkedEditingRangeOptions, LinkedEditingRangeRegistrationOptions>;
-constexpr auto MonikerProvider = "monikerProvider";
-using MonikerProviderType = std::variant<bool, MonikerOptions, MonikerRegistrationOptions>;
-constexpr auto DocumentOnTypeFormattingProvider = "documentOnTypeFormattingProvider";
-using DocumentOnTypeFormattingProviderType = DocumentOnTypeFormattingOptions;
-constexpr auto CallHierarchyProvider = "callHierarchyProvider";
-using CallHierarchyProviderType =
-        std::variant<bool, CallHierarchyOptions, CallHierarchyRegistrationOptions>;
-constexpr auto DocumentRangeFormattingProvider = "documentRangeFormattingProvider";
-using DocumentRangeFormattingProviderType = std::variant<bool, DocumentRangeFormattingOptions>;
-constexpr auto ReferencesProvider = "referencesProvider";
-using ReferencesProviderType = std::variant<bool, ReferenceOptions>;
-constexpr auto RenameProvider = "renameProvider";
-using RenameProviderType = std::variant<bool, RenameOptions>;
-constexpr auto SelectionRangeProvider = "selectionRangeProvider";
-using SelectionRangeProviderType =
-        std::variant<bool, SelectionRangeOptions, SelectionRangeRegistrationOptions>;
-constexpr auto SemanticTokensProvider = "semanticTokensProvider";
-using SemanticTokensProviderType =
-        std::variant<SemanticTokensOptions, SemanticTokensRegistrationOptions>;
-constexpr auto SignatureHelpProvider = "signatureHelpProvider";
-using SignatureHelpProviderType = SignatureHelpOptions;
-constexpr auto TextDocumentSync = "textDocumentSync";
-using TextDocumentSyncType = std::variant<TextDocumentSyncKind, TextDocumentSyncOptions>;
-constexpr auto TypeDefinitionProvider = "typeDefinitionProvider";
-using TypeDefinitionProviderType =
-        std::variant<bool, TypeDefinitionOptions, TypeDefinitionRegistrationOptions>;
-constexpr auto TextDocumentSyncWillSave = "textDocumentSync.willSave";
-using TextDocumentSyncWillSaveType = bool;
-constexpr auto TextDocumentSyncWillSaveWaitUntil = "textDocumentSync.willSaveWaitUntil";
-using TextDocumentSyncWillSaveWaitUntilType = bool;
-constexpr auto WorkspaceFileOperationsDidCreate = "workspace.fileOperations.didCreate";
-using WorkspaceFileOperationsDidCreateType = FileOperationRegistrationOptions;
-constexpr auto WorkspaceFileOperationsDidDelete = "workspace.fileOperations.didDelete";
-using WorkspaceFileOperationsDidDeleteType = FileOperationRegistrationOptions;
-constexpr auto WorkspaceFileOperationsDidRename = "workspace.fileOperations.didRename";
-using WorkspaceFileOperationsDidRenameType = FileOperationRegistrationOptions;
-constexpr auto ExecuteCommandProvider = "executeCommandProvider";
-using ExecuteCommandProviderType = ExecuteCommandOptions;
-constexpr auto WorkspaceSymbolProvider = "workspaceSymbolProvider";
-using WorkspaceSymbolProviderType = std::variant<bool, WorkspaceSymbolOptions>;
-constexpr auto WorkspaceFileOperationsWillCreate = "workspace.fileOperations.willCreate";
-using WorkspaceFileOperationsWillCreateType = FileOperationRegistrationOptions;
-constexpr auto WorkspaceFileOperationsWillDelete = "workspace.fileOperations.willDelete";
-using WorkspaceFileOperationsWillDeleteType = FileOperationRegistrationOptions;
-constexpr auto WorkspaceFileOperationsWillRename = "workspace.fileOperations.willRename";
-using WorkspaceFileOperationsWillRenameType = FileOperationRegistrationOptions;
-constexpr auto WorkspaceWorkspaceFolders = "workspace.workspaceFolders";
-using WorkspaceWorkspaceFoldersType = WorkspaceFoldersServerCapabilities;
-} // namespace ServerCapabilitiesInfo
-
 namespace Requests {
-constexpr auto CallHierarchyIncomingCallsMethod = "callHierarchy/incomingCalls";
+// C++ types for the LSP method "callHierarchy/incomingCalls"
+constexpr auto CallHierarchyIncomingCallsMethod = QLatin1String("callHierarchy/incomingCalls");
 using CallHierarchyIncomingCallsParamsType = CallHierarchyIncomingCallsParams;
-constexpr auto CallHierarchyOutgoingCallsMethod = "callHierarchy/outgoingCalls";
-using CallHierarchyOutgoingCallsParamsType = CallHierarchyOutgoingCallsParams;
-constexpr auto RegistrationMethod = "client/registerCapability";
-using RegistrationParamsType = RegistrationParams;
-constexpr auto UnregistrationMethod = "client/unregisterCapability";
-using UnregistrationParamsType = UnregistrationParams;
-constexpr auto CodeActionResolveMethod = "codeAction/resolve";
-using CodeActionResolveParamsType = CodeAction;
-constexpr auto CodeLensRefreshMethod = "workspace/codeLens/refresh";
-using CodeLensRefreshParamsType = std::nullptr_t;
-constexpr auto CodeLensResolveMethod = "codeLens/resolve";
-using CodeLensResolveParamsType = CodeLens;
-constexpr auto CompletionItemResolveMethod = "completionItem/resolve";
-using CompletionItemResolveParamsType = CompletionItem;
-constexpr auto DocumentLinkResolveMethod = "documentLink/resolve";
-using DocumentLinkResolveParamsType = DocumentLink;
-constexpr auto InitializeMethod = "initialize";
-using InitializeParamsType = InitializeParams;
-constexpr auto ShutdownMethod = "shutdown";
-using ShutdownParamsType = std::nullptr_t;
-constexpr auto CodeActionMethod = "textDocument/codeAction";
-using CodeActionParamsType = CodeActionParams;
-constexpr auto CodeLensMethod = "textDocument/codeLens";
-using CodeLensParamsType = CodeLensParams;
-constexpr auto ColorPresentationMethod = "textDocument/colorPresentation";
-using ColorPresentationParamsType = ColorPresentationParams;
-constexpr auto CompletionMethod = "textDocument/completion";
-using CompletionParamsType = CompletionParams;
-constexpr auto DeclarationMethod = "textDocument/declaration";
-using DeclarationParamsType = DeclarationParams;
-constexpr auto DefinitionMethod = "textDocument/definition";
-using DefinitionParamsType = DefinitionParams;
-constexpr auto DocumentColorMethod = "textDocument/documentColor";
-using DocumentColorParamsType = DocumentColorParams;
-constexpr auto DocumentHighlightMethod = "textDocument/documentHighlight";
-using DocumentHighlightParamsType = DocumentHighlightParams;
-constexpr auto DocumentLinkMethod = "textDocument/documentLink";
-using DocumentLinkParamsType = DocumentLinkParams;
-constexpr auto DocumentSymbolMethod = "textDocument/documentSymbol";
-using DocumentSymbolParamsType = DocumentSymbolParams;
-constexpr auto FoldingRangeMethod = "textDocument/foldingRange";
-using FoldingRangeParamsType = FoldingRangeParams;
-constexpr auto DocumentFormattingMethod = "textDocument/formatting";
-using DocumentFormattingParamsType = DocumentFormattingParams;
-constexpr auto HoverMethod = "textDocument/hover";
-using HoverParamsType = HoverParams;
-constexpr auto ImplementationMethod = "textDocument/implementation";
-using ImplementationParamsType = ImplementationParams;
-constexpr auto LinkedEditingRangeMethod = "textDocument/linkedEditingRange";
-using LinkedEditingRangeParamsType = LinkedEditingRangeParams;
-constexpr auto MonikerMethod = "textDocument/moniker";
-using MonikerParamsType = MonikerParams;
-constexpr auto DocumentOnTypeFormattingMethod = "textDocument/onTypeFormatting";
-using DocumentOnTypeFormattingParamsType = DocumentOnTypeFormattingParams;
-constexpr auto CallHierarchyPrepareMethod = "textDocument/prepareCallHierarchy";
-using CallHierarchyPrepareParamsType = CallHierarchyPrepareParams;
-constexpr auto PrepareRenameMethod = "textDocument/prepareRename";
-using PrepareRenameParamsType = PrepareRenameParams;
-constexpr auto DocumentRangeFormattingMethod = "textDocument/rangeFormatting";
-using DocumentRangeFormattingParamsType = DocumentRangeFormattingParams;
-constexpr auto ReferenceMethod = "textDocument/references";
-using ReferenceParamsType = ReferenceParams;
-constexpr auto RenameMethod = "textDocument/rename";
-using RenameParamsType = RenameParams;
-constexpr auto SelectionRangeMethod = "textDocument/selectionRange";
-using SelectionRangeParamsType = SelectionRangeParams;
-constexpr auto SemanticTokensMethod = "textDocument/semanticTokens/full";
-using SemanticTokensParamsType = SemanticTokensParams;
-constexpr auto SemanticTokensDeltaMethod = "textDocument/semanticTokens/full/delta";
-using SemanticTokensDeltaParamsType = SemanticTokensDeltaParams;
-constexpr auto SemanticTokensRangeMethod = "textDocument/semanticTokens/range";
-using SemanticTokensRangeParamsType = SemanticTokensRangeParams;
-constexpr auto RequestingARefreshOfAllSemanticTokensMethod = "workspace/semanticTokens/refresh";
-using RequestingARefreshOfAllSemanticTokensParamsType = std::nullptr_t;
-constexpr auto SignatureHelpMethod = "textDocument/signatureHelp";
-using SignatureHelpParamsType = SignatureHelpParams;
-constexpr auto TypeDefinitionMethod = "textDocument/typeDefinition";
-using TypeDefinitionParamsType = TypeDefinitionParams;
-constexpr auto WillSaveTextDocumentMethod = "textDocument/willSaveWaitUntil";
-using WillSaveTextDocumentParamsType = WillSaveTextDocumentParams;
-constexpr auto ShowDocumentMethod = "window/showDocument";
-using ShowDocumentParamsType = ShowDocumentParams;
-constexpr auto ShowMessageRequestMethod = "window/showMessageRequest";
-using ShowMessageRequestParamsType = ShowMessageRequestParams;
-constexpr auto WorkDoneProgressCreateMethod = "window/workDoneProgress/create";
-using WorkDoneProgressCreateParamsType = WorkDoneProgressCreateParams;
-constexpr auto ApplyWorkspaceEditMethod = "workspace/applyEdit";
-using ApplyWorkspaceEditParamsType = ApplyWorkspaceEditParams;
-constexpr auto ConfigurationMethod = "workspace/configuration";
-using ConfigurationParamsType = ConfigurationParams;
-constexpr auto ExecuteCommandMethod = "workspace/executeCommand";
-using ExecuteCommandParamsType = ExecuteCommandParams;
-constexpr auto WorkspaceSymbolMethod = "workspace/symbol";
-using WorkspaceSymbolParamsType = WorkspaceSymbolParams;
-constexpr auto CreateFilesMethod = "workspace/willCreateFiles";
-using CreateFilesParamsType = CreateFilesParams;
-constexpr auto DeleteFilesMethod = "workspace/willDeleteFiles";
-using DeleteFilesParamsType = DeleteFilesParams;
-constexpr auto RenameFilesMethod = "workspace/willRenameFiles";
-using RenameFilesParamsType = RenameFilesParams;
-constexpr auto WorkspaceWorkspaceFoldersMethod = "workspace/workspaceFolders";
-using WorkspaceWorkspaceFoldersParamsType = std::nullptr_t;
-}
-
-namespace Responses {
 using CallHierarchyIncomingCallsResultType =
         std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>;
 using CallHierarchyIncomingCallsPartialResultType = QList<CallHierarchyIncomingCall>;
 using CallHierarchyIncomingCallsResponseType =
-        LSPPartialResponse<CallHierarchyIncomingCallsResultType,
-                           CallHierarchyIncomingCallsPartialResultType>;
+        LSPPartialResponse<std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>,
+                           QList<CallHierarchyIncomingCall>>;
+
+// C++ types for the LSP method "callHierarchy/outgoingCalls"
+constexpr auto CallHierarchyOutgoingCallsMethod = QLatin1String("callHierarchy/outgoingCalls");
+using CallHierarchyOutgoingCallsParamsType = CallHierarchyOutgoingCallsParams;
 using CallHierarchyOutgoingCallsResultType =
         std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>;
 using CallHierarchyOutgoingCallsPartialResultType = QList<CallHierarchyOutgoingCall>;
 using CallHierarchyOutgoingCallsResponseType =
-        LSPPartialResponse<CallHierarchyOutgoingCallsResultType,
-                           CallHierarchyOutgoingCallsPartialResultType>;
+        LSPPartialResponse<std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>,
+                           QList<CallHierarchyOutgoingCall>>;
+
+// C++ types for the LSP method "client/registerCapability"
+constexpr auto RegistrationMethod = QLatin1String("client/registerCapability");
+using RegistrationParamsType = RegistrationParams;
 using RegistrationResultType = std::nullptr_t;
-using RegistrationResponseType = LSPResponse<RegistrationResultType>;
+using RegistrationResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "client/unregisterCapability"
+constexpr auto UnregistrationMethod = QLatin1String("client/unregisterCapability");
+using UnregistrationParamsType = UnregistrationParams;
 using UnregistrationResultType = std::nullptr_t;
-using UnregistrationResponseType = LSPResponse<UnregistrationResultType>;
+using UnregistrationResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "codeAction/resolve"
+constexpr auto CodeActionResolveMethod = QLatin1String("codeAction/resolve");
+using CodeActionResolveParamsType = CodeAction;
 using CodeActionResolveResultType = CodeAction;
-using CodeActionResolveResponseType = LSPResponse<CodeActionResolveResultType>;
-using CodeLensRefreshResultType = std::nullptr_t;
-using CodeLensRefreshResponseType = LSPResponse<CodeLensRefreshResultType>;
+using CodeActionResolveResponseType = LSPResponse<CodeAction>;
+
+// C++ types for the LSP method "codeLens/resolve"
+constexpr auto CodeLensResolveMethod = QLatin1String("codeLens/resolve");
+using CodeLensResolveParamsType = CodeLens;
 using CodeLensResolveResultType = CodeLens;
-using CodeLensResolveResponseType = LSPResponse<CodeLensResolveResultType>;
+using CodeLensResolveResponseType = LSPResponse<CodeLens>;
+
+// C++ types for the LSP method "completionItem/resolve"
+constexpr auto CompletionItemResolveMethod = QLatin1String("completionItem/resolve");
+using CompletionItemResolveParamsType = CompletionItem;
 using CompletionItemResolveResultType = CompletionItem;
-using CompletionItemResolveResponseType = LSPResponse<CompletionItemResolveResultType>;
+using CompletionItemResolveResponseType = LSPResponse<CompletionItem>;
+
+// C++ types for the LSP method "documentLink/resolve"
+constexpr auto DocumentLinkResolveMethod = QLatin1String("documentLink/resolve");
+using DocumentLinkResolveParamsType = DocumentLink;
 using DocumentLinkResolveResultType = DocumentLink;
-using DocumentLinkResolveResponseType = LSPResponse<DocumentLinkResolveResultType>;
+using DocumentLinkResolveResponseType = LSPResponse<DocumentLink>;
+
+// C++ types for the LSP method "initialize"
+constexpr auto InitializeMethod = QLatin1String("initialize");
+using InitializeParamsType = InitializeParams;
 using InitializeResultType = InitializeResult;
-using InitializeResponseType = LSPResponse<InitializeResultType>;
+using InitializeResponseType = LSPResponse<InitializeResult>;
+
+// C++ types for the LSP method "inlayHint/resolve"
+constexpr auto InlayHintResolveMethod = QLatin1String("inlayHint/resolve");
+using InlayHintResolveParamsType = InlayHint;
+using InlayHintResolveResultType = InlayHint;
+using InlayHintResolveResponseType = LSPResponse<InlayHint>;
+
+// C++ types for the LSP method "shutdown"
+constexpr auto ShutdownMethod = QLatin1String("shutdown");
+using ShutdownParamsType = std::nullptr_t;
 using ShutdownResultType = std::nullptr_t;
-using ShutdownResponseType = LSPResponse<ShutdownResultType>;
+using ShutdownResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "textDocument/codeAction"
+constexpr auto CodeActionMethod = QLatin1String("textDocument/codeAction");
+using CodeActionParamsType = CodeActionParams;
 using CodeActionResultType = std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>;
 using CodeActionPartialResultType = QList<std::variant<Command, CodeAction>>;
 using CodeActionResponseType =
-        LSPPartialResponse<CodeActionResultType, CodeActionPartialResultType>;
+        LSPPartialResponse<std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>,
+                           QList<std::variant<Command, CodeAction>>>;
+
+// C++ types for the LSP method "textDocument/codeLens"
+constexpr auto CodeLensMethod = QLatin1String("textDocument/codeLens");
+using CodeLensParamsType = CodeLensParams;
 using CodeLensResultType = std::variant<QList<CodeLens>, std::nullptr_t>;
 using CodeLensPartialResultType = QList<CodeLens>;
-using CodeLensResponseType = LSPPartialResponse<CodeLensResultType, CodeLensPartialResultType>;
+using CodeLensResponseType =
+        LSPPartialResponse<std::variant<QList<CodeLens>, std::nullptr_t>, QList<CodeLens>>;
+
+// C++ types for the LSP method "textDocument/colorPresentation"
+constexpr auto ColorPresentationMethod = QLatin1String("textDocument/colorPresentation");
+using ColorPresentationParamsType = ColorPresentationParams;
 using ColorPresentationResultType = QList<ColorPresentation>;
 using ColorPresentationPartialResultType = QList<ColorPresentation>;
 using ColorPresentationResponseType =
-        LSPPartialResponse<ColorPresentationResultType, ColorPresentationPartialResultType>;
+        LSPPartialResponse<QList<ColorPresentation>, QList<ColorPresentation>>;
+
+// C++ types for the LSP method "textDocument/completion"
+constexpr auto CompletionMethod = QLatin1String("textDocument/completion");
+using CompletionParamsType = CompletionParams;
 using CompletionResultType = std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>;
-using CompletionPartialResultType = std::variant<CompletionList, QList<CompletionItem>>;
+using CompletionPartialResultType = QList<CompletionItem>;
 using CompletionResponseType =
-        LSPPartialResponse<CompletionResultType, CompletionPartialResultType>;
-using DeclarationResultType =
-        std::variant<Location, QList<Location>, QList<LocationLink>, std::nullptr_t>;
-using DeclarationPartialResultType = std::variant<QList<Location>, QList<LocationLink>>;
+        LSPPartialResponse<std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
+                           QList<CompletionItem>>;
+
+// C++ types for the LSP method "textDocument/declaration"
+constexpr auto DeclarationMethod = QLatin1String("textDocument/declaration");
+using DeclarationParamsType = DeclarationParams;
+using DeclarationResultType = std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t>;
+using DeclarationPartialResultType = std::variant<QList<Location>, QList<DeclarationLink>>;
 using DeclarationResponseType =
-        LSPPartialResponse<DeclarationResultType, DeclarationPartialResultType>;
-using DefinitionResultType =
-        std::variant<Location, QList<Location>, QList<LocationLink>, std::nullptr_t>;
-using DefinitionPartialResultType = std::variant<QList<Location>, QList<LocationLink>>;
+        LSPPartialResponse<std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t>,
+                           std::variant<QList<Location>, QList<DeclarationLink>>>;
+
+// C++ types for the LSP method "textDocument/definition"
+constexpr auto DefinitionMethod = QLatin1String("textDocument/definition");
+using DefinitionParamsType = DefinitionParams;
+using DefinitionResultType = std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>;
+using DefinitionPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using DefinitionResponseType =
-        LSPPartialResponse<DefinitionResultType, DefinitionPartialResultType>;
+        LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                           std::variant<QList<Location>, QList<DefinitionLink>>>;
+
+// C++ types for the LSP method "textDocument/diagnostic"
+constexpr auto DocumentDiagnosticMethod = QLatin1String("textDocument/diagnostic");
+using DocumentDiagnosticParamsType = DocumentDiagnosticParams;
+using DocumentDiagnosticResultType = DocumentDiagnosticReport;
+using DocumentDiagnosticPartialResultType = DocumentDiagnosticReportPartialResult;
+using DocumentDiagnosticResponseType =
+        LSPPartialResponse<DocumentDiagnosticReport, DocumentDiagnosticReportPartialResult>;
+
+// C++ types for the LSP method "textDocument/documentColor"
+constexpr auto DocumentColorMethod = QLatin1String("textDocument/documentColor");
+using DocumentColorParamsType = DocumentColorParams;
 using DocumentColorResultType = QList<ColorInformation>;
 using DocumentColorPartialResultType = QList<ColorInformation>;
 using DocumentColorResponseType =
-        LSPPartialResponse<DocumentColorResultType, DocumentColorPartialResultType>;
+        LSPPartialResponse<QList<ColorInformation>, QList<ColorInformation>>;
+
+// C++ types for the LSP method "textDocument/documentHighlight"
+constexpr auto DocumentHighlightMethod = QLatin1String("textDocument/documentHighlight");
+using DocumentHighlightParamsType = DocumentHighlightParams;
 using DocumentHighlightResultType = std::variant<QList<DocumentHighlight>, std::nullptr_t>;
 using DocumentHighlightPartialResultType = QList<DocumentHighlight>;
 using DocumentHighlightResponseType =
-        LSPPartialResponse<DocumentHighlightResultType, DocumentHighlightPartialResultType>;
+        LSPPartialResponse<std::variant<QList<DocumentHighlight>, std::nullptr_t>,
+                           QList<DocumentHighlight>>;
+
+// C++ types for the LSP method "textDocument/documentLink"
+constexpr auto DocumentLinkMethod = QLatin1String("textDocument/documentLink");
+using DocumentLinkParamsType = DocumentLinkParams;
 using DocumentLinkResultType = std::variant<QList<DocumentLink>, std::nullptr_t>;
 using DocumentLinkPartialResultType = QList<DocumentLink>;
 using DocumentLinkResponseType =
-        LSPPartialResponse<DocumentLinkResultType, DocumentLinkPartialResultType>;
+        LSPPartialResponse<std::variant<QList<DocumentLink>, std::nullptr_t>, QList<DocumentLink>>;
+
+// C++ types for the LSP method "textDocument/documentSymbol"
+constexpr auto DocumentSymbolMethod = QLatin1String("textDocument/documentSymbol");
+using DocumentSymbolParamsType = DocumentSymbolParams;
 using DocumentSymbolResultType =
-        std::variant<QList<DocumentSymbol>, QList<SymbolInformation>, std::nullptr_t>;
+        std::variant<QList<SymbolInformation>, QList<DocumentSymbol>, std::nullptr_t>;
 using DocumentSymbolPartialResultType =
-        std::variant<QList<DocumentSymbol>, QList<SymbolInformation>>;
-using DocumentSymbolResponseType =
-        LSPPartialResponse<DocumentSymbolResultType, DocumentSymbolPartialResultType>;
+        std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>;
+using DocumentSymbolResponseType = LSPPartialResponse<
+        std::variant<QList<SymbolInformation>, QList<DocumentSymbol>, std::nullptr_t>,
+        std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>>;
+
+// C++ types for the LSP method "textDocument/foldingRange"
+constexpr auto FoldingRangeMethod = QLatin1String("textDocument/foldingRange");
+using FoldingRangeParamsType = FoldingRangeParams;
 using FoldingRangeResultType = std::variant<QList<FoldingRange>, std::nullptr_t>;
 using FoldingRangePartialResultType = QList<FoldingRange>;
 using FoldingRangeResponseType =
-        LSPPartialResponse<FoldingRangeResultType, FoldingRangePartialResultType>;
+        LSPPartialResponse<std::variant<QList<FoldingRange>, std::nullptr_t>, QList<FoldingRange>>;
+
+// C++ types for the LSP method "textDocument/formatting"
+constexpr auto DocumentFormattingMethod = QLatin1String("textDocument/formatting");
+using DocumentFormattingParamsType = DocumentFormattingParams;
 using DocumentFormattingResultType = std::variant<QList<TextEdit>, std::nullptr_t>;
-using DocumentFormattingResponseType = LSPResponse<DocumentFormattingResultType>;
+using DocumentFormattingResponseType = LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/hover"
+constexpr auto HoverMethod = QLatin1String("textDocument/hover");
+using HoverParamsType = HoverParams;
 using HoverResultType = std::variant<Hover, std::nullptr_t>;
-using HoverResponseType = LSPResponse<HoverResultType>;
-using ImplementationResultType =
-        std::variant<Location, QList<Location>, QList<LocationLink>, std::nullptr_t>;
-using ImplementationPartialResultType = std::variant<QList<Location>, QList<LocationLink>>;
+using HoverResponseType = LSPResponse<std::variant<Hover, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/implementation"
+constexpr auto ImplementationMethod = QLatin1String("textDocument/implementation");
+using ImplementationParamsType = ImplementationParams;
+using ImplementationResultType = std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>;
+using ImplementationPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using ImplementationResponseType =
-        LSPPartialResponse<ImplementationResultType, ImplementationPartialResultType>;
+        LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                           std::variant<QList<Location>, QList<DefinitionLink>>>;
+
+// C++ types for the LSP method "textDocument/inlayHint"
+constexpr auto InlayHintMethod = QLatin1String("textDocument/inlayHint");
+using InlayHintParamsType = InlayHintParams;
+using InlayHintResultType = std::variant<QList<InlayHint>, std::nullptr_t>;
+using InlayHintPartialResultType = QList<InlayHint>;
+using InlayHintResponseType =
+        LSPPartialResponse<std::variant<QList<InlayHint>, std::nullptr_t>, QList<InlayHint>>;
+
+// C++ types for the LSP method "textDocument/inlineCompletion"
+constexpr auto InlineCompletionMethod = QLatin1String("textDocument/inlineCompletion");
+using InlineCompletionParamsType = InlineCompletionParams;
+using InlineCompletionResultType =
+        std::variant<InlineCompletionList, QList<InlineCompletionItem>, std::nullptr_t>;
+using InlineCompletionPartialResultType = QList<InlineCompletionItem>;
+using InlineCompletionResponseType = LSPPartialResponse<
+        std::variant<InlineCompletionList, QList<InlineCompletionItem>, std::nullptr_t>,
+        QList<InlineCompletionItem>>;
+
+// C++ types for the LSP method "textDocument/inlineValue"
+constexpr auto InlineValueMethod = QLatin1String("textDocument/inlineValue");
+using InlineValueParamsType = InlineValueParams;
+using InlineValueResultType = std::variant<QList<InlineValue>, std::nullptr_t>;
+using InlineValuePartialResultType = QList<InlineValue>;
+using InlineValueResponseType =
+        LSPPartialResponse<std::variant<QList<InlineValue>, std::nullptr_t>, QList<InlineValue>>;
+
+// C++ types for the LSP method "textDocument/linkedEditingRange"
+constexpr auto LinkedEditingRangeMethod = QLatin1String("textDocument/linkedEditingRange");
+using LinkedEditingRangeParamsType = LinkedEditingRangeParams;
 using LinkedEditingRangeResultType = std::variant<LinkedEditingRanges, std::nullptr_t>;
-using LinkedEditingRangeResponseType = LSPResponse<LinkedEditingRangeResultType>;
+using LinkedEditingRangeResponseType =
+        LSPResponse<std::variant<LinkedEditingRanges, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/moniker"
+constexpr auto MonikerMethod = QLatin1String("textDocument/moniker");
+using MonikerParamsType = MonikerParams;
 using MonikerResultType = std::variant<QList<Moniker>, std::nullptr_t>;
 using MonikerPartialResultType = QList<Moniker>;
-using MonikerResponseType = LSPPartialResponse<MonikerResultType, MonikerPartialResultType>;
+using MonikerResponseType =
+        LSPPartialResponse<std::variant<QList<Moniker>, std::nullptr_t>, QList<Moniker>>;
+
+// C++ types for the LSP method "textDocument/onTypeFormatting"
+constexpr auto DocumentOnTypeFormattingMethod = QLatin1String("textDocument/onTypeFormatting");
+using DocumentOnTypeFormattingParamsType = DocumentOnTypeFormattingParams;
 using DocumentOnTypeFormattingResultType = std::variant<QList<TextEdit>, std::nullptr_t>;
-using DocumentOnTypeFormattingResponseType = LSPResponse<DocumentOnTypeFormattingResultType>;
+using DocumentOnTypeFormattingResponseType =
+        LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/prepareCallHierarchy"
+constexpr auto CallHierarchyPrepareMethod = QLatin1String("textDocument/prepareCallHierarchy");
+using CallHierarchyPrepareParamsType = CallHierarchyPrepareParams;
 using CallHierarchyPrepareResultType = std::variant<QList<CallHierarchyItem>, std::nullptr_t>;
-using CallHierarchyPrepareResponseType = LSPResponse<CallHierarchyPrepareResultType>;
-using PrepareRenameResultType =
-        std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct, std::nullptr_t>;
-using PrepareRenameResponseType = LSPResponse<PrepareRenameResultType>;
+using CallHierarchyPrepareResponseType =
+        LSPResponse<std::variant<QList<CallHierarchyItem>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/prepareRename"
+constexpr auto PrepareRenameMethod = QLatin1String("textDocument/prepareRename");
+using PrepareRenameParamsType = PrepareRenameParams;
+using PrepareRenameResultType = std::variant<PrepareRenameResult, std::nullptr_t>;
+using PrepareRenameResponseType = LSPResponse<std::variant<PrepareRenameResult, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/prepareTypeHierarchy"
+constexpr auto TypeHierarchyPrepareMethod = QLatin1String("textDocument/prepareTypeHierarchy");
+using TypeHierarchyPrepareParamsType = TypeHierarchyPrepareParams;
+using TypeHierarchyPrepareResultType = std::variant<QList<TypeHierarchyItem>, std::nullptr_t>;
+using TypeHierarchyPrepareResponseType =
+        LSPResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/rangeFormatting"
+constexpr auto DocumentRangeFormattingMethod = QLatin1String("textDocument/rangeFormatting");
+using DocumentRangeFormattingParamsType = DocumentRangeFormattingParams;
 using DocumentRangeFormattingResultType = std::variant<QList<TextEdit>, std::nullptr_t>;
-using DocumentRangeFormattingResponseType = LSPResponse<DocumentRangeFormattingResultType>;
+using DocumentRangeFormattingResponseType =
+        LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/rangesFormatting"
+constexpr auto DocumentRangesFormattingMethod = QLatin1String("textDocument/rangesFormatting");
+using DocumentRangesFormattingParamsType = DocumentRangesFormattingParams;
+using DocumentRangesFormattingResultType = std::variant<QList<TextEdit>, std::nullptr_t>;
+using DocumentRangesFormattingResponseType =
+        LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/references"
+constexpr auto ReferenceMethod = QLatin1String("textDocument/references");
+using ReferenceParamsType = ReferenceParams;
 using ReferenceResultType = std::variant<QList<Location>, std::nullptr_t>;
 using ReferencePartialResultType = QList<Location>;
-using ReferenceResponseType = LSPPartialResponse<ReferenceResultType, ReferencePartialResultType>;
+using ReferenceResponseType =
+        LSPPartialResponse<std::variant<QList<Location>, std::nullptr_t>, QList<Location>>;
+
+// C++ types for the LSP method "textDocument/rename"
+constexpr auto RenameMethod = QLatin1String("textDocument/rename");
+using RenameParamsType = RenameParams;
 using RenameResultType = std::variant<WorkspaceEdit, std::nullptr_t>;
-using RenameResponseType = LSPResponse<RenameResultType>;
+using RenameResponseType = LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/selectionRange"
+constexpr auto SelectionRangeMethod = QLatin1String("textDocument/selectionRange");
+using SelectionRangeParamsType = SelectionRangeParams;
 using SelectionRangeResultType = std::variant<QList<SelectionRange>, std::nullptr_t>;
 using SelectionRangePartialResultType = QList<SelectionRange>;
 using SelectionRangeResponseType =
-        LSPPartialResponse<SelectionRangeResultType, SelectionRangePartialResultType>;
+        LSPPartialResponse<std::variant<QList<SelectionRange>, std::nullptr_t>,
+                           QList<SelectionRange>>;
+
+// C++ types for the LSP method "textDocument/semanticTokens/full"
+constexpr auto SemanticTokensMethod = QLatin1String("textDocument/semanticTokens/full");
+using SemanticTokensParamsType = SemanticTokensParams;
 using SemanticTokensResultType = std::variant<SemanticTokens, std::nullptr_t>;
 using SemanticTokensPartialResultType = SemanticTokensPartialResult;
-using SemanticTokensResponseType =
-        LSPPartialResponse<SemanticTokensResultType, SemanticTokensPartialResultType>;
+using SemanticTokensResponseType = LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
+                                                      SemanticTokensPartialResult>;
+
+// C++ types for the LSP method "textDocument/semanticTokens/full/delta"
+constexpr auto SemanticTokensDeltaMethod = QLatin1String("textDocument/semanticTokens/full/delta");
+using SemanticTokensDeltaParamsType = SemanticTokensDeltaParams;
 using SemanticTokensDeltaResultType =
         std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>;
-using SemanticTokensDeltaPartialResultType = SemanticTokensDeltaPartialResult;
-using SemanticTokensDeltaResponseType =
-        LSPPartialResponse<SemanticTokensDeltaResultType, SemanticTokensDeltaPartialResultType>;
+using SemanticTokensDeltaPartialResultType =
+        std::variant<SemanticTokensPartialResult, SemanticTokensDeltaPartialResult>;
+using SemanticTokensDeltaResponseType = LSPPartialResponse<
+        std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
+        std::variant<SemanticTokensPartialResult, SemanticTokensDeltaPartialResult>>;
+
+// C++ types for the LSP method "textDocument/semanticTokens/range"
+constexpr auto SemanticTokensRangeMethod = QLatin1String("textDocument/semanticTokens/range");
+using SemanticTokensRangeParamsType = SemanticTokensRangeParams;
 using SemanticTokensRangeResultType = std::variant<SemanticTokens, std::nullptr_t>;
 using SemanticTokensRangePartialResultType = SemanticTokensPartialResult;
 using SemanticTokensRangeResponseType =
-        LSPPartialResponse<SemanticTokensRangeResultType, SemanticTokensRangePartialResultType>;
-using RequestingARefreshOfAllSemanticTokensResultType = std::nullptr_t;
-using RequestingARefreshOfAllSemanticTokensResponseType =
-        LSPResponse<RequestingARefreshOfAllSemanticTokensResultType>;
+        LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
+                           SemanticTokensPartialResult>;
+
+// C++ types for the LSP method "textDocument/signatureHelp"
+constexpr auto SignatureHelpMethod = QLatin1String("textDocument/signatureHelp");
+using SignatureHelpParamsType = SignatureHelpParams;
 using SignatureHelpResultType = std::variant<SignatureHelp, std::nullptr_t>;
-using SignatureHelpResponseType = LSPResponse<SignatureHelpResultType>;
-using TypeDefinitionResultType =
-        std::variant<Location, QList<Location>, QList<LocationLink>, std::nullptr_t>;
-using TypeDefinitionPartialResultType = std::variant<QList<Location>, QList<LocationLink>>;
+using SignatureHelpResponseType = LSPResponse<std::variant<SignatureHelp, std::nullptr_t>>;
+
+// C++ types for the LSP method "textDocument/typeDefinition"
+constexpr auto TypeDefinitionMethod = QLatin1String("textDocument/typeDefinition");
+using TypeDefinitionParamsType = TypeDefinitionParams;
+using TypeDefinitionResultType = std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>;
+using TypeDefinitionPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using TypeDefinitionResponseType =
-        LSPPartialResponse<TypeDefinitionResultType, TypeDefinitionPartialResultType>;
+        LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                           std::variant<QList<Location>, QList<DefinitionLink>>>;
+
+// C++ types for the LSP method "textDocument/willSaveWaitUntil"
+constexpr auto WillSaveTextDocumentMethod = QLatin1String("textDocument/willSaveWaitUntil");
+using WillSaveTextDocumentParamsType = WillSaveTextDocumentParams;
 using WillSaveTextDocumentResultType = std::variant<QList<TextEdit>, std::nullptr_t>;
-using WillSaveTextDocumentResponseType = LSPResponse<WillSaveTextDocumentResultType>;
+using WillSaveTextDocumentResponseType = LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>>;
+
+// C++ types for the LSP method "typeHierarchy/subtypes"
+constexpr auto TypeHierarchySubtypesMethod = QLatin1String("typeHierarchy/subtypes");
+using TypeHierarchySubtypesParamsType = TypeHierarchySubtypesParams;
+using TypeHierarchySubtypesResultType = std::variant<QList<TypeHierarchyItem>, std::nullptr_t>;
+using TypeHierarchySubtypesPartialResultType = QList<TypeHierarchyItem>;
+using TypeHierarchySubtypesResponseType =
+        LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                           QList<TypeHierarchyItem>>;
+
+// C++ types for the LSP method "typeHierarchy/supertypes"
+constexpr auto TypeHierarchySupertypesMethod = QLatin1String("typeHierarchy/supertypes");
+using TypeHierarchySupertypesParamsType = TypeHierarchySupertypesParams;
+using TypeHierarchySupertypesResultType = std::variant<QList<TypeHierarchyItem>, std::nullptr_t>;
+using TypeHierarchySupertypesPartialResultType = QList<TypeHierarchyItem>;
+using TypeHierarchySupertypesResponseType =
+        LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                           QList<TypeHierarchyItem>>;
+
+// C++ types for the LSP method "window/showDocument"
+constexpr auto ShowDocumentMethod = QLatin1String("window/showDocument");
+using ShowDocumentParamsType = ShowDocumentParams;
 using ShowDocumentResultType = ShowDocumentResult;
-using ShowDocumentResponseType = LSPResponse<ShowDocumentResultType>;
+using ShowDocumentResponseType = LSPResponse<ShowDocumentResult>;
+
+// C++ types for the LSP method "window/showMessageRequest"
+constexpr auto ShowMessageRequestMethod = QLatin1String("window/showMessageRequest");
+using ShowMessageRequestParamsType = ShowMessageRequestParams;
 using ShowMessageRequestResultType = std::variant<MessageActionItem, std::nullptr_t>;
-using ShowMessageRequestResponseType = LSPResponse<ShowMessageRequestResultType>;
+using ShowMessageRequestResponseType = LSPResponse<std::variant<MessageActionItem, std::nullptr_t>>;
+
+// C++ types for the LSP method "window/workDoneProgress/create"
+constexpr auto WorkDoneProgressCreateMethod = QLatin1String("window/workDoneProgress/create");
+using WorkDoneProgressCreateParamsType = WorkDoneProgressCreateParams;
 using WorkDoneProgressCreateResultType = std::nullptr_t;
-using WorkDoneProgressCreateResponseType = LSPResponse<WorkDoneProgressCreateResultType>;
-using ApplyWorkspaceEditResultType = ApplyWorkspaceEditResponse;
-using ApplyWorkspaceEditResponseType = LSPResponse<ApplyWorkspaceEditResultType>;
+using WorkDoneProgressCreateResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/applyEdit"
+constexpr auto ApplyWorkspaceEditMethod = QLatin1String("workspace/applyEdit");
+using ApplyWorkspaceEditParamsType = ApplyWorkspaceEditParams;
+using ApplyWorkspaceEditResultType = ApplyWorkspaceEditResult;
+using ApplyWorkspaceEditResponseType = LSPResponse<ApplyWorkspaceEditResult>;
+
+// C++ types for the LSP method "workspace/codeLens/refresh"
+constexpr auto WorkspaceCodeLensRefreshMethod = QLatin1String("workspace/codeLens/refresh");
+using WorkspaceCodeLensRefreshParamsType = std::nullptr_t;
+using WorkspaceCodeLensRefreshResultType = std::nullptr_t;
+using WorkspaceCodeLensRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/configuration"
+constexpr auto ConfigurationMethod = QLatin1String("workspace/configuration");
+using ConfigurationParamsType = ConfigurationParams;
 using ConfigurationResultType = QList<QJsonValue>;
-using ConfigurationResponseType = LSPResponse<ConfigurationResultType>;
+using ConfigurationResponseType = LSPResponse<QList<QJsonValue>>;
+
+// C++ types for the LSP method "workspace/diagnostic"
+constexpr auto WorkspaceDiagnosticMethod = QLatin1String("workspace/diagnostic");
+using WorkspaceDiagnosticParamsType = WorkspaceDiagnosticParams;
+using WorkspaceDiagnosticResultType = WorkspaceDiagnosticReport;
+using WorkspaceDiagnosticPartialResultType = WorkspaceDiagnosticReportPartialResult;
+using WorkspaceDiagnosticResponseType =
+        LSPPartialResponse<WorkspaceDiagnosticReport, WorkspaceDiagnosticReportPartialResult>;
+
+// C++ types for the LSP method "workspace/diagnostic/refresh"
+constexpr auto WorkspaceDiagnosticRefreshMethod = QLatin1String("workspace/diagnostic/refresh");
+using WorkspaceDiagnosticRefreshParamsType = std::nullptr_t;
+using WorkspaceDiagnosticRefreshResultType = std::nullptr_t;
+using WorkspaceDiagnosticRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/executeCommand"
+constexpr auto ExecuteCommandMethod = QLatin1String("workspace/executeCommand");
+using ExecuteCommandParamsType = ExecuteCommandParams;
 using ExecuteCommandResultType = std::variant<QJsonValue, std::nullptr_t>;
-using ExecuteCommandResponseType = LSPResponse<ExecuteCommandResultType>;
-using WorkspaceSymbolResultType = std::variant<QList<SymbolInformation>, std::nullptr_t>;
-using WorkspaceSymbolPartialResultType = QList<SymbolInformation>;
-using WorkspaceSymbolResponseType =
-        LSPPartialResponse<WorkspaceSymbolResultType, WorkspaceSymbolPartialResultType>;
+using ExecuteCommandResponseType = LSPResponse<std::variant<QJsonValue, std::nullptr_t>>;
+
+// C++ types for the LSP method "workspace/foldingRange/refresh"
+constexpr auto WorkspaceFoldingRangeRefreshMethod = QLatin1String("workspace/foldingRange/refresh");
+using WorkspaceFoldingRangeRefreshParamsType = std::nullptr_t;
+using WorkspaceFoldingRangeRefreshResultType = std::nullptr_t;
+using WorkspaceFoldingRangeRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/inlayHint/refresh"
+constexpr auto WorkspaceInlayHintRefreshMethod = QLatin1String("workspace/inlayHint/refresh");
+using WorkspaceInlayHintRefreshParamsType = std::nullptr_t;
+using WorkspaceInlayHintRefreshResultType = std::nullptr_t;
+using WorkspaceInlayHintRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/inlineValue/refresh"
+constexpr auto WorkspaceInlineValueRefreshMethod = QLatin1String("workspace/inlineValue/refresh");
+using WorkspaceInlineValueRefreshParamsType = std::nullptr_t;
+using WorkspaceInlineValueRefreshResultType = std::nullptr_t;
+using WorkspaceInlineValueRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/semanticTokens/refresh"
+constexpr auto WorkspaceSemanticTokensRefreshMethod =
+        QLatin1String("workspace/semanticTokens/refresh");
+using WorkspaceSemanticTokensRefreshParamsType = std::nullptr_t;
+using WorkspaceSemanticTokensRefreshResultType = std::nullptr_t;
+using WorkspaceSemanticTokensRefreshResponseType = LSPResponse<std::nullptr_t>;
+
+// C++ types for the LSP method "workspace/symbol"
+constexpr auto WorkspaceSymbolMethod = QLatin1String("workspace/symbol");
+using WorkspaceSymbolParamsType = WorkspaceSymbolParams;
+using WorkspaceSymbolResultType =
+        std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>, std::nullptr_t>;
+using WorkspaceSymbolPartialResultType =
+        std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>;
+using WorkspaceSymbolResponseType = LSPPartialResponse<
+        std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>, std::nullptr_t>,
+        std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>;
+
+// C++ types for the LSP method "workspace/willCreateFiles"
+constexpr auto CreateFilesMethod = QLatin1String("workspace/willCreateFiles");
+using CreateFilesParamsType = CreateFilesParams;
 using CreateFilesResultType = std::variant<WorkspaceEdit, std::nullptr_t>;
-using CreateFilesResponseType = LSPResponse<CreateFilesResultType>;
+using CreateFilesResponseType = LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>>;
+
+// C++ types for the LSP method "workspace/willDeleteFiles"
+constexpr auto DeleteFilesMethod = QLatin1String("workspace/willDeleteFiles");
+using DeleteFilesParamsType = DeleteFilesParams;
 using DeleteFilesResultType = std::variant<WorkspaceEdit, std::nullptr_t>;
-using DeleteFilesResponseType = LSPResponse<DeleteFilesResultType>;
+using DeleteFilesResponseType = LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>>;
+
+// C++ types for the LSP method "workspace/willRenameFiles"
+constexpr auto RenameFilesMethod = QLatin1String("workspace/willRenameFiles");
+using RenameFilesParamsType = RenameFilesParams;
 using RenameFilesResultType = std::variant<WorkspaceEdit, std::nullptr_t>;
-using RenameFilesResponseType = LSPResponse<RenameFilesResultType>;
+using RenameFilesResponseType = LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>>;
+
+// C++ types for the LSP method "workspace/workspaceFolders"
+constexpr auto WorkspaceWorkspaceFoldersMethod = QLatin1String("workspace/workspaceFolders");
+using WorkspaceWorkspaceFoldersParamsType = std::nullptr_t;
 using WorkspaceWorkspaceFoldersResultType = std::variant<QList<WorkspaceFolder>, std::nullptr_t>;
-using WorkspaceWorkspaceFoldersResponseType = LSPResponse<WorkspaceWorkspaceFoldersResultType>;
+using WorkspaceWorkspaceFoldersResponseType =
+        LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>>;
+
+// C++ types for the LSP method "workspaceSymbol/resolve"
+constexpr auto WorkspaceSymbolResolveMethod = QLatin1String("workspaceSymbol/resolve");
+using WorkspaceSymbolResolveParamsType = WorkspaceSymbol;
+using WorkspaceSymbolResolveResultType = WorkspaceSymbol;
+using WorkspaceSymbolResolveResponseType = LSPResponse<WorkspaceSymbol>;
+
+} // namespace Requests
+// for compatibility reasons:
+namespace Responses {
+using namespace Requests;
 }
 
 namespace Notifications {
+// C++ types for the LSP method "$/cancelRequest"
 constexpr auto CancelMethod = "$/cancelRequest";
 using CancelParamsType = CancelParams;
-constexpr auto ExitMethod = "exit";
-using ExitParamsType = std::nullptr_t;
-constexpr auto InitializedMethod = "initialized";
-using InitializedParamsType = InitializedParams;
+
+// C++ types for the LSP method "$/logTrace"
 constexpr auto LogTraceMethod = "$/logTrace";
 using LogTraceParamsType = LogTraceParams;
+
+// C++ types for the LSP method "$/progress"
 constexpr auto ProgressMethod = "$/progress";
 using ProgressParamsType = ProgressParams;
+
+// C++ types for the LSP method "$/setTrace"
 constexpr auto SetTraceMethod = "$/setTrace";
 using SetTraceParamsType = SetTraceParams;
+
+// C++ types for the LSP method "exit"
+constexpr auto ExitMethod = "exit";
+using ExitParamsType = std::nullptr_t;
+
+// C++ types for the LSP method "initialized"
+constexpr auto InitializedMethod = "initialized";
+using InitializedParamsType = InitializedParams;
+
+// C++ types for the LSP method "notebookDocument/didChange"
+constexpr auto DidChangeNotebookDocumentMethod = "notebookDocument/didChange";
+using DidChangeNotebookDocumentParamsType = DidChangeNotebookDocumentParams;
+
+// C++ types for the LSP method "notebookDocument/didClose"
+constexpr auto DidCloseNotebookDocumentMethod = "notebookDocument/didClose";
+using DidCloseNotebookDocumentParamsType = DidCloseNotebookDocumentParams;
+
+// C++ types for the LSP method "notebookDocument/didOpen"
+constexpr auto DidOpenNotebookDocumentMethod = "notebookDocument/didOpen";
+using DidOpenNotebookDocumentParamsType = DidOpenNotebookDocumentParams;
+
+// C++ types for the LSP method "notebookDocument/didSave"
+constexpr auto DidSaveNotebookDocumentMethod = "notebookDocument/didSave";
+using DidSaveNotebookDocumentParamsType = DidSaveNotebookDocumentParams;
+
+// C++ types for the LSP method "telemetry/event"
 constexpr auto TelemetryEventMethod = "telemetry/event";
-using TelemetryEventParamsType = QJsonObject;
+using TelemetryEventParamsType = QJsonValue;
+
+// C++ types for the LSP method "textDocument/didChange"
 constexpr auto DidChangeTextDocumentMethod = "textDocument/didChange";
 using DidChangeTextDocumentParamsType = DidChangeTextDocumentParams;
+
+// C++ types for the LSP method "textDocument/didClose"
 constexpr auto DidCloseTextDocumentMethod = "textDocument/didClose";
 using DidCloseTextDocumentParamsType = DidCloseTextDocumentParams;
+
+// C++ types for the LSP method "textDocument/didOpen"
 constexpr auto DidOpenTextDocumentMethod = "textDocument/didOpen";
 using DidOpenTextDocumentParamsType = DidOpenTextDocumentParams;
+
+// C++ types for the LSP method "textDocument/didSave"
 constexpr auto DidSaveTextDocumentMethod = "textDocument/didSave";
 using DidSaveTextDocumentParamsType = DidSaveTextDocumentParams;
+
+// C++ types for the LSP method "textDocument/publishDiagnostics"
 constexpr auto PublishDiagnosticsMethod = "textDocument/publishDiagnostics";
 using PublishDiagnosticsParamsType = PublishDiagnosticsParams;
+
+// C++ types for the LSP method "textDocument/willSave"
 constexpr auto WillSaveTextDocumentMethod = "textDocument/willSave";
 using WillSaveTextDocumentParamsType = WillSaveTextDocumentParams;
+
+// C++ types for the LSP method "window/logMessage"
 constexpr auto LogMessageMethod = "window/logMessage";
 using LogMessageParamsType = LogMessageParams;
+
+// C++ types for the LSP method "window/showMessage"
 constexpr auto ShowMessageMethod = "window/showMessage";
 using ShowMessageParamsType = ShowMessageParams;
+
+// C++ types for the LSP method "window/workDoneProgress/cancel"
 constexpr auto WorkDoneProgressCancelMethod = "window/workDoneProgress/cancel";
 using WorkDoneProgressCancelParamsType = WorkDoneProgressCancelParams;
+
+// C++ types for the LSP method "workspace/didChangeConfiguration"
 constexpr auto DidChangeConfigurationMethod = "workspace/didChangeConfiguration";
 using DidChangeConfigurationParamsType = DidChangeConfigurationParams;
+
+// C++ types for the LSP method "workspace/didChangeWatchedFiles"
 constexpr auto DidChangeWatchedFilesMethod = "workspace/didChangeWatchedFiles";
 using DidChangeWatchedFilesParamsType = DidChangeWatchedFilesParams;
+
+// C++ types for the LSP method "workspace/didChangeWorkspaceFolders"
 constexpr auto DidChangeWorkspaceFoldersMethod = "workspace/didChangeWorkspaceFolders";
 using DidChangeWorkspaceFoldersParamsType = DidChangeWorkspaceFoldersParams;
+
+// C++ types for the LSP method "workspace/didCreateFiles"
 constexpr auto CreateFilesMethod = "workspace/didCreateFiles";
 using CreateFilesParamsType = CreateFilesParams;
+
+// C++ types for the LSP method "workspace/didDeleteFiles"
 constexpr auto DeleteFilesMethod = "workspace/didDeleteFiles";
 using DeleteFilesParamsType = DeleteFilesParams;
+
+// C++ types for the LSP method "workspace/didRenameFiles"
 constexpr auto RenameFilesMethod = "workspace/didRenameFiles";
 using RenameFilesParamsType = RenameFilesParams;
-}
 
+} // namespace Notifications
+
+// Variant over all possible request parameters, required by the generic handlers.
+// This variant is used like a generic argument type that can be constructed from
+// any argument type... except when it contains duplicate, in that case the
+// constructors are deleted. Therefore ensure that each variant type only occurs
+// once in the variant.
 using RequestParams = std::variant<
-        CallHierarchyIncomingCallsParams, CallHierarchyOutgoingCallsParams, RegistrationParams,
-        UnregistrationParams, CodeAction, std::nullptr_t, CodeLens, CompletionItem, DocumentLink,
-        InitializeParams, CodeActionParams, CodeLensParams, ColorPresentationParams,
-        CompletionParams, DeclarationParams, DefinitionParams, DocumentColorParams,
-        DocumentHighlightParams, DocumentLinkParams, DocumentSymbolParams, FoldingRangeParams,
-        DocumentFormattingParams, HoverParams, ImplementationParams, LinkedEditingRangeParams,
-        MonikerParams, DocumentOnTypeFormattingParams, CallHierarchyPrepareParams,
-        PrepareRenameParams, DocumentRangeFormattingParams, ReferenceParams, RenameParams,
-        SelectionRangeParams, SemanticTokensParams, SemanticTokensDeltaParams,
-        SemanticTokensRangeParams, SignatureHelpParams, TypeDefinitionParams,
-        WillSaveTextDocumentParams, ShowDocumentParams, ShowMessageRequestParams,
-        WorkDoneProgressCreateParams, ApplyWorkspaceEditParams, ConfigurationParams,
-        ExecuteCommandParams, WorkspaceSymbolParams, CreateFilesParams, DeleteFilesParams,
-        RenameFilesParams, QJsonValue>;
-using NotificationParams =
-        std::variant<CancelParams, std::nullptr_t, InitializedParams, LogTraceParams,
-                     ProgressParams, SetTraceParams, QJsonObject, DidChangeTextDocumentParams,
-                     DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-                     DidSaveTextDocumentParams, PublishDiagnosticsParams,
-                     WillSaveTextDocumentParams, LogMessageParams, ShowMessageParams,
-                     WorkDoneProgressCancelParams, DidChangeConfigurationParams,
-                     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
-                     CreateFilesParams, DeleteFilesParams, RenameFilesParams, QJsonValue>;
+        ApplyWorkspaceEditParams, CallHierarchyIncomingCallsParams,
+        CallHierarchyOutgoingCallsParams, CallHierarchyPrepareParams, CodeAction, CodeActionParams,
+        CodeLens, CodeLensParams, ColorPresentationParams, CompletionItem, CompletionParams,
+        ConfigurationParams, CreateFilesParams, DeclarationParams, DefinitionParams,
+        DeleteFilesParams, DocumentColorParams, DocumentDiagnosticParams, DocumentFormattingParams,
+        DocumentHighlightParams, DocumentLink, DocumentLinkParams, DocumentOnTypeFormattingParams,
+        DocumentRangeFormattingParams, DocumentRangesFormattingParams, DocumentSymbolParams,
+        ExecuteCommandParams, FoldingRangeParams, HoverParams, ImplementationParams,
+        InitializeParams, InlayHint, InlayHintParams, InlineCompletionParams, InlineValueParams,
+        LinkedEditingRangeParams, MonikerParams, PrepareRenameParams, ReferenceParams,
+        RegistrationParams, RenameFilesParams, RenameParams, SelectionRangeParams,
+        SemanticTokensDeltaParams, SemanticTokensParams, SemanticTokensRangeParams,
+        ShowDocumentParams, ShowMessageRequestParams, SignatureHelpParams, TypeDefinitionParams,
+        TypeHierarchyPrepareParams, TypeHierarchySubtypesParams, TypeHierarchySupertypesParams,
+        UnregistrationParams, WillSaveTextDocumentParams, WorkDoneProgressCreateParams,
+        WorkspaceDiagnosticParams, WorkspaceSymbol, WorkspaceSymbolParams, std::nullptr_t,
+        QJsonValue>;
+
+// Variant over all possible notification parameters, required by the generic handlers.
+// This can't contain duplicates, see comment on RequestParams.
+using NotificationParams = std::variant<
+        CancelParams, CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams,
+        DidChangeNotebookDocumentParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseNotebookDocumentParams, DidCloseTextDocumentParams,
+        DidOpenNotebookDocumentParams, DidOpenTextDocumentParams, DidSaveNotebookDocumentParams,
+        DidSaveTextDocumentParams, InitializedParams, LogMessageParams, LogTraceParams,
+        ProgressParams, PublishDiagnosticsParams, QJsonValue, RenameFilesParams, SetTraceParams,
+        ShowMessageParams, WillSaveTextDocumentParams, WorkDoneProgressCancelParams,
+        std::nullptr_t>;
 
 } // namespace QLspSpecification
 

@@ -58,17 +58,6 @@ src/languageserver/qlspnotifysignals_p.h An object that emits signals
   for the same notification, by simply connecting the signal multiple
   times.
 
-The script also generates the following files that are not checked in:
-- protocol.json: the structured information on Capabilites, methods,
-  types of requests and notifications
-- protocolRaw.json: the raw version of protocol.json that is extracted
-  from the markdown specification, useful for debugging (extraction
-  from the text is done with regexps, and it doesn't folloe any
-  formally checked grammar, but uses structured text)
-- specification.ts: the typescript definition of the various
-  types (but without information on how they are used in the protocol),
-  used to generate qlanguageserverspectypes_p.h
-
 The goal is to keep the generated part simple, that is the reason when
 possible setup/tweaks are done in other non generated files:
 src/languageserver/qlanguageserverprespectypes_p.h:
@@ -89,15 +78,32 @@ function stringLiteral(text: string)
     return "QLatin1String(\"" + text + "\")";
 }
 
-var builtinTypes = {
+const builtinTypes: { [key: string]: string } = {
     "string" : "QByteArray",
     "number" : "int",
+    "decimal" : "int", // TODO: should be double!
+    "integer" : "int", // technically is qint32
+    // uinteger is technically a qint32 that is in [0, 2^31-1]. Note that it can't hold numbers up to 2^32-1 like a quint32.
+    "uinteger" : "int",
     "boolean" : "bool",
     "any" : "QJsonValue",
     "unknown" : "QJsonValue",
+    "uri" : "QByteArray",
+    "DocumentUri" : "QByteArray",
+    "URI" : "QByteArray",
     "Array" : "QList",
     "null" : "std::nullptr_t",
     "object" : "QJsonObject",
+  // Use QJson(Value|Object|Array) to represent LSP(Any|Object|Array). It
+  // turned out that implementing our own versions of them comes with lots
+  // of challenges: qt container types do not support the recursive
+  // inheritance, which leads to weird compile errors like QTBUG-146007 or
+  // QTBUG-146563. Also, to make a custom LSPAny class usable you have to
+  // implement methods to get the underlying type (string, int, ...), which
+  // is exactly what QJsonValue offers.
+    "LSPAny" : "QJsonValue",
+    "LSPObject" : "QJsonObject",
+    "LSPArray" : "QJsonArray",
     "[number, number]" : "std::pair<int,int>",
     // For enumerations in typescript single numbers can be types,
     // namely a type containing exactly that number.
@@ -110,73 +116,56 @@ var builtinTypes = {
     "4" : "int"
 };
 
-var specialStructs = {
+const specialStructs = {
     "Message" : null, // non templatized top level
     "RequestMessage" : null, // non templatized top level
     "ResponseMessage" : null, // non templatized top level
     "NotificationMessage" : null, // non templatized top level
-    "TextDocumentContentChangeEvent" : null, // anonymous objects
-    "SelectionRange" : null // recursive reference
+    "SelectionRange" : null, // recursive reference
 };
-const patchedStructMembers = new Map<string, Map<string, string>>([
+
+const specialAliases = {
+    "MarkedString" : null, // already defined by hand
+    "LSPAny" : null, // recursive reference
+    "LSPObject" : null, // recursive reference
+    "LSPArray" : null, // recursive reference
+}
+
+const specialEnums = {
+    "ErrorCodes" : null
+}
+
+interface PatchedStructMembers {
+    memberCodeByName: Map<string, string>, dependencies: string[],
+}
+
+const patchedStructMembers = new Map<string, PatchedStructMembers>([
+    [
+        "ProgressParams", {
+            "memberCodeByName" : new Map<string, string>([ [
+                "value",
+                "\n    std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> %1 = {};"
+            ] ]),
+            "dependencies" :
+                    [ "WorkDoneProgressBegin", "WorkDoneProgressReport", "WorkDoneProgressEnd" ]
+        }
+    ],
     // documentChanges has a weird type, so simplify it
     [
-        "WorkspaceEdit",
-        new Map<string, string>([ [
-            "documentChanges",
-            `using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
+        "WorkspaceEdit", {
+            "memberCodeByName" : new Map<string, string>([ [
+                "documentChanges",
+                `using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
     std::optional<QList<DocumentChange>> %1 = {};`
-        ] ]),
-    ],
-    [
-        // hardcode the kind to begin
-        "WorkDoneProgressBegin",
-        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"begin\";" ] ]),
-    ],
-    [
-        // hardcode the kind to report
-        "WorkDoneProgressReport",
-        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"report\";" ] ]),
-    ],
-    [
-        // hardcode the kind to end
-        "WorkDoneProgressEnd",
-        new Map<string, string>([ [ "kind", "static constexpr QByteArrayView %1 = \"end\";" ] ]),
-    ],
-    [
-        // The only type in the LSP specification that has a template member. Ignore the "generic"
-        // case for now and use a variant of all possible progress values found in the LSP
-        // specification.
-        "ProgressParams",
-        new Map<string, string>([ [
-            "value",
-            "std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> %1 = {};"
-        ] ]),
+            ] ]),
+            "dependencies" : [ "TextDocumentEdit", "CreateFile", "RenameFile", "DeleteFile" ]
+        }
     ],
 ]);
 
-var specialEnums = { "ErrorCodes" : null, "InitializeError" : "InitializeErrorCode" }
-
-const missingDependencies = new Map<string, string>([
-    [ "DocumentFilter", "DocumentSelector" ], // created by hand in postStruct
-]);
-
-var postStruct = {
+var postStruct: { [key: string]: string } = {
     "DocumentFilter" : "using DocumentSelector = QList<DocumentFilter>;\n\n",
-    "Range" : `class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEvent
-{
-public:
-    std::optional<Range> range = {};
-    std::optional<int> rangeLength = {};
-    QByteArray text = {};
-
-    template <typename W> void walk(W &w) {
-        field(w, "range", range);
-        field(w, "rangeLength", rangeLength);
-        field(w, "text", text);
-    }
-};
-
+    "Range" : `
 class Q_LANGUAGESERVER_EXPORT SelectionRange
 {
 public:
@@ -233,196 +222,61 @@ public:
 `
 };
 
-function stringCompare(a: string, b: string): number
-{
-    if (a == b)
-        return 0;
-    return a < b ? -1 : 1;
-}
-
-let enums: Enum[] = [];
-let enumNames = {};
-let structs: Struct[] = [];
-
-interface Member {
-    name: string, type: string|Struct, isOptional: boolean
-}
-
-interface Value {
-    name: string, value: string
-}
-
-interface Struct {
-    name: string, extends: string, members: Member[], hasExtraMembers: boolean
-}
-
-interface Enum {
-    name: string, members: Value[], type: string
-}
-
 function upperCase(type: string): string
 {
     return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 
-function baseType(type: string)
+function generateEnum(e: metaModel.Enumeration): string
 {
-    if (type.indexOf("\"") != -1 || type.indexOf(" | ") != -1) {
-        return "any";
-    } else if (type.indexOf("[]") != -1) {
-        return "Array";
-    } else {
-        var angle = type.indexOf("<");
-        return (angle != -1) ? type.substr(0, angle) : type;
-    }
-}
-
-function templateParam(type: string)
-{
-    if (type.indexOf("\"") != -1 || type.indexOf(" | ") != -1) {
+    if (e.name in specialEnums)
         return "";
-    } else if (type.indexOf("[]") != -1) {
-        return "<" + effectiveType(type.substr(0, type.length - 2)) + ">";
-    } else {
-        var angle = type.indexOf("<");
-        return (angle != -1)
-                ? "<" + effectiveType(type.substring(angle + 1, type.indexOf(">"))) + ">"
-                : "";
-    }
-}
 
-function uniq(a)
-{
-    var seen = {};
-    return a.filter(function(
-            item) { return seen.hasOwnProperty(item) ? false : (seen[item] = true); });
-}
-
-function effectiveType(type: string)
-{
-    // with strict mode all optional types get a | undefined appended to them, get rid of it
-    // as we handle them as std::optional not as variant that can be undefined.
-    let undefinedRemoveRe: RegExp = / \| undefined\b/g;
-    while (true) {
-        let newT = type.replace(undefinedRemoveRe, "");
-        if (newT == type)
-            break;
-        type = newT;
-    }
-    // arrays -> QList
-    let arrayRegexp: RegExp = /(?:\((.+)\)|([A-Za-z0-9]+|"[^"]+"))\[\]/;
-    while (true) {
-        var newT = type.replace(arrayRegexp, function(m) {
-            let match = m.match(arrayRegexp);
-            if (match && match[1])
-                return "QList<" + effectiveType(match[1]) + ">";
-            else if (match && match[2])
-                return "QList<" + effectiveType(match[2]) + ">";
-            else {
-                console.log("error with array type:" + type);
-                return "QJsonValue";
-            }
-        });
-        if (newT == type)
-            break;
-        type = newT
-    }
-    if (type.startsWith('"') && type.endsWith('"')) {
-        return "QByteArray";
-    } else if (type.indexOf("\"") != -1) {
-        console.log("type:" + type);
-        return "QJsonValue";
-    } else if (type[0] == '{' && type[type.length - 1] == '}') {
-        return "QJsonObject";
-    } else if (type.indexOf(" | ") != -1) {
-        return "std::variant<" + uniq(type.split(" | ").map(effectiveType)).join(", ") + ">";
-    } else if (builtinTypes[type]) {
-        return builtinTypes[type];
-    }
-    return type;
-}
-
-function isNullableVariant(typeStr: String)
-{
-    // variants containing either a or b are represented as a | b
-    // we look at the variants containing null as possible option
-    let nestedParentheses = 0;
-    let currentTypeStart = 0;
-    for (let i = 0; i < typeStr.length; ++i) {
-        let c = typeStr[i];
-        if (c == "(" || c == "[")
-            nestedParentheses += 1;
-        else if (c == ")" || c == "]")
-            nestedParentheses -= 1;
-        else if (c == "|" && nestedParentheses == 0) {
-            if (typeStr.slice(currentTypeStart, i).trim() == "null")
-                return true;
-            currentTypeStart = i + 1;
-        }
-    }
-    return typeStr.slice(currentTypeStart, typeStr.length).trim() == "null";
-}
-
-function generateEnum(e: Enum)
-{
     let output: string = "enum class " + e.name + "\n{\n";
-    output += e.members
-                      .map(function(member) {
-                          let value = e.type === "number" ? (" = " + (+member.value)) : "";
-                          return "    " + member.name + value;
+    output += e.values.map(function(entry: metaModel.EnumerationEntry) {
+                          let value =
+                                  (typeof entry.value == "number") ? (" = " + (+entry.value)) : "";
+                          return "    " + upperCase(entry.name) + value;
                       })
                       .join(",\n");
     return output + "\n};\nQ_ENUM_NS(" + e.name + ")\n\n";
 }
 
-function generateStringAccessors(e: Enum)
+function generateStringAccessors(e: metaModel.Enumeration): string
 {
     let output: string = "";
-    let nameValIdentical: boolean = true;
-    let nameValSimilar: boolean = true;
-    e.members.forEach(function(m) {
-        if (m.name !== m.value) {
-            nameValIdentical = false;
-            if (m.name.toUpperCase() !== m.value.toUpperCase())
-                nameValSimilar = false;
-        }
-    });
-    if (!nameValIdentical) {
-        output = "template<>\n";
-        output += "inline QString enumToString<QLspSpecification::" + e.name
-                + ">(QLspSpecification::" + e.name + " value)\n";
-        output += "{\n";
-        output += "    switch (value) {\n"
-        output += e.members
-                          .map(function(member) {
-                              return "    case QLspSpecification::" + e.name + "::" + member.name
-                                      + ": return " + stringLiteral(member.value) + ";\n";
-                          })
-                          .join("");
-        output += "    default: return QString::number(int(value));\n";
-        output += "    }\n"
-        output += "}\n\n";
-    }
-    if (!nameValSimilar) {
-        output += "template<>\n";
-        output += "inline QLspSpecification::" + e.name
-                + " enumFromString<QLspSpecification::" + e.name + ">(const QString &string)\n";
-        output += "{\n";
-        output += e.members
-                          .map(function(member) {
-                              return "    if (string.compare(" + stringLiteral(member.value)
-                                      + ", Qt::CaseInsensitive) == 0)\n" +
-                                      "        return QLspSpecification::" + e.name
-                                      + "::" + member.name + ";\n";
-                          })
-                          .join("    else ");
-        output += "    return QLspSpecification::" + e.name + "{};\n";
-        output += "}\n\n";
-    }
+    const enumName = namify(e.name);
+    output = "template<>\n";
+    output += "inline QString enumToString<QLspSpecification::" + enumName
+            + ">(QLspSpecification::" + enumName + " value)\n";
+    output += "{\n";
+    output += "    switch (value) {\n"
+    output += e.values.map(function(member: metaModel.EnumerationEntry) {
+                          return "    case QLspSpecification::" + enumName
+                                  + "::" + namify(member.name) + ": return "
+                                  + stringLiteral(<string>member.value) + ";\n";
+                      })
+                      .join("");
+    output += "    default: return QString::number(int(value));\n";
+    output += "    }\n"
+    output += "}\n\n";
+    output += "template<>\n";
+    output += "inline QLspSpecification::" + enumName
+            + " enumFromString<QLspSpecification::" + enumName + ">(const QString &string)\n";
+    output += "{\n";
+    output += e.values.map(function(member: metaModel.EnumerationEntry) {
+                          return "    if (string.compare(" + stringLiteral(<string>member.value)
+                                  + ", Qt::CaseInsensitive) == 0)\n" +
+                                  "        return QLspSpecification::" + enumName
+                                  + "::" + namify(member.name) + ";\n";
+                      })
+                      .join("    else ");
+    output += "    return QLspSpecification::" + enumName + "{};\n";
+    output += "}\n\n";
     return output;
 }
 
-function generateNumberAccessors(e: Enum)
+function generateNumberAccessors(e: metaModel.Enumeration): string
 {
     let output: string = "";
     output += "template<>\n";
@@ -435,899 +289,444 @@ function generateNumberAccessors(e: Enum)
     return output;
 }
 
-function setterParam(type: string, name: string)
+let typeToCppCache: Map<metaModel.Type, string> = new Map();
+// Returns the C++ type name of a metamodel type. Use literalObjectName to create literal objects on demand if needed.
+// Transforms std::variant<T, null> into std::optional<T>.
+function typeToCppType(type: metaModel.Type,
+                       literalObjectName: ((s: metaModel.StructureLiteral) => string)|undefined):
+        string
 {
-    if (type == "bool" || type == "int")
-        return "(" + type + " " + name + ")";
-    else
-        return "(const " + type + " &" + name + ")";
+    const cachedResult = typeToCppCache.get(type);
+    if (cachedResult)
+        return cachedResult
+        const result = typeToCppTypeImpl(type, literalObjectName);
+    typeToCppCache.set(type, result);
+    return result;
 }
 
-function generateClass(struct: Struct, indent: string)
+// squash variant of object literals that only differ in their optional properties
+function squashType(types: metaModel.Type[]): metaModel.Type|undefined
 {
-    let output: string = indent + "class Q_LANGUAGESERVER_EXPORT " + struct.name;
-    if (struct.extends.length != 0)
-        output += " : public " + struct.extends;
-    output += "\n";
+    if (!types.every(x => x.kind == "literal"))
+        return;
+    const firstType = types[0];
+    const otherTypes = types.slice(1);
+    if (!otherTypes.every(x => x.value.properties.length == firstType.value.properties.length))
+        return;
 
-    var innerIndent = indent + "    ";
-    output += indent + "{\n" + indent + "public:\n";
+    if (!otherTypes.every(x => x.value.properties.every(
+                                  (p, i) => p.name == firstType.value.properties[i].name)))
+        return;
 
-    output += struct.members
-                      .map(function(member: Member) {
-                          if (patchedStructMembers.has(struct.name)
-                              && patchedStructMembers.get(struct.name)?.has(member.name)) {
-                              const rType =
-                                      patchedStructMembers.get(struct.name)?.get(member.name)!;
-                              return innerIndent + rType.replace(/%1/, member.name) + "\n";
-                          }
+    let optionalProperties = new Set<String>();
+    const collectOptionalProperties = (p: metaModel.Property) => {
+        if (p.optional)
+            optionalProperties.add(p.name);
+    };
+    types.forEach(t => t.value.properties.forEach(collectOptionalProperties));
 
-                          var members = "";
-                          var type = "";
-                          let defaultValue = "{}";
-                          if ((<Struct>member.type).members) {
-                              members += "\n";
-                              members += generateClass(<Struct>member.type, innerIndent);
-                              type = (<Struct>member.type).name;
-                          } else {
-                              let t = <string>member.type;
-                              type = effectiveType(t);
-                              if (isNullableVariant(t))
-                                  defaultValue = "nullptr";
-                          }
-                          let upperCaseName: string = upperCase(member.name);
-                          var rType: string = type;
-                          if (member.isOptional)
-                              rType = "std::optional<" + type + ">";
-                          members += innerIndent + rType + " " + member.name + " = " + defaultValue
-                                  + ";\n";
-                          return members;
-                      })
-                      .join("");
-    if (struct.hasExtraMembers) {
-        output += innerIndent + "QJsonObject extraFields;\n"
+    firstType.value.properties.forEach(p => {
+        if (optionalProperties.has(p.name))
+            p.optional = true;
+    });
+    return firstType;
+}
+
+function typeToCppTypeImpl(
+        type: metaModel.Type,
+        literalObjectName: ((s: metaModel.StructureLiteral) => string)|undefined): string
+{
+    if (!type)
+        return "std::nullptr_t";
+    switch (type.kind) {
+    case "base":
+        if (type.name in builtinTypes)
+            return builtinTypes[type.name];
+    case "reference":
+        const name = (<metaModel.ReferenceType>type).name;
+        if (name in builtinTypes)
+            return builtinTypes[type.name];
+        return name
+    case "array":
+        return `QList<${typeToCppType((<metaModel.ArrayType>type).element, literalObjectName)}>`;
+    case "map":
+        return `QMap<${typeToCppType((<metaModel.MapType>type).key, literalObjectName)}, ${
+                typeToCppType((<metaModel.MapType>type).value, literalObjectName)}>`;
+    case "and":
+        throw new Error(
+                "and types are not supported in the current LSP specification, if you see this error it means the specification has changed and the code needs to be updated");
+    case "or":
+        const orType = <metaModel.OrType>type;
+
+        // squash variant of object literals that only differ in their optional properties
+        const squashed = squashType(orType.items)
+        if (squashed)
+        return typeToCppTypeImpl(squashed, literalObjectName);
+
+        return `std::variant<${
+                (<metaModel.OrType>type)
+                        .items.map(x => typeToCppType(x, literalObjectName))
+                        .join(", ")}>`;
+    case "tuple":
+        return `std::tuple<${
+                (<metaModel.TupleType>type)
+                        .items.map(x => typeToCppType(x, literalObjectName))
+                        .join(", ")}>`;
+    case "literal":
+        if (literalObjectName)
+            return literalObjectName((<metaModel.StructureLiteralType>type).value)
+            return "QJsonObject";
+    case "stringLiteral":
+        return "QByteArray";
+    case "integerLiteral":
+        return "int";
+    case "booleanLiteral":
+        return "bool";
+    }
+}
+
+// collect dependencies and add them to result. All strings added to result are typenames that have to be defined
+// before type's C++ definition can be generated. Otherwise, the compiler will complain about unknown types that are
+// actually defined later in the generated .cpp file.
+function collectDependencies(type: metaModel.Type, result: string[]): void
+{
+    switch (type.kind) {
+    case "base":
+    case "stringLiteral":
+    case "integerLiteral":
+    case "booleanLiteral":
+        return;
+    case "reference":
+        const name = (<metaModel.ReferenceType>type).name;
+        if (name in builtinTypes)
+            return;
+        result.push((<metaModel.ReferenceType>type).name);
+        return;
+    case "array":
+        return collectDependencies((<metaModel.ArrayType>type).element, result);
+    case "map":
+        collectDependencies((<metaModel.MapType>type).key, result);
+        collectDependencies((<metaModel.MapType>type).value, result);
+        return;
+    case "and":
+        throw new Error(
+                "and types are not supported in the current LSP specification, if you see this error it means the specification has changed and the code needs to be updated");
+    case "or":
+    case "tuple":
+        const orType = <metaModel.OrType|metaModel.TupleType>type;
+        orType.items.forEach(x => collectDependencies(x, result));
+        return;
+    case "literal":
+        const literalType = <metaModel.StructureLiteralType>type;
+        type.value.properties.forEach(x => collectDependencies(x.type, result));
+        return;
+    }
+}
+
+// Generate the definition code in a struct so that the definitions can be sorted dependencies first.
+interface GeneratedClassOrAlias
+{
+    name: string, code: string, dependencies: string[]
+}
+;
+
+function generateProperty(property: metaModel.Property, patch: PatchedStructMembers|undefined,
+                          literalObjectName: ((s: metaModel.StructureLiteral) => string)|undefined):
+        string
+{
+    if (property.type.kind == "stringLiteral")
+        return `\n    static constexpr QByteArrayView kind = "${property.type.value}";`;
+
+    if (patch && patch.memberCodeByName.has(property.name)) {
+        const rType = patch!.memberCodeByName.get(property.name)!;
+        return "    " + rType.replace(/%1/, property.name) + "\n";
     }
 
-    output += "\n"
-    if (struct.extends.length != 0 || struct.members.length != 0)
-        output += innerIndent + "template <typename W> void walk(W &w) {\n"
-        else output += innerIndent + "template <typename W> void walk(W &) {\n"
-        if (struct.extends.length != 0)
-        struct.extends.split(", ").forEach(function(
-                parentName) { output += innerIndent + "    " + parentName + "::walk(w);\n"; })
-        if (struct.members.length != 0)
-        output += struct.members
-                          .map(function(member: Member) {
-                              return innerIndent
-                                      + `    field(w, "${member.name}", ${member.name});\n`;
-                          })
-                          .join("")
-        output += innerIndent + "}\n";
+    let type = typeToCppType(property.type, literalObjectName);
+    // some types like WorkspaceFoldersInitializeParams can be empty in multiple ways - only wrap type into optional
+    if (property.optional && !type.startsWith("std::optional<"))
+        type = `std::optional<${type}>`;
+    return `\n    ${type} ${property.name} = {};`
+}
 
-        if (struct.hasExtraMembers) {
-            output += innerIndent
-                    + "template <typename W> void walkExtra(W &w) { w.handleExtras(extraFields); }\n"
-        }
+function collectDependenciesForStruct(struct: metaModel.Structure): string[]
+{
+    let result: string[] = [];
+    if (struct.extends) {
+        struct.extends.forEach(baseType => collectDependencies(baseType, result));
+    }
+    if (struct.mixins) {
+        struct.mixins.forEach(baseType => collectDependencies(baseType, result));
+    }
+
+    // process properties
+    struct.properties.forEach(property => collectDependencies(property.type, result));
+    return result;
+}
+
+// generate the C++ code for a metamodel structure
+function generateClass(struct: metaModel.Structure, indent: string,
+                       seenStructures: Set<string> = new Set()): GeneratedClassOrAlias
+{
+    let result: GeneratedClassOrAlias = {
+        name : struct.name,
+        code : "",
+        dependencies : collectDependenciesForStruct(struct),
+    };
+
+    seenStructures.add(struct.name);
+    let output: string = indent + "class Q_LANGUAGESERVER_EXPORT " + struct.name;
+
+    // process base types
+    if (struct.extends) {
+        output += " : " + struct.extends
+                .map(baseType => "public " + (<metaModel.ReferenceType>baseType).name)
+                .join(", ");
+    }
+    if (struct.mixins) {
+        if (!struct.extends)
+            output += " : ";
+        else
+            output += ", ";
+        output +=
+                struct.mixins.map(baseType => "public " + (<metaModel.ReferenceType>baseType).name)
+                        .join(", ");
+    }
+
+    // process properties
+    output += "\n";
+    const innerIndent = indent + "    ";
+    output += indent + "{\n" + indent + "public:";
+
+    const patch = patchedStructMembers.get(struct.name);
+    if (patch)
+        result.dependencies.push(...patch!.dependencies);
+    output += struct.properties.map(property => generateProperty(property, patch, undefined))
+                      .join("");
+    output += "\n";
+    output += "\n";
+
+    // generate walk() method
+    const usesArgument = struct.properties.length != 0 || struct.mixins || struct.extends;
+    output += `${innerIndent}template <typename W> void walk(W &${usesArgument ? "w" : ""}) {`;
+    const methodIndent = innerIndent + "    ";
+    if (struct.extends)
+        output += struct.extends
+                .map(baseType => `\n${methodIndent}${typeToCppType(baseType, undefined)}::walk(w);`)
+                .join("");
+    if (struct.mixins)
+        output += struct.mixins
+                          .map(baseType => `\n${methodIndent}${
+                                       typeToCppType(baseType, undefined)}::walk(w);`)
+                          .join("");
+    struct.properties.forEach(function(member: metaModel.Property) {
+        output += "\n";
+        output += `${methodIndent}field(w, "${member.name}", ${member.name});`;
+    });
+    output += "\n";
+    output += innerIndent + "}\n";
     output += indent + "};\n\n";
+
     let post = postStruct[struct.name];
     if (post)
         output += post
-        return output;
+
+        result.code = output;
+    return result;
 }
 
-interface GeneratedTypes {
+interface GeneratedTypes
+{
     typeDeclarations: string, enumStringConversions: string
 }
 
-/** Generate code for all classes in a set of .ts files */
-function generate(fileNames: string[], options: ts.CompilerOptions): GeneratedTypes
+// creates a map from metamodel type name to index, such that all dependencies of a type have a smaller index than the type itself. Used
+// to make sure that all dependencies are generated before the type.
+function calculateOrderingOfGeneratedClassesAndAliases(classesAndAliases: GeneratedClassOrAlias[],
+                                                       enumByNames: { [key: string]: boolean }):
+        { [key: string]: number }
 {
-    let typeDeclarations: string = "";
-    let enumStringConversions: string = "";
+    let result: { [key: string]: number } = { };
+    const classesAndAliasesByName = Object.fromEntries(classesAndAliases.map(a => [a.name, a]));
 
-    // Build a program using the set of root file names in fileNames
-    let program = ts.createProgram(fileNames, options);
+    let breakCycles = new Set<string>();
+    let counter = 0;
+    const processDependency = function(classOrAlias: GeneratedClassOrAlias) {
+        if (classOrAlias.name in result)
+            return;
+        if (breakCycles.has(classOrAlias.name))
+            return;
+        breakCycles.add(classOrAlias.name);
+        classOrAlias.dependencies.forEach(function(dependency: string) {
+            if (dependency in enumByNames || dependency in specialEnums
+                || dependency in specialAliases || dependency in specialStructs) {
+                return;
+            }
+            processDependency(classesAndAliasesByName[dependency]);
+        });
+        const currentValue = ++counter;
+        result[classOrAlias.name] = currentValue;
+        return currentValue;
+    };
+    classesAndAliases.forEach(processDependency);
+    return result;
+}
 
-    // Get the checker, we will use it to find more about classes
-    let checker = program.getTypeChecker();
+interface GenerateObjectLiteralHelper
+{
+    literalBaseName: string, counter: number|null, alreadyGeneratedLiterals: GeneratedClassOrAlias[]
+}
 
-    let identifier: ts.Node|null = null;
+// generate C++ structs for anonymous literal object types found in aliases (usually literal | literal ...)
+// This generates the C++ defintion for PrepareRenameResultVariantN in:
+// using PrepareRenameResult =
+//         std::variant<Range,
+//             PrepareRenameResultVariant1,
+//             PrepareRenameResultVariant2>;
+// for example.
 
-    // Visit every sourceFile in the program
-    for (const sourceFile of program.getSourceFiles()) {
-        // Walk the tree to search for classes
-        if (fileNames.indexOf(sourceFile.fileName) != -1)
-            ts.forEachChild(sourceFile, visit);
+function generateObjectLiteral(helper: GenerateObjectLiteralHelper,
+                               literal: metaModel.StructureLiteral): string
+{
+    let literalName: string = helper.literalBaseName;
+    if (helper.counter != null)
+        literalName += ++helper.counter;
+
+    let result: GeneratedClassOrAlias = { name : literalName, code : "", dependencies : [] };
+    helper.alreadyGeneratedLiterals.push(result);
+
+    result.code = "class Q_LANGUAGESERVER_EXPORT " + literalName + "\n{\npublic:";
+    const innerIndent = "    ";
+
+    result.code += literal.properties
+                           .map(property => generateProperty(property, undefined,
+                                                             x => generateObjectLiteral(helper, x)))
+                           .join("");
+    result.code += "\n";
+    result.code += "\n";
+
+    // generate walk() method
+    result.code += `${innerIndent}template <typename W> void walk(W &w) {`;
+    const methodIndent = innerIndent + "    ";
+    if (literal.properties.length == 0) {
+        result.code += "\n";
+        result.code += `${methodIndent}Q_UNUSED(w);`;
+    } else {
+        literal.properties.forEach(function(member: metaModel.Property) {
+            result.code += "\n";
+            result.code += `${methodIndent}field(w, "${member.name}", ${member.name});`;
+        });
+    }
+    result.code += "\n";
+    result.code += innerIndent + "}\n";
+    result.code += "};\n\n";
+    collectDependencies({ kind : "literal", value : literal }, result.dependencies);
+    return literalName;
+}
+
+// generate C++ code for a metamodel type alias, appends it to result
+function generateAlias(alias: metaModel.TypeAlias, result: GeneratedClassOrAlias[])
+{
+    // generate normal structs for alias that are defined as literals
+    if (alias.type.kind == "literal") {
+        let helper: GenerateObjectLiteralHelper = {
+            literalBaseName : alias.name,
+            counter : null,
+            alreadyGeneratedLiterals : result,
+        };
+        typeToCppType(alias.type, x => generateObjectLiteral(helper, x));
+        return;
+    }
+    if (alias.type.kind == "or") {
+        const squashed = squashType(alias.type.items);
+        if (squashed) {
+            let helper: GenerateObjectLiteralHelper = {
+                literalBaseName : alias.name,
+                counter : null,
+                alreadyGeneratedLiterals : result,
+            };
+            typeToCppType(squashed, x => generateObjectLiteral(helper, x));
+            return;
+        }
     }
 
-    var generated = {};
-    var sortedStructs: Struct[] = [];
+    let helper: GenerateObjectLiteralHelper = {
+        literalBaseName : alias.name + "Variant",
+        counter : 0,
+        alreadyGeneratedLiterals : result,
+    };
+    let generatedAlias: GeneratedClassOrAlias = { name : alias.name, code : "", dependencies : [] };
+    generatedAlias.code = "using " + alias.name + " = "
+            + typeToCppType(alias.type, x => generateObjectLiteral(helper, x)) + ";\n";
+    collectDependencies(alias.type, generatedAlias.dependencies);
+    result.forEach(x => generatedAlias.dependencies.push(x.name));
+    result.push(generatedAlias);
+}
+function stringCompare(a: string, b: string): number
+{
+    if (a == b)
+        return 0;
+    return a < b ? -1 : 1;
+}
 
-    var doGenerateDeclarations = function(struct: Struct) {
+/** Generate code for all classes in a set of .ts files */
+function generate(protoData: metaModel.MetaModel): GeneratedTypes
+{
+    let typeDeclarations: GeneratedClassOrAlias[] = [];
+    let enumStringConversions: string = "";
+    var generated: { [key: string]: boolean } = { };
+
+    var doGenerateDeclarations = function(struct: metaModel.Structure) {
         if (generated[struct.name] !== undefined)
             return;
 
-        structs.forEach(function(other) {
-            if (struct === other || generated[other.name] !== undefined)
-                return;
-
-            // special case: ProgressParams has member of type T, which we changed to
-            // std::variant<WorkDoneProgress(Begin|Report|End)>. Make sure the types
-            // inside the variant exist before writing out ProgressParams.
-            if (struct.name == "ProgressParams"
-                && other.name.match(/WorkDoneProgress(Begin|Report|End)/g))
-                doGenerateDeclarations(other);
-
-            if (struct.extends.split(", ").includes(other.name)) {
-                doGenerateDeclarations(other);
-                return;
-            }
-
-            var contained = false;
-            let otherRe = new RegExp('\\b'
-                                     + (missingDependencies.has(other.name)
-                                                ? missingDependencies.get(other.name)
-                                                : other.name)
-                                     + '\\b');
-            var checkMember =
-                    function(member) {
-                if (member.type.members) {
-                    member.type.members.forEach(checkMember);
-                } else if (otherRe.test(member.type)) {
-                    contained = true;
-                }
-            }
-
-                    struct.members.forEach(checkMember);
-            if (contained)
-                doGenerateDeclarations(other);
-        });
-
-        typeDeclarations += generateClass(struct, "");
-
+        if (struct.name in specialStructs)
+            return;
+        typeDeclarations.push(generateClass(struct, ""));
         generated[struct.name] = true;
-        sortedStructs.push(struct);
+    };
+    var doGenerateAliases = function(alias: metaModel.TypeAlias) {
+        if (alias.name in generated)
+            return;
+        if (alias.name in specialAliases)
+            return;
+
+        generateAlias(alias, typeDeclarations);
+        generated[alias.name] = true;
     };
 
-    enums.sort((a, b) => stringCompare(a.name, b.name));
-    enums.forEach(function(e) { typeDeclarations += generateEnum(e); });
-    structs.sort((a, b) => stringCompare(a.name, b.name));
-    structs.forEach(doGenerateDeclarations);
+    protoData.typeAliases.forEach(doGenerateAliases);
+    protoData.structures.forEach(doGenerateDeclarations);
 
-    enums.forEach(function(e) {
-        if (e.type == "string")
+    protoData.enumerations.sort((a, b) => stringCompare(a.name, b.name));
+    protoData.enumerations.forEach(function(e: metaModel.Enumeration) {
+        if (e.name in specialEnums)
+            return;
+        if (e.type.name == "string")
             enumStringConversions += generateStringAccessors(e);
         else
             enumStringConversions += generateNumberAccessors(e);
     });
 
-    return { typeDeclarations : typeDeclarations, enumStringConversions : enumStringConversions };
+    const enumByNames = Object.fromEntries(protoData.enumerations.map(x => [x.name, true]));
+    typeDeclarations.sort((x, y) => stringCompare(x.name, y.name));
+    const ordering = calculateOrderingOfGeneratedClassesAndAliases(typeDeclarations, enumByNames);
+    typeDeclarations.sort((x, y) => ordering[x.name] - ordering[y.name]);
 
-    /** visit nodes finding exported classes */
-    function visit(node: ts.Node)
-    {
-        if (node.kind == ts.SyntaxKind.InterfaceDeclaration) {
-            // This is a top level class, get its symbol
-            var iface = serializeInterface((<ts.InterfaceDeclaration>node));
-            var special = specialStructs[iface.name];
-            if (special === undefined) {
-                structs.push(iface);
-            } else if (typeof (special) === "string") {
-                iface.name = special;
-                structs.push(iface);
-            }
-        } else if (node.kind == ts.SyntaxKind.ModuleDeclaration) {
-            // This is a namespace, visit its children
-            ts.forEachChild(node, visit);
-        } else if (node.kind == ts.SyntaxKind.Identifier) {
-            identifier = node;
-        } else if (node.kind == ts.SyntaxKind.ModuleBlock) {
-            let e = serializeNamespace((<ts.Identifier>identifier), (<ts.ModuleBlock>node));
-            identifier = null;
-            var special = specialEnums[e.name];
-            if (special === undefined && enumNames[e.name] === undefined) {
-                enumNames[e.name] = true
-                enums.push(e);
-            } else if (typeof (special) === "string") {
-                enumNames[e.name] = true
-                e.name = special;
-                enums.push(e);
-            }
-        } else if (node.kind == ts.SyntaxKind.EnumDeclaration) {
-            let e = serializeEnumDecl(<ts.EnumDeclaration>node);
-            enumNames[e.name] = true
-            enums.push(e);
-        }
-    }
+    let output = "";
+    protoData.enumerations.forEach(function(e) { output += generateEnum(e); });
 
-    function serializeSymbol(symbol: ts.Symbol, name: string, isOptional: boolean): Member
-    {
-        if (symbol.flags & ts.SymbolFlags.TypeLiteral) {
-            let struct: Struct = {
-                name: upperCase(name),
-                extends: globalBaseClass,
-                members: [],
-                hasExtraMembers: false
-            };
+    typeDeclarations.forEach(x => output += x.code);
 
-            symbol.members?.forEach(function(member) {
-                var signature = (<ts.PropertySignature>member.valueDeclaration);
-                struct.members.push(
-                        serializeSymbol(member, <string>member.escapedName,
-                                        (signature && signature.questionToken) ? true : false));
-            });
-
-            return {
-                name : name,
-                isOptional : isOptional,
-                type : (struct.members.length == 1 && <string>struct.members[0].name == "__index")
-                        ? "any"
-                        : struct
-            };
-        } else {
-            let d = symbol.declarations?.[0];
-            let t = checker.getTypeAtLocation(d!);
-            return serializeType(t!, name, isOptional);
-        }
-    }
-
-    function serializeType(type: ts.Type, name: string, isOptional: boolean): Member
-    {
-        if (type.symbol && (type.symbol.flags & ts.SymbolFlags.TypeLiteral)) {
-            return serializeSymbol(type.symbol, name, isOptional);
-        } else {
-            return { name : name, isOptional : isOptional, type : checker.typeToString(type) };
-        }
-    }
-
-    function serializeEnumDecl(enumDecl: ts.EnumDeclaration): Enum
-    {
-        let identifier = enumDecl.name;
-        var e: Enum = {
-            name : checker.symbolToString(checker.getSymbolAtLocation(identifier)!),
-            members : [],
-            type : "number"
-        };
-
-        enumDecl.members.forEach(function(m: ts.EnumMember) {
-            let nKind = m.name.kind;
-            if (nKind == ts.SyntaxKind.Identifier) {
-                let t = m.initializer!.getText();
-                let v: Value = {
-                    name : upperCase(checker.symbolToString(
-                            checker.getSymbolAtLocation(<ts.Identifier>m.name)!)),
-                    value : t.replace(/['"]/g, '')
-                };
-                if (t.includes("'") || t.includes('"') || +t + "" !== t)
-                    e.type = "string";
-                e.members.push(v);
-            } else if (ts.isLiteralExpression(m.name)) {
-                let t = (<ts.LiteralExpression>m.name).text;
-                let v: Value = {
-                    name : upperCase(t.replace(/['"]/g, '')),
-                    value : t.replace(/['"]/g, '')
-                };
-                e.type = "string";
-                e.members.push(v);
-            } else {
-                console.error("unsupported type " + nKind + " in EnumMember.name for enum "
-                              + e.name);
-            }
-        });
-        return e;
-    }
-
-    function serializeBaseTypes(name: ts.Identifier): string
-    {
-        let result = checker.getBaseTypes((<ts.InterfaceType>checker.getTypeAtLocation(name)))
-                             .map(function(type) { return checker.typeToString(type) })
-                             .join(", ");
-        return (result.length == 0) ? globalBaseClass : result;
-    }
-
-    function serializeInterface(iface: ts.InterfaceDeclaration): Struct
-    {
-        let mm: Member[] = []
-        let result = {
-            name: checker.symbolToString(checker.getSymbolAtLocation(iface.name)!),
-            members: mm,
-            extends: serializeBaseTypes(iface.name),
-            hasExtraMembers: false
-        };
-
-        iface.members.forEach(function(typeElement) {
-            if (typeElement.name) {
-                result.members.push(serializeType(
-                        checker.getTypeAtLocation(typeElement.name)!,
-                        checker.symbolToString(checker.getSymbolAtLocation(typeElement.name)!),
-                        typeElement.questionToken ? true : false)!);
-            } else {
-                result.hasExtraMembers = true;
-            }
-        });
-
-        return result;
-    }
-
-    function serializeVariableDeclaration(variable: ts.VariableDeclaration): Value
-    {
-        return {
-            name : upperCase(checker.symbolToString(checker.getSymbolAtLocation(variable.name)!)!),
-            value : variable.initializer?.getText()?.replace(/['"]/g, '')!
-        };
-    }
-
-    function serializeNamespace(identifier: ts.Identifier, block: ts.ModuleBlock): Enum
-    {
-        var e: Enum = {
-            name : checker.symbolToString(checker.getSymbolAtLocation(identifier)!),
-            members : [],
-            type : "number"
-        };
-
-        ts.forEachChild(block, function(node: ts.Node) {
-            if (node.kind == ts.SyntaxKind.VariableStatement) {
-                var statement = (<ts.VariableStatement>node);
-                statement.declarationList.declarations.forEach(function(declaration) {
-                    let member: Value = serializeVariableDeclaration(declaration);
-                    e.members.push(member);
-                    if (+member.value + "" !== member.value)
-                        e.type = "string";
-                });
-            } else {
-                console.error(`${e.name} ${node.kind}`);
-            }
-        });
-
-        return e;
-    }
+    return { typeDeclarations : output, enumStringConversions : enumStringConversions };
 }
 
-function textToDict(s: string)
-{
-    let typeRe = /`([^`]+)`/g;
-    let strRe = /'([^']+)'/g
-    let types: string[] = [];
-    let strings: string[] = [];
-    let tStr = s.replace(/` *where.*/, '`');
-    while (true) {
-        let uriRe = /\[ *(`[^`)]+`) *\]\([^)]+\)/;
-        let arrayRe = /`([A-Z][a-zA-Z0-9]+)`\[\]/;
-        let newStr = tStr.replace(uriRe, function(m) { return m.match(uriRe)![1]; })
-                             .replace(arrayRe,
-                                      function(m) { return "`" + m.match(arrayRe)![1] + "[]`"; })
-                             .replace(/` *\\*\| *`/, ' | ');
-        if (newStr == tStr)
-            break;
-        tStr = newStr;
-    }
-    for (const m of tStr.matchAll(typeRe))
-        types.push(m[1]);
-    for (const m of s.matchAll(strRe))
-        strings.push(m[1]);
-    return { text : s, strings : strings, types : types };
-}
+import * as metaModel from "./3rdparty/metaModel.js";
+// some types in metaModel.json were patched by hand, see 3rdparty/metaModel.json.patch
+const metaModelJson = ts.sys.readFile("./3rdparty/metaModel.json");
+const protoData = JSON.parse(metaModelJson!) as metaModel.MetaModel;
 
-var checkedTypeExtraction = {
-    "`TextDocumentSyncKind | TextDocumentSyncOptions`. The below definition of the `TextDocumentSyncOptions` only covers the properties specific to the open, change and close notifications. A complete definition covering all properties can be found [here](#textDocument_didClose):" :
-            "TextDocumentSyncKind | TextDocumentSyncOptions",
-    "`CompletionItem[]` \\| `CompletionList` \\| `null`. If a `CompletionItem[]` is provided it is interpreted to be complete. So it is the same as `{ isIncomplete: false, items }`" :
-            "CompletionItem[] | CompletionList | null",
-    "`CompletionItem[]` or `CompletionList` followed by `CompletionItem[]`. If the first provided result item is of type `CompletionList` subsequent partial results of `CompletionItem[]` add to the `items` property of the `CompletionList`." :
-            "CompletionList | CompletionItem[]",
-    "`DocumentSymbol[]` \\| `SymbolInformation[]`. `DocumentSymbol[]` and `SymbolInformation[]` can not be mixed. That means the first chunk defines the type of all the other chunks." :
-            "DocumentSymbol[] | SymbolInformation[]",
-    "`Range | { range: Range, placeholder: string } | { defaultBehavior: boolean } | null` describing a [`Range`](#range) of the string to rename and optionally a placeholder text of the string content to be renamed. If `{ defaultBehavior: boolean }` is returned (since 3.16) the rename position is valid and the client should use its default behavior to compute the rename range. If `null` is returned then it is deemed that a 'textDocument/rename' request is not valid at the given position." :
-            "Range | RangePlaceHolder | DefaultBehaviorStruct | null"
-};
-
-interface StructuredProtocol {
-    structuredSequence: string[]
-    structured: any
-}
-
-function extractProto(lines): StructuredProtocol
-{
-    var res = {};
-    var resSequence: string[] = [];
-    function insert(path: string[], value)
-    {
-        if (resSequence.length == 0 || resSequence[resSequence.length - 1] != path[0])
-            resSequence.push(path[0]);
-        let el = res;
-        for (const p of path.slice(0, path.length - 1)) {
-            if (!el[p])
-                el[p] = {};
-            el = el[p];
-        }
-        let last = path[path.length - 1];
-        if (el[last])
-            console.log(`WARNING: overwriting ${JSON.stringify(el[last])} with ${
-                    JSON.stringify(value)} at ${path}`)
-            el[last] = value
-    }
-    let sectionRe: RegExp = /^#+ .* name="([^"]*)"/;
-    let groupRe: RegExp =
-            /^(?: *|<[^<>]+>)*_([A-Za-z_0-9 ]+)(?:_ *:| *: *_)(?: *|<[^<>]+>)*(\w+.*)?$/;
-    var path: string[] = [];
-    var basePath: string[] = [];
-    let i = 0;
-    let ii = 0;
-    while (i < lines.length) {
-        let line = lines[i];
-        i += 1;
-        let mList = line.match(/^\* +(?:([^'`:]+):)? *(.*)$/);
-        if (mList) {
-            if (mList[1]) {
-                if (mList[2])
-                    insert(path.concat([ mList[1].trim() ]), textToDict(mList[2]));
-                else if (!/ *\* *error\.[a-z]*/.test(line))
-                    console.log(`WARNING: missing value for ${path}: ${line}`);
-            } else if (mList[2]) {
-                insert(path.concat([ `${ii}` ]), textToDict(mList[2]));
-                ii += 1;
-            }
-            continue
-        }
-        let m1 = line.match(sectionRe);
-        if (m1) {
-            basePath = [ m1[1] ];
-            path = basePath;
-            continue
-        }
-        let m2 = line.match(groupRe);
-        if (m2) {
-            path = basePath.concat([ m2[1] ]);
-            ii = 0;
-            if (m2[2]) {
-                insert(path, textToDict(m2[2]));
-            }
-            continue
-        }
-        let m3 = line.match(/^\*\* *(\w.*)\*\* *$/);
-        if (m3) {
-            basePath = [ basePath[0], m3[1].trim() ];
-            path = basePath
-            continue
-        }
-    }
-    return { structured : res, structuredSequence : resSequence };
-}
-
-function namify(str: string): string
-{
-    return str.split(/[$./ _]+/).map(upperCase).join("");
-}
-
-function stringFromDict(dict): string
-{
-    if (!dict)
-        return "";
-    if (dict["strings"] && dict["strings"].length > 0)
-        return dict["strings"][0];
-    else if (dict["types"] && dict["types"].length > 0)
-        return dict["types"][0];
-    else
-        return "";
-}
-
-function typeFromDict(dict): string
-{
-    if (!dict)
-        return "";
-    if (dict["types"] && dict["types"].length > 0) {
-        if (dict['types'].length != 1) {
-            let t = checkedTypeExtraction[dict['text']];
-            if (t)
-                return t;
-            console.log(`Suspicious type extraction \"${dict['text']}\": "${dict['types'][0]}"`);
-        }
-        return dict["types"][0];
-    } else if (dict["strings"] && dict["strings"].length > 0)
-        return dict["strings"][0];
-    else if (dict["text"].match(/ *(any *\[ *\]) *\.? */))
-        return "any[]";
-    else if (dict["text"].match(/ *(none|void|null) *\.? */))
-        return "null";
-    console.log(`cannot extract type from ${JSON.stringify(dict)}`);
-    return "";
-}
-
-interface ServerCapability {
-    propertyPath: string, propertyType: string
-}
-
-function getServerCapability(path, dict): ServerCapability
-{
-    let pPath: string = "";
-    if (dict["property path (optional)"])
-        pPath = stringFromDict(dict["property path (optional)"]);
-    else if (dict["property name (optional)"])
-        pPath = stringFromDict(dict["property name (optional)"]);
-    else
-        console.log(`no property name or path for ServerCapability at ${path}`);
-    let res: ServerCapability = {
-        propertyPath : pPath,
-        propertyType : typeFromDict(dict["property type"])
-    };
-    if (!res.propertyPath)
-        console.log(`ServerCapability missing 'property path (optional)' in ${
-                JSON.stringify(dict)} at ${path}`);
-    if (!res.propertyType)
-        console.log(
-                `ServerCapability missing 'property type' in ${JSON.stringify(dict)} at ${path}`);
-    return res;
-}
-
-interface ClientCapability {
-    propertyPath: string, propertyType: string
-}
-
-function getClientCapability(path, dict): ClientCapability
-{
-    let pPath: string = "";
-    if (dict["property path (optional)"])
-        pPath = stringFromDict(dict["property path (optional)"]);
-    else if (dict["property name (optional)"])
-        pPath = stringFromDict(dict["property name (optional)"]);
-    else
-        console.log(`no property name or path for ServerCapability at ${path}`);
-    let res: ClientCapability = {
-        propertyPath : pPath,
-        propertyType : typeFromDict(dict["property type"])
-    };
-    if (!res.propertyPath)
-        console.log(`ClientCapability missing 'property path/name (optional)' in ${
-                JSON.stringify(dict)} at ${path}`);
-    if (!res.propertyType)
-        console.log(
-                `ClientCapability missing 'property type' in ${JSON.stringify(dict)} at ${path}`);
-    return res;
-}
-
-interface Notification {
-    method: string, params: string
-}
-
-function getNotification(path, dict): Notification
-{
-    let res: Notification = {
-        method : stringFromDict(dict["method"]),
-        params : typeFromDict(dict["params"])
-    };
-    if (!res.method)
-        console.log(`Notification missing 'method' in ${JSON.stringify(dict)} at ${path}`);
-    if (!res.params)
-        console.log(`Notification missing 'params' in ${JSON.stringify(dict)} at ${path}`);
-    return res;
-}
-
-interface Response {
-    result: string;
-    partialResult?: string;
-    error?: string;
-}
-
-function getResponse(path, dict): Response
-{
-    let res: Response = { result : typeFromDict(dict["result"]) };
-    if (!res.result)
-        console.log(`Response missing 'result' in ${JSON.stringify(dict)} at ${path}`);
-    if (dict["error"])
-        res.error = dict["error"]["text"];
-    if (dict["partial result"])
-        res.partialResult = typeFromDict(dict["partial result"]);
-    return res;
-}
-
-interface Request {
-    method: string, params: string, response?: Response
-}
-
-function getRequest(path, dict): Request
-{
-    let res: Request = {
-        method : stringFromDict(dict["method"]),
-        params : typeFromDict(dict["params"])
-    };
-    if (!res.method)
-        console.log(`Request missing 'method' in ${JSON.stringify(dict)} at ${path}`);
-    if (!res.params)
-        console.log(`Request missing 'params' in ${JSON.stringify(dict)} at ${path}`);
-    return res;
-}
-
-function requestOrNotificationToName(x, path) {
-    let name = x.params;
-    if (name.endsWith("Params"))
-        name = name.slice(0, name.length - "Params".length);
-    else
-        name = namify(path.split(".").pop());
-    return name
-}
-function parseStructuredProtocol(structuredProto, structuredSequence)
-{
-    function handleGroups(path, dict)
-    {
-        let res = {};
-        if (dict["Server Capability"]) {
-            let cap = getServerCapability(path, dict["Server Capability"]);
-            res["ServerCapability"] = cap;
-        }
-        if (dict["Client Capability"]) {
-            let cap = getClientCapability(path, dict["Client Capability"]);
-            res["ClientCapability"] = cap;
-        }
-        if (dict["Request"]) {
-            let req: Request = getRequest(path, dict["Request"]);
-            if (dict["Response"]) {
-                let res: Response = getResponse(path, dict["Response"]);
-                req.response = res;
-            } else {
-                console.log(`Request without Response at ${path}`);
-            }
-            res["Request"] = req;
-        } else if (dict["Notification"]) {
-            let notif = getRequest(path, dict["Notification"]);
-            res["Notification"] = notif;
-        } else {
-            if (dict["Response"]) {
-                console.log(`Response without Request in ${path}`);
-            }
-            Object.entries(dict).forEach(([ key2, value2 ]) => {
-                if (key2 != "Request" && key2 != "Response" && key2 != "Notification"
-                    && key2 != "Client Capability" && key2 != "Server Capability") {
-                    let newPath = path + "." + key2;
-                    let toIgnoreRe: RegExp = /^(?:traceValue\b|version_|snippet_|regExp\b)/;
-                    if (!(<any>value2)?.["text"]) {
-                        res[key2] = handleGroups(newPath, value2)
-                    } else if (!toIgnoreRe.test(path)) {
-                        console.log(`Ignoring at ${path}:${JSON.stringify(value2)}`);
-                    }
-                }
-            });
-        }
-        return res;
-    }
-
-    let extractedInfo = {};
-    structuredSequence.filter(x => !structuredProto[x])
-            .sort((a: string, b: string) =>
-                          stringCompare(requestOrNotificationToName(structuredProto[a], a),
-                                        requestOrNotificationToName(structuredProto[b], b)));
-    for (const key1 of structuredSequence) {
-        let value1 = structuredProto[key1];
-        extractedInfo[key1] = handleGroups(key1, value1);
-    }
-    return extractedInfo;
-}
-
-interface GeneratedProtocol {
-    notifications: string[], requests: string[], responses: string[]
-    clientCapabilities: string[], serverCapabilities: string[], registrations: string[],
-            signalDeclarations: string[], registerVars: string[], requestParams: string[],
-            notificationParams: string[], sendDeclarations: string[], sendImplementations: string[],
-            notificationDeclarations: string[], notificationImplementations: string[],
-            requestMethodMap: string[], notificationMethodMap: string[]
-}
-
-function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
-{
-    let notifications: string[] = [];
-    let requests: string[] = [];
-    let responses: string[] = [];
-    let clientCapabilities: string[] = [];
-    let serverCapabilities: string[] = [];
-    let registrations: string[] = [];
-    let signalDeclarations: string[] = [];
-    let registerVars: string[] = [];
-    let implementations: string[] = [];
-    let requestParams: string[] = [];
-    let requestParamsKnown = {};
-    let notificationParams: string[] = [];
-    let notificationParamsKnown = {};
-    let requestDeclarations: string[] = [];
-    let requestImplementations: string[] = [];
-    let notificationDeclarations: string[] = [];
-    let notificationImplementations: string[] = [];
-    let requestMethodMap: string[] = [];
-    let notificationMethodMap: string[] = [];
-
-    function handleGroups(path, dict)
-    {
-        if (dict["ServerCapability"]) {
-            let cap = dict["ServerCapability"];
-            serverCapabilities.push(
-                    `constexpr auto ${namify(cap.propertyPath)} = "${cap.propertyPath}";`);
-            serverCapabilities.push(
-                    `using ${namify(cap.propertyPath)}Type = ${effectiveType(cap.propertyType)};`);
-        }
-        if (dict["ClientCapability"]) {
-            let cap = dict["ClientCapability"];
-            clientCapabilities.push(
-                    `constexpr auto ${namify(cap.propertyPath)} = "${cap.propertyPath}";`);
-            clientCapabilities.push(
-                    `using ${namify(cap.propertyPath)}Type = ${effectiveType(cap.propertyType)};`);
-        }
-        if (dict["Request"]) {
-            let req: Request = dict["Request"];
-            let rName = req.params;
-            if (rName.endsWith("Params"))
-                rName = rName.slice(0, rName.length - "Params".length);
-            else
-                rName = namify(path.split(".").pop());
-            let pType = effectiveType(req.params);
-            if (!requestParamsKnown[pType]) {
-                requestParamsKnown[pType] = true;
-                requestParams.push(pType);
-            }
-            requests.push(`constexpr auto ${rName}Method = "${req.method}";`);
-            let paramsType = effectiveType(req.params);
-            requests.push(`using ${rName}ParamsType = ${paramsType};`);
-            if (req.response) {
-                let resultType = effectiveType(req.response.result);
-                let responseType: string = "";
-                responses.push(`using ${rName}ResultType = ${resultType};`);
-                if (req.response.partialResult) {
-                    let partialResultType = effectiveType(req.response.partialResult);
-                    responses.push(`using ${rName}PartialResultType = ${partialResultType};`);
-                    responseType = `LSPPartialResponse<${resultType}, ${partialResultType}>`;
-                    responses.push(`using ${rName}ResponseType = LSPPartialResponse<${
-                            rName}ResultType,${rName}PartialResultType>;`);
-                    // skip client implementation for now
-                } else {
-                    responseType = `LSPResponse<${resultType}>`;
-                    responses.push(`using ${rName}ResponseType = LSPResponse<${rName}ResultType>;`);
-                }
-                let responseHandlerType: string =
-                        ((resultType == "std::nullptr_t")
-                                 ? "std::function<void()>"
-                                 : `std::function<void(const ${resultType} &)>`);
-                requestDeclarations.push(`void request${rName}(const ${paramsType}&, ${
-                        responseHandlerType} responseHandler, ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);`);
-                requestImplementations.push(`void ProtocolGen::request${rName}(const ${
-                        paramsType} &params, ${
-                        responseHandlerType} responseHandler, ResponseErrorHandler errorHandler)
-{
-    typedRpc()->sendRequest(QByteArray(Requests::${
-                        rName}Method), [responseHandler = std::move(responseHandler), errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
-        if (response.errorCode.isDouble())
-            errorHandler(ResponseError{response.errorCode.toInt(), response.errorMessage.toUtf8(), response.data});
-        else
-            decodeAndCall<${resultType}>(response.data, responseHandler, errorHandler);
-    }, params);
-}`);
-                requestDeclarations.push(`void register${
-                        rName}RequestHandler(const std::function<void(const QByteArray &, const ${
-                        paramsType} &, ${responseType} &&)> &handler);`);
-                requestImplementations.push(`
-void ProtocolGen::register${
-                        rName}RequestHandler(const std::function<void(const QByteArray &, const ${
-                        paramsType} &, ${responseType} &&)> &handler)
-{
-    typedRpc()->registerRequestHandler<QLspSpecification::Requests::${
-                        rName}ParamsType, QLspSpecification::Responses::${rName}ResponseType>(
-        QByteArray(QLspSpecification::Requests::${rName}Method), handler);
-}`);
-                requestMethodMap.push(`{QByteArray("${req.method}"), QByteArray("${rName}")}`);
-            }
-        } else if (dict["Notification"]) {
-            let notif = dict["Notification"];
-            let nName = notif.params;
-            if (nName.endsWith("Params"))
-                nName = nName.slice(0, nName.length - "Params".length);
-            else
-                nName = namify(path.split(".").pop());
-            let pType = effectiveType(notif.params);
-            notifications.push(`constexpr auto ${nName}Method = "${notif.method}";`);
-            notificationMethodMap.push(`{QByteArray("${notif.method}"), QByteArray("${nName}")}`);
-            if (specialStructs[notif.params] === undefined) {
-                if (!notificationParamsKnown[pType]) {
-                    notificationParamsKnown[pType] = true;
-                    notificationParams.push(pType);
-                }
-                let paramsType = effectiveType(notif.params);
-                notifications.push(`using ${nName}ParamsType = ${paramsType};`);
-                registrations.push(`
-protocol->register${nName}NotificationHandler(
-    [this, protocol](const QByteArray &method, const QLspSpecification::Notifications::${
-                        nName}ParamsType &params) {
-        static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(&QLspNotifySignals::received${
-                        nName}Notification);
-        if (isSignalConnected(notificationSignal))
-            emit received${nName}Notification(params);
-        else
-            protocol->handleUndispatchedNotification(method, params);
-    });`);
-                signalDeclarations.push(`    void received${
-                        nName}Notification(const QLspSpecification::Notifications::${
-                        nName}ParamsType &);`)
-                notificationDeclarations.push(`void register${
-                        nName}NotificationHandler(const std::function<void(const QByteArray &, const ${
-                        paramsType} &)> &handler);`);
-                notificationImplementations.push(`
-void ProtocolGen::register${
-                        nName}NotificationHandler(const std::function<void(const QByteArray &, const ${
-                        paramsType} &)> &handler)
-{
-    typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::${nName}ParamsType>(
-        QByteArray(QLspSpecification::Notifications::${nName}Method), handler);
-}`);
-                notificationDeclarations.push(
-                        `    void notify${nName}(const ${paramsType}&params);`);
-                notificationImplementations.push(
-                        `void ProtocolGen::notify${nName}(const ${paramsType} &params)
-{
-    typedRpc()->sendNotification(Notifications::${nName}Method, params);
-}`);
-            }
-        } else {
-            Object.entries(dict).forEach(([ key2, value2 ]) => {
-                if (key2 != "Request" && key2 != "Response" && key2 != "Notification"
-                    && key2 != "ClientCapability" && key2 != "ServerCapability") {
-                    let newPath = path + "." + key2;
-                    if (!(<any>value2)?.["text"]) {
-                        handleGroups(newPath, value2);
-                    }
-                }
-            });
-        }
-        if (dict["ServerCapability"] || dict["ClientCapability"]) { }
-    }
-
-    structuredSequence.sort((a: string, b: string) => {
-        if (extractedInfo[a].params && extractedInfo[b].params)
-            return stringCompare(requestOrNotificationToName(extractedInfo[a], a),
-                                 requestOrNotificationToName(extractedInfo[b], b));
-        return extractedInfo[a].params ? -1 : 1;
-    });
-    for (const key1 of structuredSequence) {
-        let value1 = extractedInfo[key1];
-        if (value1)
-            handleGroups(key1, value1);
-    }
-    return {
-        notifications : notifications,
-        requests : requests,
-        responses : responses,
-        clientCapabilities : clientCapabilities,
-        serverCapabilities : serverCapabilities,
-        registrations : registrations,
-        registerVars : registerVars,
-        signalDeclarations : signalDeclarations,
-        requestParams : requestParams,
-        notificationParams : notificationParams,
-        sendDeclarations : requestDeclarations,
-        sendImplementations : requestImplementations,
-        notificationDeclarations : notificationDeclarations,
-        notificationImplementations : notificationImplementations,
-        requestMethodMap : requestMethodMap,
-        notificationMethodMap : notificationMethodMap
-    };
-}
-
-let contents = ts.sys.readFile("3rdparty/specification.md");
-let parts = contents?.split("\n```");
-let output = "";
-parts?.forEach(function(part) {
-    if (part.indexOf("typescript") === 0)
-        output += (part.substr("typescript".length));
-    else if (part.indexOf("ts") === 0)
-        output += (part.substr("ts".length));
-});
-
-let protoData = extractProto(contents!.split("\n"));
-ts.sys.writeFile("protocolRaw.json", JSON.stringify(protoData, null, 2));
-let protoStructs =
-        parseStructuredProtocol(protoData["structured"], protoData["structuredSequence"]);
-ts.sys.writeFile("protocol.json", JSON.stringify(protoStructs, null, 2));
-protoData["structuredSequence"].sort()
-let proto: GeneratedProtocol = generateProtocol(protoStructs, protoData["structuredSequence"]);
-
-ts.sys.writeFile("specification.ts", output);
-
-let result: GeneratedTypes = generate([ "specification.ts" ],
-                                      { target : ts.ScriptTarget.Latest, strictNullChecks : true });
+let result: GeneratedTypes = generate(protoData);
 
 let license = ts.sys.readFile("generate.ts")!.split("\n\n")[0];
 
@@ -1357,11 +756,13 @@ ts.sys.writeFile("qlanguageserverspectypes_p.h", `${license}
 #include <QtCore/QJsonValue>
 #include <QtCore/QJsonObject>
 #include <QtCore/QString>
+#include <QtCore/QMap>
 
 #include <optional>
 #include <variant>
 
 QT_BEGIN_NAMESPACE
+
 namespace QLspSpecification {
 Q_NAMESPACE_EXPORT(Q_LANGUAGESERVER_EXPORT)
 
@@ -1429,7 +830,211 @@ QT_END_NAMESPACE
 #endif // QLANGUAGESERVERSPECTYPES_P_H
 `);
 
-ts.sys.writeFile("qlanguageserverspec_p.h", license + `
+function namify(str: string): string
+{
+    if (str.startsWith("textDocument/"))
+        str = str.replace(/[^\/]*\//, "");
+    return str.split(/[$./ _]+/).map(upperCase).join("");
+}
+// naming strategy:
+// Use parameter type name of request or notification if it ends in "Params" to name the
+// request or notification. Otherwise, remove "/" in the method name and capitalize.
+// Examples:
+// * "textDocument/codeAction" has parameter type CodeActionParams => return "CodeAction"
+// * "codeAction/resolve" has parameter type CodeAction => return "CodeActionResolve"
+function methodNameFrom(requestOrNotification: metaModel.Request|metaModel.Notification): string
+{
+    let methodName = namify(requestOrNotification.method);
+    if (!requestOrNotification.params)
+        return methodName;
+
+    // note: in 3.17, no notification or request has more than one parameter type
+    const type = <metaModel.Type>requestOrNotification.params;
+    if (!type || type.kind != "reference")
+        return methodName;
+    if (!type.name.endsWith("Params"))
+        return methodName
+        return namify(type.name.slice(0, type.name.length - "Params".length));
+}
+
+function responseType(request: metaModel.Request): string
+{
+    if (request.partialResult) {
+        return `LSPPartialResponse<${typeToCppType(request.result, undefined)}, ${
+                typeToCppType(request.partialResult, undefined)}>`;
+    }
+    return `LSPResponse<${typeToCppType(request.result, undefined)}>`;
+}
+function createRequest(request: metaModel.Request): string
+{
+    const parameterType = <metaModel.Type>request.params;
+    let name = methodNameFrom(request);
+    const indent = "    ";
+
+    let result = `\n${indent}constexpr auto ${name}Method = QLatin1String("${request.method}");`;
+    result += `\n${indent}using ${name}ParamsType = ${typeToCppType(parameterType, undefined)};`;
+    result += `\n${indent}using ${name}ResultType = ${typeToCppType(request.result, undefined)};`;
+    if (request.partialResult) {
+        result += `\n${indent}using ${name}PartialResultType = ${
+                typeToCppType(request.partialResult, undefined)};
+${indent}using ${name}ResponseType = ${responseType(request)};`;
+    } else {
+        result += `\n${indent}using ${name}ResponseType = ${responseType(request)};`;
+    }
+    return result;
+}
+
+function createNotification(notification: metaModel.Notification): string
+{
+    const name = methodNameFrom(notification);
+    return `\n    constexpr auto ${name}Method = "${notification.method}";
+    using ${name}ParamsType = ${typeToCppType(<metaModel.Type>notification.params, undefined)};`;
+}
+
+function createInGroups<Type extends metaModel.Notification>(
+        requests: Type[], createRequestOrNotification: (a: Type) => string): string
+{
+    return createInGroupsImpl(false, requests, createRequestOrNotification);
+}
+function createInGroupsWithComments<Type extends metaModel.Notification>(
+        requests: Type[], createRequestOrNotification: (a: Type) => string): string
+{
+    return createInGroupsImpl(true, requests, createRequestOrNotification);
+}
+
+function createInGroupsImpl<Type extends metaModel.Notification>(
+        withComments: boolean, requests: Type[],
+        createRequestOrNotification: (a: Type) => string): string
+{
+
+    requests.sort((a, b) => stringCompare(a.method, b.method));
+
+    let namespace: string = "";
+    let output: string = "";
+    requests.forEach(request => {
+        if (withComments) {
+            let neededNamespace = request.method;
+            if (neededNamespace != namespace) {
+                if (namespace != "")
+                    output += `\n`;
+                output += `\n// C++ types for the LSP method "${neededNamespace}"`;
+                namespace = neededNamespace;
+            }
+        }
+        output += createRequestOrNotification(request);
+    });
+    if (namespace != "")
+        output += `\n`
+        return output;
+}
+
+function responseHandlerType(type: metaModel.Type): string
+{
+    return type.kind == "base" && type.name == "null"
+            ? "std::function<void()>"
+            : `std::function<void(const ${typeToCppType(type, undefined)} &)>`;
+}
+
+function createRequestDeclaration(request: metaModel.Request): string
+{
+    const name = methodNameFrom(request);
+    const paramsType = typeToCppType(<metaModel.Type>request.params, undefined);
+    return `\n    void request${name}(const ${paramsType}&, ${
+            responseHandlerType(
+                    request.result)} responseHandler, ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void register${name}RequestHandler(const std::function<void(const QByteArray &, const ${
+            paramsType} &, ${responseType(request)} &&)> &handler);`;
+}
+
+function createRequestImplementation(request: metaModel.Request): string
+{
+    const name = methodNameFrom(request);
+    const paramsType = typeToCppType(<metaModel.Type>request.params, undefined);
+    return `
+
+void ProtocolGen::request${name}(const ${paramsType} &params, ${
+            responseHandlerType(request.result)} responseHandler, ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(QByteArray(Requests::${
+            name}Method), [responseHandler = std::move(responseHandler), errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+        if (response.errorCode.isDouble())
+            errorHandler(ResponseError{response.errorCode.toInt(), response.errorMessage.toUtf8(), response.data});
+        else
+            decodeAndCall<${
+            typeToCppType(request.result,
+                          undefined)}>(response.data, responseHandler, errorHandler);
+    }, params);
+}
+
+void ProtocolGen::register${
+            name}RequestHandler(const std::function<void(const QByteArray &, const ${
+            paramsType} &, ${responseType(request)} &&)> &handler)
+{
+    typedRpc()->registerRequestHandler<
+        QLspSpecification::Requests::${name}ParamsType,
+        QLspSpecification::Responses::${
+            name}ResponseType>(QByteArray(QLspSpecification::Requests::${name}Method), handler);
+}`;
+}
+
+function createRegisterNotification(notification: metaModel.Notification): string
+{
+    const name = methodNameFrom(notification);
+    return `
+protocol->register${name}NotificationHandler(
+    [this, protocol](const QByteArray &method, const QLspSpecification::Notifications::${
+            name}ParamsType &params) {
+        static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(&QLspNotifySignals::received${
+            name}Notification);
+        if (isSignalConnected(notificationSignal))
+            emit received${name}Notification(params);
+        else
+            protocol->handleUndispatchedNotification(method, params);
+    });`;
+}
+
+function createSignalDeclaration(notification: metaModel.Notification): string
+{
+    const name = methodNameFrom(notification);
+    return `void received${name}Notification(const QLspSpecification::Notifications::${
+            name}ParamsType &);`;
+}
+
+function createSendNotificationDeclaration(notification: metaModel.Notification): string
+{
+    const name = methodNameFrom(notification);
+    const paramsType = typeToCppType(<metaModel.Type>notification.params, undefined);
+    let output = "";
+    output += `\n    void register${
+            name}NotificationHandler(const std::function<void(const QByteArray &, const ${
+            paramsType} &)> &handler);`;
+    output += `\n    void notify${name}(const ${paramsType} &params);`;
+    return output;
+}
+function createNotificationImplementation(notification: metaModel.Notification): string
+{
+    const name = methodNameFrom(notification);
+    const paramsType = typeToCppType(<metaModel.Type>notification.params, undefined);
+    return `
+
+void ProtocolGen::register${
+            name}NotificationHandler(const std::function<void(const QByteArray &, const ${
+            paramsType} &)> &handler)
+{
+    typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::${name}ParamsType>(
+    QByteArray(QLspSpecification::Notifications::${name}Method), handler);
+}
+
+void ProtocolGen::notify${name}(const ${paramsType} &params)
+{
+    typedRpc()->sendNotification(Notifications::${name}Method, params);
+}`;
+}
+
+ts.sys.writeFile(
+        "qlanguageserverspec_p.h",
+        license
+                + `
 
 // this file was generated by the generate.ts script
 
@@ -1453,28 +1058,37 @@ ts.sys.writeFile("qlanguageserverspec_p.h", license + `
 QT_BEGIN_NAMESPACE
 
 namespace QLspSpecification {
-namespace ClientCapabilitiesInfo {
-${proto.clientCapabilities.join("\n")}
-}
+namespace Requests {${createInGroupsWithComments(protoData.requests, createRequest)}
+} // namespace Requests
+// for compatibility reasons:
+namespace Responses { using namespace Requests; }
 
-namespace ServerCapabilitiesInfo {
-${proto.serverCapabilities.join("\n")}
-}
+namespace Notifications {${createInGroupsWithComments(protoData.notifications, createNotification)}
+} // namespace Notifications
 
-namespace Requests {
-${proto.requests.join("\n")}
-}
+// Variant over all possible request parameters, required by the generic handlers.
+// This variant is used like a generic argument type that can be constructed from
+// any argument type... except when it contains duplicate, in that case the
+// constructors are deleted. Therefore ensure that each variant type only occurs
+// once in the variant.
+using RequestParams = std::variant<${
+                                [...new Set(
+                                         protoData.requests
+                                                 .map(r => typeToCppType(<metaModel.Type>r.params,
+                                                                         undefined))
+                                                 .sort())]
+                                        .join(",\n    ")},
+    QJsonValue>;
 
-namespace Responses {
-${proto.responses.join("\n")}
-}
-
-namespace Notifications {
-${proto.notifications.join("\n")}
-}
-
-using RequestParams = std::variant<${proto.requestParams.join(", ")}, QJsonValue>;
-using NotificationParams = std::variant<${proto.notificationParams.join(", ")}, QJsonValue>;
+// Variant over all possible notification parameters, required by the generic handlers.
+// This can't contain duplicates, see comment on RequestParams.
+using NotificationParams = std::variant<${
+                                [...new Set(
+                                         protoData.notifications
+                                                 .map(r => typeToCppType(<metaModel.Type>r.params,
+                                                                         undefined))
+                                                 .sort())]
+                                        .join(",\n    ")}>;
 
 } // namespace QLspSpecification
 
@@ -1522,10 +1136,10 @@ public:
     ~ProtocolGen();
 
 // Requests
-${proto.sendDeclarations.join("\n")}
+${createInGroups(protoData.requests, createRequestDeclaration)}
 
 // Notifications
-${proto.notificationDeclarations.join("\n")}
+${createInGroups(protoData.notifications, createSendNotificationDeclaration)}
 
 private:
     Q_DISABLE_COPY(ProtocolGen)
@@ -1539,7 +1153,10 @@ QT_END_NAMESPACE
 #endif // QLANGUAGESERVER_P_H
 `);
 
-ts.sys.writeFile("qlanguageservergen.cpp", license + `
+ts.sys.writeFile(
+        "qlanguageservergen.cpp",
+        license
+                + `
 
 // this file was generated by the generate.ts script
 
@@ -1553,16 +1170,22 @@ namespace QLspSpecification {
 
 QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
 {
-    static QHash<QByteArray,QByteArray> map({
-        ${proto.requestMethodMap.join(",\n        ")}
+    static QHash<QByteArray,QByteArray> map({${
+                        protoData.requests
+                                .map(r => `\n       { QByteArray("${r.method}"), QByteArray("${
+                                             methodNameFrom(r)}") }`)
+                                .join(",")}
     });
     return map.value(method);
 }
 
 QByteArray ProtocolBase::notificationMethodToBaseCppName(const QByteArray &method)
 {
-    static QHash<QByteArray,QByteArray> map({
-        ${proto.notificationMethodMap.join(",\n        ")}
+    static QHash<QByteArray,QByteArray> map({${
+                        protoData.notifications
+                                .map(n => `\n        { QByteArray("${n.method}"), QByteArray("${
+                                             methodNameFrom(n)}") }`)
+                                .join(",")}
     });
     return map.value(method);
 }
@@ -1575,54 +1198,16 @@ ProtocolGen::ProtocolGen(std::unique_ptr<ProtocolGenPrivate> &&p):
 ProtocolGen::~ProtocolGen()
 {}
 
-${proto.sendImplementations.join("\n\n")}
+// Requests
+${createInGroups(protoData.requests, createRequestImplementation)}
 
-${proto.notificationImplementations.join("\n\n")}
+// Notifications
+${createInGroups(protoData.notifications, createNotificationImplementation)}
 
 } // namespace QLspSpecification
 
 QT_END_NAMESPACE
 `);
-
-ts.sys.writeFile("qlanguageservergen_p_p.h", license + `
-
-// this file was generated by the generate.ts script
-
-#ifndef QLANGUAGESERVERGEN_P_P_H
-#define QLANGUAGESERVERGEN_P_P_H
-
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
-
-#include <QtLanguageServer/qtlanguageserverglobal.h>
-#include <QtLanguageServer/private/qlanguageservergen_p.h>
-#include <QtLanguageServer/private/qlanguageserverbase_p_p.h>
-
-QT_BEGIN_NAMESPACE
-
-namespace QLspSpecification {
-
-class ProtocolGenPrivate: public ProtocolBasePrivate
-{
-public:
-${proto.registerVars.join("\n")}
-};
-
-} // namespace QLspSpecification
-
-QT_END_NAMESPACE
-
-#endif // QLANGUAGESERVERGEN_P_P_H
-`);
-
 ts.sys.writeFile("qlspnotifysignals_p.h", license + `
 
 // this file was generated by the generate.ts script
@@ -1652,7 +1237,7 @@ public:
     QLspNotifySignals(QObject *parent = nullptr) : QObject(parent) { }
     void registerHandlers(QLanguageServerProtocol *protocol);
 signals:
-${proto.signalDeclarations.join("\n")}
+    ${protoData.notifications.map(createSignalDeclaration).join("\n    ")}
 };
 
 QT_END_NAMESPACE
@@ -1670,9 +1255,9 @@ QT_BEGIN_NAMESPACE
 
 using namespace QLspSpecification;
 
-void  QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
+void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
 {
-    ${proto.registrations.join("\n    ")}
+    ${protoData.notifications.map(createRegisterNotification).join("\n    ")}
 }
 
 QT_END_NAMESPACE

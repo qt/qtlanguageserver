@@ -22,11 +22,11 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
               { QByteArray("client/registerCapability"), QByteArray("Registration") },
               { QByteArray("client/unregisterCapability"), QByteArray("Unregistration") },
               { QByteArray("codeAction/resolve"), QByteArray("CodeActionResolve") },
-              { QByteArray("workspace/codeLens/refresh"), QByteArray("CodeLensRefresh") },
               { QByteArray("codeLens/resolve"), QByteArray("CodeLensResolve") },
               { QByteArray("completionItem/resolve"), QByteArray("CompletionItemResolve") },
               { QByteArray("documentLink/resolve"), QByteArray("DocumentLinkResolve") },
               { QByteArray("initialize"), QByteArray("Initialize") },
+              { QByteArray("inlayHint/resolve"), QByteArray("InlayHintResolve") },
               { QByteArray("shutdown"), QByteArray("Shutdown") },
               { QByteArray("textDocument/codeAction"), QByteArray("CodeAction") },
               { QByteArray("textDocument/codeLens"), QByteArray("CodeLens") },
@@ -34,6 +34,7 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
               { QByteArray("textDocument/completion"), QByteArray("Completion") },
               { QByteArray("textDocument/declaration"), QByteArray("Declaration") },
               { QByteArray("textDocument/definition"), QByteArray("Definition") },
+              { QByteArray("textDocument/diagnostic"), QByteArray("DocumentDiagnostic") },
               { QByteArray("textDocument/documentColor"), QByteArray("DocumentColor") },
               { QByteArray("textDocument/documentHighlight"), QByteArray("DocumentHighlight") },
               { QByteArray("textDocument/documentLink"), QByteArray("DocumentLink") },
@@ -42,6 +43,9 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
               { QByteArray("textDocument/formatting"), QByteArray("DocumentFormatting") },
               { QByteArray("textDocument/hover"), QByteArray("Hover") },
               { QByteArray("textDocument/implementation"), QByteArray("Implementation") },
+              { QByteArray("textDocument/inlayHint"), QByteArray("InlayHint") },
+              { QByteArray("textDocument/inlineCompletion"), QByteArray("InlineCompletion") },
+              { QByteArray("textDocument/inlineValue"), QByteArray("InlineValue") },
               { QByteArray("textDocument/linkedEditingRange"), QByteArray("LinkedEditingRange") },
               { QByteArray("textDocument/moniker"), QByteArray("Moniker") },
               { QByteArray("textDocument/onTypeFormatting"),
@@ -49,7 +53,11 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
               { QByteArray("textDocument/prepareCallHierarchy"),
                 QByteArray("CallHierarchyPrepare") },
               { QByteArray("textDocument/prepareRename"), QByteArray("PrepareRename") },
+              { QByteArray("textDocument/prepareTypeHierarchy"),
+                QByteArray("TypeHierarchyPrepare") },
               { QByteArray("textDocument/rangeFormatting"), QByteArray("DocumentRangeFormatting") },
+              { QByteArray("textDocument/rangesFormatting"),
+                QByteArray("DocumentRangesFormatting") },
               { QByteArray("textDocument/references"), QByteArray("Reference") },
               { QByteArray("textDocument/rename"), QByteArray("Rename") },
               { QByteArray("textDocument/selectionRange"), QByteArray("SelectionRange") },
@@ -58,24 +66,36 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
                 QByteArray("SemanticTokensDelta") },
               { QByteArray("textDocument/semanticTokens/range"),
                 QByteArray("SemanticTokensRange") },
-              { QByteArray("workspace/semanticTokens/refresh"),
-                QByteArray("RequestingARefreshOfAllSemanticTokens") },
               { QByteArray("textDocument/signatureHelp"), QByteArray("SignatureHelp") },
               { QByteArray("textDocument/typeDefinition"), QByteArray("TypeDefinition") },
               { QByteArray("textDocument/willSaveWaitUntil"), QByteArray("WillSaveTextDocument") },
+              { QByteArray("typeHierarchy/subtypes"), QByteArray("TypeHierarchySubtypes") },
+              { QByteArray("typeHierarchy/supertypes"), QByteArray("TypeHierarchySupertypes") },
               { QByteArray("window/showDocument"), QByteArray("ShowDocument") },
               { QByteArray("window/showMessageRequest"), QByteArray("ShowMessageRequest") },
               { QByteArray("window/workDoneProgress/create"),
                 QByteArray("WorkDoneProgressCreate") },
               { QByteArray("workspace/applyEdit"), QByteArray("ApplyWorkspaceEdit") },
+              { QByteArray("workspace/codeLens/refresh"), QByteArray("WorkspaceCodeLensRefresh") },
               { QByteArray("workspace/configuration"), QByteArray("Configuration") },
+              { QByteArray("workspace/diagnostic"), QByteArray("WorkspaceDiagnostic") },
+              { QByteArray("workspace/diagnostic/refresh"),
+                QByteArray("WorkspaceDiagnosticRefresh") },
               { QByteArray("workspace/executeCommand"), QByteArray("ExecuteCommand") },
+              { QByteArray("workspace/foldingRange/refresh"),
+                QByteArray("WorkspaceFoldingRangeRefresh") },
+              { QByteArray("workspace/inlayHint/refresh"),
+                QByteArray("WorkspaceInlayHintRefresh") },
+              { QByteArray("workspace/inlineValue/refresh"),
+                QByteArray("WorkspaceInlineValueRefresh") },
+              { QByteArray("workspace/semanticTokens/refresh"),
+                QByteArray("WorkspaceSemanticTokensRefresh") },
               { QByteArray("workspace/symbol"), QByteArray("WorkspaceSymbol") },
               { QByteArray("workspace/willCreateFiles"), QByteArray("CreateFiles") },
               { QByteArray("workspace/willDeleteFiles"), QByteArray("DeleteFiles") },
               { QByteArray("workspace/willRenameFiles"), QByteArray("RenameFiles") },
-              { QByteArray("workspace/workspaceFolders"),
-                QByteArray("WorkspaceWorkspaceFolders") } });
+              { QByteArray("workspace/workspaceFolders"), QByteArray("WorkspaceWorkspaceFolders") },
+              { QByteArray("workspaceSymbol/resolve"), QByteArray("WorkspaceSymbolResolve") } });
     return map.value(method);
 }
 
@@ -83,11 +103,15 @@ QByteArray ProtocolBase::notificationMethodToBaseCppName(const QByteArray &metho
 {
     static QHash<QByteArray, QByteArray> map(
             { { QByteArray("$/cancelRequest"), QByteArray("Cancel") },
-              { QByteArray("exit"), QByteArray("Exit") },
-              { QByteArray("initialized"), QByteArray("Initialized") },
               { QByteArray("$/logTrace"), QByteArray("LogTrace") },
               { QByteArray("$/progress"), QByteArray("Progress") },
               { QByteArray("$/setTrace"), QByteArray("SetTrace") },
+              { QByteArray("exit"), QByteArray("Exit") },
+              { QByteArray("initialized"), QByteArray("Initialized") },
+              { QByteArray("notebookDocument/didChange"), QByteArray("DidChangeNotebookDocument") },
+              { QByteArray("notebookDocument/didClose"), QByteArray("DidCloseNotebookDocument") },
+              { QByteArray("notebookDocument/didOpen"), QByteArray("DidOpenNotebookDocument") },
+              { QByteArray("notebookDocument/didSave"), QByteArray("DidSaveNotebookDocument") },
               { QByteArray("telemetry/event"), QByteArray("TelemetryEvent") },
               { QByteArray("textDocument/didChange"), QByteArray("DidChangeTextDocument") },
               { QByteArray("textDocument/didClose"), QByteArray("DidCloseTextDocument") },
@@ -114,6 +138,8 @@ QByteArray ProtocolBase::notificationMethodToBaseCppName(const QByteArray &metho
 ProtocolGen::ProtocolGen(std::unique_ptr<ProtocolGenPrivate> &&p) : ProtocolBase(std::move(p)) { }
 
 ProtocolGen::~ProtocolGen() { }
+
+// Requests
 
 void ProtocolGen::requestCallHierarchyIncomingCalls(
         const CallHierarchyIncomingCallsParams &params,
@@ -264,33 +290,6 @@ void ProtocolGen::registerCodeActionResolveRequestHandler(
                     QByteArray(QLspSpecification::Requests::CodeActionResolveMethod), handler);
 }
 
-void ProtocolGen::requestCodeLensRefresh(const std::nullptr_t &params,
-                                         std::function<void()> responseHandler,
-                                         ResponseErrorHandler errorHandler)
-{
-    typedRpc()->sendRequest(
-            QByteArray(Requests::CodeLensRefreshMethod),
-            [responseHandler = std::move(responseHandler),
-             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
-                if (response.errorCode.isDouble())
-                    errorHandler(ResponseError{ response.errorCode.toInt(),
-                                                response.errorMessage.toUtf8(), response.data });
-                else
-                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
-            },
-            params);
-}
-
-void ProtocolGen::registerCodeLensRefreshRequestHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeLensRefreshParamsType,
-                                     QLspSpecification::Responses::CodeLensRefreshResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeLensRefreshMethod), handler);
-}
-
 void ProtocolGen::requestCodeLensResolve(const CodeLens &params,
                                          std::function<void(const CodeLens &)> responseHandler,
                                          ResponseErrorHandler errorHandler)
@@ -398,6 +397,33 @@ void ProtocolGen::registerInitializeRequestHandler(
             ->registerRequestHandler<QLspSpecification::Requests::InitializeParamsType,
                                      QLspSpecification::Responses::InitializeResponseType>(
                     QByteArray(QLspSpecification::Requests::InitializeMethod), handler);
+}
+
+void ProtocolGen::requestInlayHintResolve(const InlayHint &params,
+                                          std::function<void(const InlayHint &)> responseHandler,
+                                          ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::InlayHintResolveMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<InlayHint>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerInlayHintResolveRequestHandler(
+        const std::function<void(const QByteArray &, const InlayHint &, LSPResponse<InlayHint> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::InlayHintResolveParamsType,
+                                     QLspSpecification::Responses::InlayHintResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::InlayHintResolveMethod), handler);
 }
 
 void ProtocolGen::requestShutdown(const std::nullptr_t &params,
@@ -545,11 +571,10 @@ void ProtocolGen::requestCompletion(
 }
 
 void ProtocolGen::registerCompletionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const CompletionParams &,
-                     LSPPartialResponse<
-                             std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
-                             std::variant<CompletionList, QList<CompletionItem>>> &&)> &handler)
+        const std::function<void(const QByteArray &, const CompletionParams &,
+                                 LSPPartialResponse<std::variant<QList<CompletionItem>,
+                                                                 CompletionList, std::nullptr_t>,
+                                                    QList<CompletionItem>> &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::CompletionParamsType,
@@ -559,8 +584,8 @@ void ProtocolGen::registerCompletionRequestHandler(
 
 void ProtocolGen::requestDeclaration(
         const DeclarationParams &params,
-        std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                              std::nullptr_t> &)>
+        std::function<
+                void(const std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -572,9 +597,9 @@ void ProtocolGen::requestDeclaration(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                               std::nullptr_t>>(response.data, responseHandler,
-                                                                errorHandler);
+                    decodeAndCall<
+                            std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
             },
             params);
 }
@@ -582,10 +607,9 @@ void ProtocolGen::requestDeclaration(
 void ProtocolGen::registerDeclarationRequestHandler(
         const std::function<
                 void(const QByteArray &, const DeclarationParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                &handler)
+                     LSPPartialResponse<
+                             std::variant<Declaration, QList<DeclarationLink>, std::nullptr_t>,
+                             std::variant<QList<Location>, QList<DeclarationLink>>> &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::DeclarationParamsType,
@@ -595,8 +619,7 @@ void ProtocolGen::registerDeclarationRequestHandler(
 
 void ProtocolGen::requestDefinition(
         const DefinitionParams &params,
-        std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                              std::nullptr_t> &)>
+        std::function<void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -608,25 +631,54 @@ void ProtocolGen::requestDefinition(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                               std::nullptr_t>>(response.data, responseHandler,
-                                                                errorHandler);
+                    decodeAndCall<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerDefinitionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const DefinitionParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+        const std::function<void(
+                const QByteArray &, const DefinitionParams &,
+                LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                                   std::variant<QList<Location>, QList<DefinitionLink>>> &&)>
                 &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::DefinitionParamsType,
                                      QLspSpecification::Responses::DefinitionResponseType>(
                     QByteArray(QLspSpecification::Requests::DefinitionMethod), handler);
+}
+
+void ProtocolGen::requestDocumentDiagnostic(
+        const DocumentDiagnosticParams &params,
+        std::function<void(const DocumentDiagnosticReport &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::DocumentDiagnosticMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<DocumentDiagnosticReport>(response.data, responseHandler,
+                                                            errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerDocumentDiagnosticRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentDiagnosticParams &,
+                                 LSPPartialResponse<DocumentDiagnosticReport,
+                                                    DocumentDiagnosticReportPartialResult> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentDiagnosticParamsType,
+                                     QLspSpecification::Responses::DocumentDiagnosticResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentDiagnosticMethod), handler);
 }
 
 void ProtocolGen::requestDocumentColor(
@@ -725,7 +777,7 @@ void ProtocolGen::registerDocumentLinkRequestHandler(
 
 void ProtocolGen::requestDocumentSymbol(
         const DocumentSymbolParams &params,
-        std::function<void(const std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
+        std::function<void(const std::variant<QList<SymbolInformation>, QList<DocumentSymbol>,
                                               std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
@@ -738,7 +790,7 @@ void ProtocolGen::requestDocumentSymbol(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
+                    decodeAndCall<std::variant<QList<SymbolInformation>, QList<DocumentSymbol>,
                                                std::nullptr_t>>(response.data, responseHandler,
                                                                 errorHandler);
             },
@@ -748,9 +800,9 @@ void ProtocolGen::requestDocumentSymbol(
 void ProtocolGen::registerDocumentSymbolRequestHandler(
         const std::function<void(
                 const QByteArray &, const DocumentSymbolParams &,
-                LSPPartialResponse<std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
+                LSPPartialResponse<std::variant<QList<SymbolInformation>, QList<DocumentSymbol>,
                                                 std::nullptr_t>,
-                                   std::variant<QList<DocumentSymbol>, QList<SymbolInformation>>>
+                                   std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>>
                         &&)> &handler)
 {
     typedRpc()
@@ -852,8 +904,7 @@ void ProtocolGen::registerHoverRequestHandler(
 
 void ProtocolGen::requestImplementation(
         const ImplementationParams &params,
-        std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                              std::nullptr_t> &)>
+        std::function<void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -865,25 +916,120 @@ void ProtocolGen::requestImplementation(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                               std::nullptr_t>>(response.data, responseHandler,
-                                                                errorHandler);
+                    decodeAndCall<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerImplementationRequestHandler(
-        const std::function<
-                void(const QByteArray &, const ImplementationParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+        const std::function<void(
+                const QByteArray &, const ImplementationParams &,
+                LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                                   std::variant<QList<Location>, QList<DefinitionLink>>> &&)>
                 &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::ImplementationParamsType,
                                      QLspSpecification::Responses::ImplementationResponseType>(
                     QByteArray(QLspSpecification::Requests::ImplementationMethod), handler);
+}
+
+void ProtocolGen::requestInlayHint(
+        const InlayHintParams &params,
+        std::function<void(const std::variant<QList<InlayHint>, std::nullptr_t> &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::InlayHintMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<InlayHint>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerInlayHintRequestHandler(
+        const std::function<void(const QByteArray &, const InlayHintParams &,
+                                 LSPPartialResponse<std::variant<QList<InlayHint>, std::nullptr_t>,
+                                                    QList<InlayHint>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::InlayHintParamsType,
+                                     QLspSpecification::Responses::InlayHintResponseType>(
+                    QByteArray(QLspSpecification::Requests::InlayHintMethod), handler);
+}
+
+void ProtocolGen::requestInlineCompletion(
+        const InlineCompletionParams &params,
+        std::function<void(const std::variant<InlineCompletionList, QList<InlineCompletionItem>,
+                                              std::nullptr_t> &)>
+                responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::InlineCompletionMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<InlineCompletionList, QList<InlineCompletionItem>,
+                                               std::nullptr_t>>(response.data, responseHandler,
+                                                                errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerInlineCompletionRequestHandler(
+        const std::function<
+                void(const QByteArray &, const InlineCompletionParams &,
+                     LSPPartialResponse<std::variant<InlineCompletionList,
+                                                     QList<InlineCompletionItem>, std::nullptr_t>,
+                                        QList<InlineCompletionItem>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::InlineCompletionParamsType,
+                                     QLspSpecification::Responses::InlineCompletionResponseType>(
+                    QByteArray(QLspSpecification::Requests::InlineCompletionMethod), handler);
+}
+
+void ProtocolGen::requestInlineValue(
+        const InlineValueParams &params,
+        std::function<void(const std::variant<QList<InlineValue>, std::nullptr_t> &)>
+                responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::InlineValueMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<InlineValue>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerInlineValueRequestHandler(
+        const std::function<
+                void(const QByteArray &, const InlineValueParams &,
+                     LSPPartialResponse<std::variant<QList<InlineValue>, std::nullptr_t>,
+                                        QList<InlineValue>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::InlineValueParamsType,
+                                     QLspSpecification::Responses::InlineValueResponseType>(
+                    QByteArray(QLspSpecification::Requests::InlineValueMethod), handler);
 }
 
 void ProtocolGen::requestLinkedEditingRange(
@@ -1013,8 +1159,7 @@ void ProtocolGen::registerCallHierarchyPrepareRequestHandler(
 
 void ProtocolGen::requestPrepareRename(
         const PrepareRenameParams &params,
-        std::function<void(const std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                              std::nullptr_t> &)>
+        std::function<void(const std::variant<PrepareRenameResult, std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -1026,23 +1171,53 @@ void ProtocolGen::requestPrepareRename(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                               std::nullptr_t>>(response.data, responseHandler,
-                                                                errorHandler);
+                    decodeAndCall<std::variant<PrepareRenameResult, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerPrepareRenameRequestHandler(
-        const std::function<
-                void(const QByteArray &, const PrepareRenameParams &,
-                     LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                              std::nullptr_t>> &&)> &handler)
+        const std::function<void(const QByteArray &, const PrepareRenameParams &,
+                                 LSPResponse<std::variant<PrepareRenameResult, std::nullptr_t>> &&)>
+                &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::PrepareRenameParamsType,
                                      QLspSpecification::Responses::PrepareRenameResponseType>(
                     QByteArray(QLspSpecification::Requests::PrepareRenameMethod), handler);
+}
+
+void ProtocolGen::requestTypeHierarchyPrepare(
+        const TypeHierarchyPrepareParams &params,
+        std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::TypeHierarchyPrepareMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerTypeHierarchyPrepareRequestHandler(
+        const std::function<void(
+                const QByteArray &, const TypeHierarchyPrepareParams &,
+                LSPResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::TypeHierarchyPrepareParamsType,
+                    QLspSpecification::Responses::TypeHierarchyPrepareResponseType>(
+                    QByteArray(QLspSpecification::Requests::TypeHierarchyPrepareMethod), handler);
 }
 
 void ProtocolGen::requestDocumentRangeFormatting(
@@ -1074,6 +1249,38 @@ void ProtocolGen::registerDocumentRangeFormattingRequestHandler(
                     QLspSpecification::Requests::DocumentRangeFormattingParamsType,
                     QLspSpecification::Responses::DocumentRangeFormattingResponseType>(
                     QByteArray(QLspSpecification::Requests::DocumentRangeFormattingMethod),
+                    handler);
+}
+
+void ProtocolGen::requestDocumentRangesFormatting(
+        const DocumentRangesFormattingParams &params,
+        std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::DocumentRangesFormattingMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<TextEdit>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerDocumentRangesFormattingRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentRangesFormattingParams &,
+                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::DocumentRangesFormattingParamsType,
+                    QLspSpecification::Responses::DocumentRangesFormattingResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentRangesFormattingMethod),
                     handler);
 }
 
@@ -1222,11 +1429,12 @@ void ProtocolGen::requestSemanticTokensDelta(
 }
 
 void ProtocolGen::registerSemanticTokensDeltaRequestHandler(
-        const std::function<
-                void(const QByteArray &, const SemanticTokensDeltaParams &,
-                     LSPPartialResponse<
-                             std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
-                             SemanticTokensDeltaPartialResult> &&)> &handler)
+        const std::function<void(
+                const QByteArray &, const SemanticTokensDeltaParams &,
+                LSPPartialResponse<
+                        std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
+                        std::variant<SemanticTokensPartialResult, SemanticTokensDeltaPartialResult>>
+                        &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensDeltaParamsType,
@@ -1264,37 +1472,6 @@ void ProtocolGen::registerSemanticTokensRangeRequestHandler(
                     QByteArray(QLspSpecification::Requests::SemanticTokensRangeMethod), handler);
 }
 
-void ProtocolGen::requestRequestingARefreshOfAllSemanticTokens(
-        const std::nullptr_t &params, std::function<void()> responseHandler,
-        ResponseErrorHandler errorHandler)
-{
-    typedRpc()->sendRequest(
-            QByteArray(Requests::RequestingARefreshOfAllSemanticTokensMethod),
-            [responseHandler = std::move(responseHandler),
-             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
-                if (response.errorCode.isDouble())
-                    errorHandler(ResponseError{ response.errorCode.toInt(),
-                                                response.errorMessage.toUtf8(), response.data });
-                else
-                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
-            },
-            params);
-}
-
-void ProtocolGen::registerRequestingARefreshOfAllSemanticTokensRequestHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::RequestingARefreshOfAllSemanticTokensParamsType,
-                    QLspSpecification::Responses::
-                            RequestingARefreshOfAllSemanticTokensResponseType>(
-                    QByteArray(QLspSpecification::Requests::
-                                       RequestingARefreshOfAllSemanticTokensMethod),
-                    handler);
-}
-
 void ProtocolGen::requestSignatureHelp(
         const SignatureHelpParams &params,
         std::function<void(const std::variant<SignatureHelp, std::nullptr_t> &)> responseHandler,
@@ -1327,8 +1504,7 @@ void ProtocolGen::registerSignatureHelpRequestHandler(
 
 void ProtocolGen::requestTypeDefinition(
         const TypeDefinitionParams &params,
-        std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                              std::nullptr_t> &)>
+        std::function<void(const std::variant<Definition, QList<DefinitionLink>, std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -1340,19 +1516,17 @@ void ProtocolGen::requestTypeDefinition(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                               std::nullptr_t>>(response.data, responseHandler,
-                                                                errorHandler);
+                    decodeAndCall<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerTypeDefinitionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const TypeDefinitionParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+        const std::function<void(
+                const QByteArray &, const TypeDefinitionParams &,
+                LSPPartialResponse<std::variant<Definition, QList<DefinitionLink>, std::nullptr_t>,
+                                   std::variant<QList<Location>, QList<DefinitionLink>>> &&)>
                 &handler)
 {
     typedRpc()
@@ -1390,6 +1564,73 @@ void ProtocolGen::registerWillSaveTextDocumentRequestHandler(
                     QLspSpecification::Requests::WillSaveTextDocumentParamsType,
                     QLspSpecification::Responses::WillSaveTextDocumentResponseType>(
                     QByteArray(QLspSpecification::Requests::WillSaveTextDocumentMethod), handler);
+}
+
+void ProtocolGen::requestTypeHierarchySubtypes(
+        const TypeHierarchySubtypesParams &params,
+        std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::TypeHierarchySubtypesMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerTypeHierarchySubtypesRequestHandler(
+        const std::function<
+                void(const QByteArray &, const TypeHierarchySubtypesParams &,
+                     LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                                        QList<TypeHierarchyItem>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::TypeHierarchySubtypesParamsType,
+                    QLspSpecification::Responses::TypeHierarchySubtypesResponseType>(
+                    QByteArray(QLspSpecification::Requests::TypeHierarchySubtypesMethod), handler);
+}
+
+void ProtocolGen::requestTypeHierarchySupertypes(
+        const TypeHierarchySupertypesParams &params,
+        std::function<void(const std::variant<QList<TypeHierarchyItem>, std::nullptr_t> &)>
+                responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::TypeHierarchySupertypesMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>>(
+                            response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerTypeHierarchySupertypesRequestHandler(
+        const std::function<
+                void(const QByteArray &, const TypeHierarchySupertypesParams &,
+                     LSPPartialResponse<std::variant<QList<TypeHierarchyItem>, std::nullptr_t>,
+                                        QList<TypeHierarchyItem>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::TypeHierarchySupertypesParamsType,
+                    QLspSpecification::Responses::TypeHierarchySupertypesResponseType>(
+                    QByteArray(QLspSpecification::Requests::TypeHierarchySupertypesMethod),
+                    handler);
 }
 
 void ProtocolGen::requestShowDocument(
@@ -1481,7 +1722,7 @@ void ProtocolGen::registerWorkDoneProgressCreateRequestHandler(
 
 void ProtocolGen::requestApplyWorkspaceEdit(
         const ApplyWorkspaceEditParams &params,
-        std::function<void(const ApplyWorkspaceEditResponse &)> responseHandler,
+        std::function<void(const ApplyWorkspaceEditResult &)> responseHandler,
         ResponseErrorHandler errorHandler)
 {
     typedRpc()->sendRequest(
@@ -1492,20 +1733,49 @@ void ProtocolGen::requestApplyWorkspaceEdit(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<ApplyWorkspaceEditResponse>(response.data, responseHandler,
-                                                              errorHandler);
+                    decodeAndCall<ApplyWorkspaceEditResult>(response.data, responseHandler,
+                                                            errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerApplyWorkspaceEditRequestHandler(
         const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
-                                 LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler)
+                                 LSPResponse<ApplyWorkspaceEditResult> &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::ApplyWorkspaceEditParamsType,
                                      QLspSpecification::Responses::ApplyWorkspaceEditResponseType>(
                     QByteArray(QLspSpecification::Requests::ApplyWorkspaceEditMethod), handler);
+}
+
+void ProtocolGen::requestWorkspaceCodeLensRefresh(const std::nullptr_t &params,
+                                                  std::function<void()> responseHandler,
+                                                  ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceCodeLensRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceCodeLensRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceCodeLensRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceCodeLensRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceCodeLensRefreshMethod),
+                    handler);
 }
 
 void ProtocolGen::requestConfiguration(
@@ -1534,6 +1804,66 @@ void ProtocolGen::registerConfigurationRequestHandler(
             ->registerRequestHandler<QLspSpecification::Requests::ConfigurationParamsType,
                                      QLspSpecification::Responses::ConfigurationResponseType>(
                     QByteArray(QLspSpecification::Requests::ConfigurationMethod), handler);
+}
+
+void ProtocolGen::requestWorkspaceDiagnostic(
+        const WorkspaceDiagnosticParams &params,
+        std::function<void(const WorkspaceDiagnosticReport &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceDiagnosticMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<WorkspaceDiagnosticReport>(response.data, responseHandler,
+                                                             errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceDiagnosticRequestHandler(
+        const std::function<void(const QByteArray &, const WorkspaceDiagnosticParams &,
+                                 LSPPartialResponse<WorkspaceDiagnosticReport,
+                                                    WorkspaceDiagnosticReportPartialResult> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::WorkspaceDiagnosticParamsType,
+                                     QLspSpecification::Responses::WorkspaceDiagnosticResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceDiagnosticMethod), handler);
+}
+
+void ProtocolGen::requestWorkspaceDiagnosticRefresh(const std::nullptr_t &params,
+                                                    std::function<void()> responseHandler,
+                                                    ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceDiagnosticRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceDiagnosticRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceDiagnosticRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceDiagnosticRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceDiagnosticRefreshMethod),
+                    handler);
 }
 
 void ProtocolGen::requestExecuteCommand(
@@ -1566,9 +1896,126 @@ void ProtocolGen::registerExecuteCommandRequestHandler(
                     QByteArray(QLspSpecification::Requests::ExecuteCommandMethod), handler);
 }
 
+void ProtocolGen::requestWorkspaceFoldingRangeRefresh(const std::nullptr_t &params,
+                                                      std::function<void()> responseHandler,
+                                                      ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceFoldingRangeRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceFoldingRangeRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceFoldingRangeRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceFoldingRangeRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceFoldingRangeRefreshMethod),
+                    handler);
+}
+
+void ProtocolGen::requestWorkspaceInlayHintRefresh(const std::nullptr_t &params,
+                                                   std::function<void()> responseHandler,
+                                                   ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceInlayHintRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceInlayHintRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceInlayHintRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceInlayHintRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceInlayHintRefreshMethod),
+                    handler);
+}
+
+void ProtocolGen::requestWorkspaceInlineValueRefresh(const std::nullptr_t &params,
+                                                     std::function<void()> responseHandler,
+                                                     ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceInlineValueRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceInlineValueRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceInlineValueRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceInlineValueRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceInlineValueRefreshMethod),
+                    handler);
+}
+
+void ProtocolGen::requestWorkspaceSemanticTokensRefresh(const std::nullptr_t &params,
+                                                        std::function<void()> responseHandler,
+                                                        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceSemanticTokensRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceSemanticTokensRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceSemanticTokensRefreshParamsType,
+                    QLspSpecification::Responses::WorkspaceSemanticTokensRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceSemanticTokensRefreshMethod),
+                    handler);
+}
+
 void ProtocolGen::requestWorkspaceSymbol(
         const WorkspaceSymbolParams &params,
-        std::function<void(const std::variant<QList<SymbolInformation>, std::nullptr_t> &)>
+        std::function<void(const std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>,
+                                              std::nullptr_t> &)>
                 responseHandler,
         ResponseErrorHandler errorHandler)
 {
@@ -1580,17 +2027,20 @@ void ProtocolGen::requestWorkspaceSymbol(
                     errorHandler(ResponseError{ response.errorCode.toInt(),
                                                 response.errorMessage.toUtf8(), response.data });
                 else
-                    decodeAndCall<std::variant<QList<SymbolInformation>, std::nullptr_t>>(
-                            response.data, responseHandler, errorHandler);
+                    decodeAndCall<std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>,
+                                               std::nullptr_t>>(response.data, responseHandler,
+                                                                errorHandler);
             },
             params);
 }
 
 void ProtocolGen::registerWorkspaceSymbolRequestHandler(
-        const std::function<
-                void(const QByteArray &, const WorkspaceSymbolParams &,
-                     LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
-                                        QList<SymbolInformation>> &&)> &handler)
+        const std::function<void(
+                const QByteArray &, const WorkspaceSymbolParams &,
+                LSPPartialResponse<std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>,
+                                                std::nullptr_t>,
+                                   std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>
+                        &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::WorkspaceSymbolParamsType,
@@ -1721,6 +2171,36 @@ void ProtocolGen::registerWorkspaceWorkspaceFoldersRequestHandler(
                     handler);
 }
 
+void ProtocolGen::requestWorkspaceSymbolResolve(
+        const WorkspaceSymbol &params, std::function<void(const WorkspaceSymbol &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::WorkspaceSymbolResolveMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<WorkspaceSymbol>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerWorkspaceSymbolResolveRequestHandler(
+        const std::function<void(const QByteArray &, const WorkspaceSymbol &,
+                                 LSPResponse<WorkspaceSymbol> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkspaceSymbolResolveParamsType,
+                    QLspSpecification::Responses::WorkspaceSymbolResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceSymbolResolveMethod), handler);
+}
+
+// Notifications
+
 void ProtocolGen::registerCancelNotificationHandler(
         const std::function<void(const QByteArray &, const CancelParams &)> &handler)
 {
@@ -1731,31 +2211,6 @@ void ProtocolGen::registerCancelNotificationHandler(
 void ProtocolGen::notifyCancel(const CancelParams &params)
 {
     typedRpc()->sendNotification(Notifications::CancelMethod, params);
-}
-
-void ProtocolGen::registerExitNotificationHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler)
-{
-    typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::ExitParamsType>(
-            QByteArray(QLspSpecification::Notifications::ExitMethod), handler);
-}
-
-void ProtocolGen::notifyExit(const std::nullptr_t &params)
-{
-    typedRpc()->sendNotification(Notifications::ExitMethod, params);
-}
-
-void ProtocolGen::registerInitializedNotificationHandler(
-        const std::function<void(const QByteArray &, const InitializedParams &)> &handler)
-{
-    typedRpc()
-            ->registerNotificationHandler<QLspSpecification::Notifications::InitializedParamsType>(
-                    QByteArray(QLspSpecification::Notifications::InitializedMethod), handler);
-}
-
-void ProtocolGen::notifyInitialized(const InitializedParams &params)
-{
-    typedRpc()->sendNotification(Notifications::InitializedMethod, params);
 }
 
 void ProtocolGen::registerLogTraceNotificationHandler(
@@ -1794,8 +2249,97 @@ void ProtocolGen::notifySetTrace(const SetTraceParams &params)
     typedRpc()->sendNotification(Notifications::SetTraceMethod, params);
 }
 
+void ProtocolGen::registerExitNotificationHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler)
+{
+    typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::ExitParamsType>(
+            QByteArray(QLspSpecification::Notifications::ExitMethod), handler);
+}
+
+void ProtocolGen::notifyExit(const std::nullptr_t &params)
+{
+    typedRpc()->sendNotification(Notifications::ExitMethod, params);
+}
+
+void ProtocolGen::registerInitializedNotificationHandler(
+        const std::function<void(const QByteArray &, const InitializedParams &)> &handler)
+{
+    typedRpc()
+            ->registerNotificationHandler<QLspSpecification::Notifications::InitializedParamsType>(
+                    QByteArray(QLspSpecification::Notifications::InitializedMethod), handler);
+}
+
+void ProtocolGen::notifyInitialized(const InitializedParams &params)
+{
+    typedRpc()->sendNotification(Notifications::InitializedMethod, params);
+}
+
+void ProtocolGen::registerDidChangeNotebookDocumentNotificationHandler(
+        const std::function<void(const QByteArray &, const DidChangeNotebookDocumentParams &)>
+                &handler)
+{
+    typedRpc()
+            ->registerNotificationHandler<
+                    QLspSpecification::Notifications::DidChangeNotebookDocumentParamsType>(
+                    QByteArray(QLspSpecification::Notifications::DidChangeNotebookDocumentMethod),
+                    handler);
+}
+
+void ProtocolGen::notifyDidChangeNotebookDocument(const DidChangeNotebookDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidChangeNotebookDocumentMethod, params);
+}
+
+void ProtocolGen::registerDidCloseNotebookDocumentNotificationHandler(
+        const std::function<void(const QByteArray &, const DidCloseNotebookDocumentParams &)>
+                &handler)
+{
+    typedRpc()
+            ->registerNotificationHandler<
+                    QLspSpecification::Notifications::DidCloseNotebookDocumentParamsType>(
+                    QByteArray(QLspSpecification::Notifications::DidCloseNotebookDocumentMethod),
+                    handler);
+}
+
+void ProtocolGen::notifyDidCloseNotebookDocument(const DidCloseNotebookDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidCloseNotebookDocumentMethod, params);
+}
+
+void ProtocolGen::registerDidOpenNotebookDocumentNotificationHandler(
+        const std::function<void(const QByteArray &, const DidOpenNotebookDocumentParams &)>
+                &handler)
+{
+    typedRpc()
+            ->registerNotificationHandler<
+                    QLspSpecification::Notifications::DidOpenNotebookDocumentParamsType>(
+                    QByteArray(QLspSpecification::Notifications::DidOpenNotebookDocumentMethod),
+                    handler);
+}
+
+void ProtocolGen::notifyDidOpenNotebookDocument(const DidOpenNotebookDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidOpenNotebookDocumentMethod, params);
+}
+
+void ProtocolGen::registerDidSaveNotebookDocumentNotificationHandler(
+        const std::function<void(const QByteArray &, const DidSaveNotebookDocumentParams &)>
+                &handler)
+{
+    typedRpc()
+            ->registerNotificationHandler<
+                    QLspSpecification::Notifications::DidSaveNotebookDocumentParamsType>(
+                    QByteArray(QLspSpecification::Notifications::DidSaveNotebookDocumentMethod),
+                    handler);
+}
+
+void ProtocolGen::notifyDidSaveNotebookDocument(const DidSaveNotebookDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidSaveNotebookDocumentMethod, params);
+}
+
 void ProtocolGen::registerTelemetryEventNotificationHandler(
-        const std::function<void(const QByteArray &, const QJsonObject &)> &handler)
+        const std::function<void(const QByteArray &, const QJsonValue &)> &handler)
 {
     typedRpc()
             ->registerNotificationHandler<
@@ -1803,7 +2347,7 @@ void ProtocolGen::registerTelemetryEventNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::TelemetryEventMethod), handler);
 }
 
-void ProtocolGen::notifyTelemetryEvent(const QJsonObject &params)
+void ProtocolGen::notifyTelemetryEvent(const QJsonValue &params)
 {
     typedRpc()->sendNotification(Notifications::TelemetryEventMethod, params);
 }

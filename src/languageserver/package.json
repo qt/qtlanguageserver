@@ -5,6 +5,7 @@
     },
     "type": "module",
     "scripts": {
-        "generate": "tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false ./generate.ts"
+        "generate":
+                "tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false ./generate.ts ./3rdparty/metaModel.ts"
     }
 }

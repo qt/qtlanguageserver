@@ -30,12 +30,20 @@ public:
     void registerHandlers(QLanguageServerProtocol *protocol);
 signals:
     void receivedCancelNotification(const QLspSpecification::Notifications::CancelParamsType &);
-    void receivedExitNotification(const QLspSpecification::Notifications::ExitParamsType &);
-    void receivedInitializedNotification(
-            const QLspSpecification::Notifications::InitializedParamsType &);
     void receivedLogTraceNotification(const QLspSpecification::Notifications::LogTraceParamsType &);
     void receivedProgressNotification(const QLspSpecification::Notifications::ProgressParamsType &);
     void receivedSetTraceNotification(const QLspSpecification::Notifications::SetTraceParamsType &);
+    void receivedExitNotification(const QLspSpecification::Notifications::ExitParamsType &);
+    void receivedInitializedNotification(
+            const QLspSpecification::Notifications::InitializedParamsType &);
+    void receivedDidChangeNotebookDocumentNotification(
+            const QLspSpecification::Notifications::DidChangeNotebookDocumentParamsType &);
+    void receivedDidCloseNotebookDocumentNotification(
+            const QLspSpecification::Notifications::DidCloseNotebookDocumentParamsType &);
+    void receivedDidOpenNotebookDocumentNotification(
+            const QLspSpecification::Notifications::DidOpenNotebookDocumentParamsType &);
+    void receivedDidSaveNotebookDocumentNotification(
+            const QLspSpecification::Notifications::DidSaveNotebookDocumentParamsType &);
     void receivedTelemetryEventNotification(
             const QLspSpecification::Notifications::TelemetryEventParamsType &);
     void receivedDidChangeTextDocumentNotification(

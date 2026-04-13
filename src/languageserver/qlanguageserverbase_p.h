@@ -32,6 +32,22 @@ Q_DECLARE_LOGGING_CATEGORY(lspLog);
 
 namespace QLspSpecification {
 
+class Q_LANGUAGESERVER_EXPORT ResponseError
+{
+public:
+    int code = { };
+    QByteArray message = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "code", code);
+        field(w, "message", message);
+        field(w, "data", data);
+    }
+};
+
 class ProtocolBasePrivate;
 class Q_LANGUAGESERVER_EXPORT ProtocolBase
 {
