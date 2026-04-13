@@ -261,6 +261,10 @@ public:
     template<typename T>
     bool startArray(qint32 &size, T &el)
     {
+        if (!currentValue().isArray()) {
+            warn(QStringLiteral(u"Error: expected an array at %1.").arg(currentPath()));
+            return false;
+        }
         startArrayF(size);
         using BaseT = std::decay_t<T>;
         if constexpr (std::is_base_of_v<QList<typename BaseT::value_type>, BaseT>) {

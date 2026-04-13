@@ -353,6 +353,21 @@ private slots:
         runTest(b);
         runTest(c);
     }
+
+    void testBadArray()
+    {
+        const QMap<QByteArray, int> unexpected{
+            { "a", 1 },
+            { "b", 2 },
+            { "c", 3 },
+        };
+        const QJsonValue unexpectedJson = toJsonValue(unexpected);
+
+        QTypedJson::Reader r(unexpectedJson);
+        QList<int> result;
+        QTypedJson::doWalk(r, result);
+        QCOMPARE(r.errorMessages(), { "Error: expected an array at ."_L1 });
+    }
 };
 
 } // namespace QTypedJson
