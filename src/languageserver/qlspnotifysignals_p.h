@@ -30,44 +30,44 @@ public:
     void registerHandlers(QLanguageServerProtocol *protocol);
 signals:
     void receivedCancelNotification(const QLspSpecification::Notifications::CancelParamsType &);
-    void receivedProgressNotification(const QLspSpecification::Notifications::ProgressParamsType &);
+    void receivedExitNotification(const QLspSpecification::Notifications::ExitParamsType &);
     void receivedInitializedNotification(
             const QLspSpecification::Notifications::InitializedParamsType &);
-    void receivedExitNotification(const QLspSpecification::Notifications::ExitParamsType &);
     void receivedLogTraceNotification(const QLspSpecification::Notifications::LogTraceParamsType &);
+    void receivedProgressNotification(const QLspSpecification::Notifications::ProgressParamsType &);
     void receivedSetTraceNotification(const QLspSpecification::Notifications::SetTraceParamsType &);
-    void receivedShowMessageNotification(
-            const QLspSpecification::Notifications::ShowMessageParamsType &);
-    void
-    receivedLogMessageNotification(const QLspSpecification::Notifications::LogMessageParamsType &);
-    void receivedWorkDoneProgressCancelNotification(
-            const QLspSpecification::Notifications::WorkDoneProgressCancelParamsType &);
     void receivedTelemetryEventNotification(
             const QLspSpecification::Notifications::TelemetryEventParamsType &);
-    void receivedDidChangeWorkspaceFoldersNotification(
-            const QLspSpecification::Notifications::DidChangeWorkspaceFoldersParamsType &);
+    void receivedDidChangeTextDocumentNotification(
+            const QLspSpecification::Notifications::DidChangeTextDocumentParamsType &);
+    void receivedDidCloseTextDocumentNotification(
+            const QLspSpecification::Notifications::DidCloseTextDocumentParamsType &);
+    void receivedDidOpenTextDocumentNotification(
+            const QLspSpecification::Notifications::DidOpenTextDocumentParamsType &);
+    void receivedDidSaveTextDocumentNotification(
+            const QLspSpecification::Notifications::DidSaveTextDocumentParamsType &);
+    void receivedPublishDiagnosticsNotification(
+            const QLspSpecification::Notifications::PublishDiagnosticsParamsType &);
+    void receivedWillSaveTextDocumentNotification(
+            const QLspSpecification::Notifications::WillSaveTextDocumentParamsType &);
+    void
+    receivedLogMessageNotification(const QLspSpecification::Notifications::LogMessageParamsType &);
+    void receivedShowMessageNotification(
+            const QLspSpecification::Notifications::ShowMessageParamsType &);
+    void receivedWorkDoneProgressCancelNotification(
+            const QLspSpecification::Notifications::WorkDoneProgressCancelParamsType &);
     void receivedDidChangeConfigurationNotification(
             const QLspSpecification::Notifications::DidChangeConfigurationParamsType &);
     void receivedDidChangeWatchedFilesNotification(
             const QLspSpecification::Notifications::DidChangeWatchedFilesParamsType &);
+    void receivedDidChangeWorkspaceFoldersNotification(
+            const QLspSpecification::Notifications::DidChangeWorkspaceFoldersParamsType &);
     void receivedCreateFilesNotification(
             const QLspSpecification::Notifications::CreateFilesParamsType &);
-    void receivedRenameFilesNotification(
-            const QLspSpecification::Notifications::RenameFilesParamsType &);
     void receivedDeleteFilesNotification(
             const QLspSpecification::Notifications::DeleteFilesParamsType &);
-    void receivedDidOpenTextDocumentNotification(
-            const QLspSpecification::Notifications::DidOpenTextDocumentParamsType &);
-    void receivedDidChangeTextDocumentNotification(
-            const QLspSpecification::Notifications::DidChangeTextDocumentParamsType &);
-    void receivedWillSaveTextDocumentNotification(
-            const QLspSpecification::Notifications::WillSaveTextDocumentParamsType &);
-    void receivedDidSaveTextDocumentNotification(
-            const QLspSpecification::Notifications::DidSaveTextDocumentParamsType &);
-    void receivedDidCloseTextDocumentNotification(
-            const QLspSpecification::Notifications::DidCloseTextDocumentParamsType &);
-    void receivedPublishDiagnosticsNotification(
-            const QLspSpecification::Notifications::PublishDiagnosticsParamsType &);
+    void receivedRenameFilesNotification(
+            const QLspSpecification::Notifications::RenameFilesParamsType &);
 };
 
 QT_END_NAMESPACE

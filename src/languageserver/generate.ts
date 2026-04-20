@@ -118,7 +118,6 @@ var specialStructs = {
     "TextDocumentContentChangeEvent" : null, // anonymous objects
     "SelectionRange" : null // recursive reference
 };
-
 const patchedStructMembers = new Map<string, Map<string, string>>([
     // documentChanges has a weird type, so simplify it
     [
@@ -157,6 +156,10 @@ const patchedStructMembers = new Map<string, Map<string, string>>([
 ]);
 
 var specialEnums = { "ErrorCodes" : null, "InitializeError" : "InitializeErrorCode" }
+
+const missingDependencies = new Map<string, string>([
+    [ "DocumentFilter", "DocumentSelector" ], // created by hand in postStruct
+]);
 
 var postStruct = {
     "DocumentFilter" : "using DocumentSelector = QList<DocumentFilter>;\n\n",
@@ -229,6 +232,13 @@ public:
 
 `
 };
+
+function stringCompare(a: string, b: string): number
+{
+    if (a == b)
+        return 0;
+    return a < b ? -1 : 1;
+}
 
 let enums: Enum[] = [];
 let enumNames = {};
@@ -554,7 +564,11 @@ function generate(fileNames: string[], options: ts.CompilerOptions): GeneratedTy
             }
 
             var contained = false;
-            let otherRe = new RegExp('\\b' + other.name + '\\b')
+            let otherRe = new RegExp('\\b'
+                                     + (missingDependencies.has(other.name)
+                                                ? missingDependencies.get(other.name)
+                                                : other.name)
+                                     + '\\b');
             var checkMember =
                     function(member) {
                 if (member.type.members) {
@@ -575,7 +589,9 @@ function generate(fileNames: string[], options: ts.CompilerOptions): GeneratedTy
         sortedStructs.push(struct);
     };
 
+    enums.sort((a, b) => stringCompare(a.name, b.name));
     enums.forEach(function(e) { typeDeclarations += generateEnum(e); });
+    structs.sort((a, b) => stringCompare(a.name, b.name));
     structs.forEach(doGenerateDeclarations);
 
     enums.forEach(function(e) {
@@ -1021,6 +1037,14 @@ function getRequest(path, dict): Request
     return res;
 }
 
+function requestOrNotificationToName(x, path) {
+    let name = x.params;
+    if (name.endsWith("Params"))
+        name = name.slice(0, name.length - "Params".length);
+    else
+        name = namify(path.split(".").pop());
+    return name
+}
 function parseStructuredProtocol(structuredProto, structuredSequence)
 {
     function handleGroups(path, dict)
@@ -1067,6 +1091,10 @@ function parseStructuredProtocol(structuredProto, structuredSequence)
     }
 
     let extractedInfo = {};
+    structuredSequence.filter(x => !structuredProto[x])
+            .sort((a: string, b: string) =>
+                          stringCompare(requestOrNotificationToName(structuredProto[a], a),
+                                        requestOrNotificationToName(structuredProto[b], b)));
     for (const key1 of structuredSequence) {
         let value1 = structuredProto[key1];
         extractedInfo[key1] = handleGroups(key1, value1);
@@ -1259,6 +1287,12 @@ void ProtocolGen::register${
         }
     }
 
+    structuredSequence.sort((a: string, b: string) => {
+        if (extractedInfo[a].params && extractedInfo[b].params)
+            return stringCompare(requestOrNotificationToName(extractedInfo[a], a),
+                                 requestOrNotificationToName(extractedInfo[b], b));
+        return extractedInfo[a].params ? -1 : 1;
+    });
     for (const key1 of structuredSequence) {
         let value1 = extractedInfo[key1];
         if (value1)
@@ -1299,6 +1333,7 @@ ts.sys.writeFile("protocolRaw.json", JSON.stringify(protoData, null, 2));
 let protoStructs =
         parseStructuredProtocol(protoData["structured"], protoData["structuredSequence"]);
 ts.sys.writeFile("protocol.json", JSON.stringify(protoStructs, null, 2));
+protoData["structuredSequence"].sort()
 let proto: GeneratedProtocol = generateProtocol(protoStructs, protoData["structuredSequence"]);
 
 ts.sys.writeFile("specification.ts", output);

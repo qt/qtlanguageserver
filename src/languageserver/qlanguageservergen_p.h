@@ -39,44 +39,19 @@ public:
     ~ProtocolGen();
 
     // # Send protocol
-    void notifyCancel(const CancelParams &params);
-    void notifyProgress(const ProgressParams &params);
-
-    // ClientCapability::GeneralRegularExpressions
-
-    // ClientCapability::WorkspaceWorkspaceEdit
-
-    void requestInitialize(
-            const InitializeParams &, std::function<void(const InitializeResult &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void notifyInitialized(const InitializedParams &params);
-    void
-    requestShutdown(const std::nullptr_t &, std::function<void()> responseHandler,
-                    ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void notifyExit(const std::nullptr_t &params);
-    void notifyLogTrace(const LogTraceParams &params);
-    void notifySetTrace(const SetTraceParams &params);
-    void notifyShowMessage(const ShowMessageParams &params);
-
-    // ClientCapability::WindowShowMessage
-    void requestShowMessageRequest(
-            const ShowMessageRequestParams &,
-            std::function<void(const std::variant<MessageActionItem, std::nullptr_t> &)>
+    void requestCallHierarchyIncomingCalls(
+            const CallHierarchyIncomingCallsParams &,
+            std::function<
+                    void(const std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ClientCapability::WindowShowDocument
-    void requestShowDocument(
-            const ShowDocumentParams &,
-            std::function<void(const ShowDocumentResult &)> responseHandler,
+    void requestCallHierarchyOutgoingCalls(
+            const CallHierarchyOutgoingCallsParams &,
+            std::function<
+                    void(const std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t> &)>
+                    responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void notifyLogMessage(const LogMessageParams &params);
-    void requestWorkDoneProgressCreate(
-            const WorkDoneProgressCreateParams &, std::function<void()> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void notifyWorkDoneProgressCancel(const WorkDoneProgressCancelParams &params);
-    void notifyTelemetryEvent(const QJsonObject &params);
+    void notifyCancel(const CancelParams &params);
     void requestRegistration(
             const RegistrationParams &, std::function<void()> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
@@ -84,111 +59,62 @@ public:
             const UnregistrationParams &, std::function<void()> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::WorkspaceWorkspaceFolders
-    // ClientCapability::WorkspaceWorkspaceFolders
-    void requestWorkspaceWorkspaceFolders(
-            const std::nullptr_t &,
-            std::function<void(const std::variant<QList<WorkspaceFolder>, std::nullptr_t> &)>
+    // ClientCapability::TextDocumentCodeActionResolveSupport
+    void requestCodeActionResolve(
+            const CodeAction &, std::function<void(const CodeAction &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ClientCapability::WorkspaceCodeLens
+    void requestCodeLensRefresh(
+            const std::nullptr_t &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    void requestCodeLensResolve(
+            const CodeLens &, std::function<void(const CodeLens &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void requestCompletionItemResolve(
+            const CompletionItem &, std::function<void(const CompletionItem &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void requestDocumentLinkResolve(
+            const DocumentLink &, std::function<void(const DocumentLink &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void notifyExit(const std::nullptr_t &params);
+    void requestInitialize(
+            const InitializeParams &, std::function<void(const InitializeResult &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void notifyInitialized(const InitializedParams &params);
+    void notifyLogTrace(const LogTraceParams &params);
+    void notifyProgress(const ProgressParams &params);
+
+    // ClientCapability::GeneralRegularExpressions
+
+    void notifySetTrace(const SetTraceParams &params);
+    void
+    requestShutdown(const std::nullptr_t &, std::function<void()> responseHandler,
+                    ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void notifyTelemetryEvent(const QJsonObject &params);
+
+    // ServerCapability::CodeActionProvider
+    // ClientCapability::TextDocumentCodeAction
+    void requestCodeAction(
+            const CodeActionParams &,
+            std::function<void(
+                    const std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    void notifyDidChangeWorkspaceFolders(const DidChangeWorkspaceFoldersParams &params);
+    // ServerCapability::CodeLensProvider
+    // ClientCapability::TextDocumentCodeLens
+    void
+    requestCodeLens(const CodeLensParams &,
+                    std::function<void(const std::variant<QList<CodeLens>, std::nullptr_t> &)>
+                            responseHandler,
+                    ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ClientCapability::WorkspaceDidChangeConfiguration
-    void notifyDidChangeConfiguration(const DidChangeConfigurationParams &params);
-
-    // ClientCapability::WorkspaceConfiguration
-    void requestConfiguration(
-            const ConfigurationParams &,
-            std::function<void(const QList<QJsonValue> &)> responseHandler,
+    void requestColorPresentation(
+            const ColorPresentationParams &,
+            std::function<void(const QList<ColorPresentation> &)> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ClientCapability::WorkspaceDidChangeWatchedFiles
-    void notifyDidChangeWatchedFiles(const DidChangeWatchedFilesParams &params);
-
-    // ServerCapability::WorkspaceSymbolProvider
-    // ClientCapability::WorkspaceSymbol
-    void requestWorkspaceSymbol(
-            const WorkspaceSymbolParams &,
-            std::function<void(const std::variant<QList<SymbolInformation>, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::ExecuteCommandProvider
-    // ClientCapability::WorkspaceExecuteCommand
-    void requestExecuteCommand(
-            const ExecuteCommandParams &,
-            std::function<void(const std::variant<QJsonValue, std::nullptr_t> &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ClientCapability::WorkspaceApplyEdit
-    void requestApplyWorkspaceEdit(
-            const ApplyWorkspaceEditParams &,
-            std::function<void(const ApplyWorkspaceEditResponse &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::WorkspaceFileOperationsWillCreate
-    // ClientCapability::WorkspaceFileOperationsWillCreate
-    void requestCreateFiles(
-            const CreateFilesParams &,
-            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::WorkspaceFileOperationsDidCreate
-    // ClientCapability::WorkspaceFileOperationsDidCreate
-    void notifyCreateFiles(const CreateFilesParams &params);
-
-    // ServerCapability::WorkspaceFileOperationsWillRename
-    // ClientCapability::WorkspaceFileOperationsWillRename
-    void requestRenameFiles(
-            const RenameFilesParams &,
-            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::WorkspaceFileOperationsDidRename
-    // ClientCapability::WorkspaceFileOperationsDidRename
-    void notifyRenameFiles(const RenameFilesParams &params);
-
-    // ServerCapability::WorkspaceFileOperationsWillDelete
-    // ClientCapability::WorkspaceFileOperationsWillDelete
-    void requestDeleteFiles(
-            const DeleteFilesParams &,
-            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::WorkspaceFileOperationsDidDelete
-    // ClientCapability::WorkspaceFileOperationsDidDelete
-    void notifyDeleteFiles(const DeleteFilesParams &params);
-
-    // ServerCapability::TextDocumentSync
-    // ClientCapability::TextDocumentSynchronizationDynamicRegistration
-
-    void notifyDidOpenTextDocument(const DidOpenTextDocumentParams &params);
-    void notifyDidChangeTextDocument(const DidChangeTextDocumentParams &params);
-
-    // ServerCapability::TextDocumentSyncWillSave
-    // ClientCapability::TextDocumentSynchronizationWillSave
-    void notifyWillSaveTextDocument(const WillSaveTextDocumentParams &params);
-
-    // ServerCapability::TextDocumentSyncWillSaveWaitUntil
-    // ClientCapability::TextDocumentSynchronizationWillSaveWaitUntil
-    void requestWillSaveTextDocument(
-            const WillSaveTextDocumentParams &,
-            std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::TextDocumentSyncSave
-    // ClientCapability::TextDocumentSynchronizationDidSave
-    void notifyDidSaveTextDocument(const DidSaveTextDocumentParams &params);
-
-    void notifyDidCloseTextDocument(const DidCloseTextDocumentParams &params);
-
-    // ClientCapability::TextDocumentPublishDiagnostics
-    void notifyPublishDiagnostics(const PublishDiagnosticsParams &params);
 
     // ServerCapability::CompletionProvider
     // ClientCapability::TextDocumentCompletion
@@ -196,25 +122,6 @@ public:
             const CompletionParams &,
             std::function<void(
                     const std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void requestCompletionItemResolve(
-            const CompletionItem &, std::function<void(const CompletionItem &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::HoverProvider
-    // ClientCapability::TextDocumentHover
-    void
-    requestHover(const HoverParams &,
-                 std::function<void(const std::variant<Hover, std::nullptr_t> &)> responseHandler,
-                 ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::SignatureHelpProvider
-    // ClientCapability::TextDocumentSignatureHelp
-    void requestSignatureHelp(
-            const SignatureHelpParams &,
-            std::function<void(const std::variant<SignatureHelp, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
@@ -236,30 +143,19 @@ public:
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::TypeDefinitionProvider
-    // ClientCapability::TextDocumentTypeDefinition
-    void requestTypeDefinition(
-            const TypeDefinitionParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void notifyDidChangeTextDocument(const DidChangeTextDocumentParams &params);
+    void notifyDidCloseTextDocument(const DidCloseTextDocumentParams &params);
+    void notifyDidOpenTextDocument(const DidOpenTextDocumentParams &params);
 
-    // ServerCapability::ImplementationProvider
-    // ClientCapability::TextDocumentImplementation
-    void requestImplementation(
-            const ImplementationParams &,
-            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                  std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    // ServerCapability::TextDocumentSyncSave
+    // ClientCapability::TextDocumentSynchronizationDidSave
+    void notifyDidSaveTextDocument(const DidSaveTextDocumentParams &params);
 
-    // ServerCapability::ReferencesProvider
-    // ClientCapability::TextDocumentReferences
-    void requestReference(
-            const ReferenceParams &,
-            std::function<void(const std::variant<QList<Location>, std::nullptr_t> &)>
-                    responseHandler,
+    // ServerCapability::ColorProvider
+    // ClientCapability::TextDocumentColorProvider
+    void requestDocumentColor(
+            const DocumentColorParams &,
+            std::function<void(const QList<ColorInformation> &)> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
     // ServerCapability::DocumentHighlightProvider
@@ -267,6 +163,14 @@ public:
     void requestDocumentHighlight(
             const DocumentHighlightParams &,
             std::function<void(const std::variant<QList<DocumentHighlight>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::DocumentLinkProvider
+    // ClientCapability::TextDocumentDocumentLink
+    void requestDocumentLink(
+            const DocumentLinkParams &,
+            std::function<void(const std::variant<QList<DocumentLink>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
@@ -279,59 +183,12 @@ public:
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::CodeActionProvider
-    // ClientCapability::TextDocumentCodeAction
-    void requestCodeAction(
-            const CodeActionParams &,
-            std::function<void(
-                    const std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t> &)>
+    // ServerCapability::FoldingRangeProvider
+    // ClientCapability::TextDocumentFoldingRange
+    void requestFoldingRange(
+            const FoldingRangeParams &,
+            std::function<void(const std::variant<QList<FoldingRange>, std::nullptr_t> &)>
                     responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ClientCapability::TextDocumentCodeActionResolveSupport
-    void requestCodeActionResolve(
-            const CodeAction &, std::function<void(const CodeAction &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::CodeLensProvider
-    // ClientCapability::TextDocumentCodeLens
-    void
-    requestCodeLens(const CodeLensParams &,
-                    std::function<void(const std::variant<QList<CodeLens>, std::nullptr_t> &)>
-                            responseHandler,
-                    ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void requestCodeLensResolve(
-            const CodeLens &, std::function<void(const CodeLens &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ClientCapability::WorkspaceCodeLens
-    void requestCodeLensRefresh(
-            const std::nullptr_t &, std::function<void()> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::DocumentLinkProvider
-    // ClientCapability::TextDocumentDocumentLink
-    void requestDocumentLink(
-            const DocumentLinkParams &,
-            std::function<void(const std::variant<QList<DocumentLink>, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void requestDocumentLinkResolve(
-            const DocumentLink &, std::function<void(const DocumentLink &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::ColorProvider
-    // ClientCapability::TextDocumentColorProvider
-    void requestDocumentColor(
-            const DocumentColorParams &,
-            std::function<void(const QList<ColorInformation> &)> responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void requestColorPresentation(
-            const ColorPresentationParams &,
-            std::function<void(const QList<ColorPresentation> &)> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
     // ServerCapability::DocumentFormattingProvider
@@ -342,50 +199,41 @@ public:
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::DocumentRangeFormattingProvider
-    // ClientCapability::TextDocumentRangeFormatting
-    void requestDocumentRangeFormatting(
-            const DocumentRangeFormattingParams &,
-            std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
+    // ServerCapability::HoverProvider
+    // ClientCapability::TextDocumentHover
+    void
+    requestHover(const HoverParams &,
+                 std::function<void(const std::variant<Hover, std::nullptr_t> &)> responseHandler,
+                 ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::ImplementationProvider
+    // ClientCapability::TextDocumentImplementation
+    void requestImplementation(
+            const ImplementationParams &,
+            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                  std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::LinkedEditingRangeProvider
+    void requestLinkedEditingRange(
+            const LinkedEditingRangeParams &,
+            std::function<void(const std::variant<LinkedEditingRanges, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::MonikerProvider
+    void
+    requestMoniker(const MonikerParams &,
+                   std::function<void(const std::variant<QList<Moniker>, std::nullptr_t> &)>
+                           responseHandler,
+                   ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
     // ServerCapability::DocumentOnTypeFormattingProvider
     // ClientCapability::TextDocumentOnTypeFormatting
     void requestDocumentOnTypeFormatting(
             const DocumentOnTypeFormattingParams &,
             std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::RenameProvider
-    // ClientCapability::TextDocumentRename
-    void
-    requestRename(const RenameParams &,
-                  std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
-                          responseHandler,
-                  ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    void requestPrepareRename(
-            const PrepareRenameParams &,
-            std::function<void(const std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                                  std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::FoldingRangeProvider
-    // ClientCapability::TextDocumentFoldingRange
-    void requestFoldingRange(
-            const FoldingRangeParams &,
-            std::function<void(const std::variant<QList<FoldingRange>, std::nullptr_t> &)>
-                    responseHandler,
-            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-
-    // ServerCapability::SelectionRangeProvider
-    // ClientCapability::TextDocumentSelectionRange
-    void requestSelectionRange(
-            const SelectionRangeParams &,
-            std::function<void(const std::variant<QList<SelectionRange>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
@@ -397,16 +245,45 @@ public:
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    void requestCallHierarchyIncomingCalls(
-            const CallHierarchyIncomingCallsParams &,
-            std::function<
-                    void(const std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t> &)>
+    void requestPrepareRename(
+            const PrepareRenameParams &,
+            std::function<void(const std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
+                                                  std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
-    void requestCallHierarchyOutgoingCalls(
-            const CallHierarchyOutgoingCallsParams &,
-            std::function<
-                    void(const std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t> &)>
+
+    // ClientCapability::TextDocumentPublishDiagnostics
+    void notifyPublishDiagnostics(const PublishDiagnosticsParams &params);
+
+    // ServerCapability::DocumentRangeFormattingProvider
+    // ClientCapability::TextDocumentRangeFormatting
+    void requestDocumentRangeFormatting(
+            const DocumentRangeFormattingParams &,
+            std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::ReferencesProvider
+    // ClientCapability::TextDocumentReferences
+    void requestReference(
+            const ReferenceParams &,
+            std::function<void(const std::variant<QList<Location>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::RenameProvider
+    // ClientCapability::TextDocumentRename
+    void
+    requestRename(const RenameParams &,
+                  std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
+                          responseHandler,
+                  ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::SelectionRangeProvider
+    // ClientCapability::TextDocumentSelectionRange
+    void requestSelectionRange(
+            const SelectionRangeParams &,
+            std::function<void(const std::variant<QList<SelectionRange>, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
@@ -434,68 +311,156 @@ public:
             const std::nullptr_t &, std::function<void()> responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::LinkedEditingRangeProvider
-    void requestLinkedEditingRange(
-            const LinkedEditingRangeParams &,
-            std::function<void(const std::variant<LinkedEditingRanges, std::nullptr_t> &)>
+    // ServerCapability::SignatureHelpProvider
+    // ClientCapability::TextDocumentSignatureHelp
+    void requestSignatureHelp(
+            const SignatureHelpParams &,
+            std::function<void(const std::variant<SignatureHelp, std::nullptr_t> &)>
                     responseHandler,
             ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ServerCapability::MonikerProvider
-    void
-    requestMoniker(const MonikerParams &,
-                   std::function<void(const std::variant<QList<Moniker>, std::nullptr_t> &)>
-                           responseHandler,
-                   ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    // ServerCapability::TextDocumentSync
+    // ClientCapability::TextDocumentSynchronizationDynamicRegistration
 
-    // # receive protocol
-    void registerCancelNotificationHandler(
-            const std::function<void(const QByteArray &, const CancelParams &)> &handler);
-    void registerProgressNotificationHandler(
-            const std::function<void(const QByteArray &, const ProgressParams &)> &handler);
+    // ServerCapability::TypeDefinitionProvider
+    // ClientCapability::TextDocumentTypeDefinition
+    void requestTypeDefinition(
+            const TypeDefinitionParams &,
+            std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                  std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ClientCapability::GeneralRegularExpressions
+    // ServerCapability::TextDocumentSyncWillSave
+    // ClientCapability::TextDocumentSynchronizationWillSave
+    void notifyWillSaveTextDocument(const WillSaveTextDocumentParams &params);
+
+    // ServerCapability::TextDocumentSyncWillSaveWaitUntil
+    // ClientCapability::TextDocumentSynchronizationWillSaveWaitUntil
+    void requestWillSaveTextDocument(
+            const WillSaveTextDocumentParams &,
+            std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    void notifyLogMessage(const LogMessageParams &params);
+
+    // ClientCapability::WindowShowDocument
+    void requestShowDocument(
+            const ShowDocumentParams &,
+            std::function<void(const ShowDocumentResult &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    void notifyShowMessage(const ShowMessageParams &params);
+
+    // ClientCapability::WindowShowMessage
+    void requestShowMessageRequest(
+            const ShowMessageRequestParams &,
+            std::function<void(const std::variant<MessageActionItem, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    void notifyWorkDoneProgressCancel(const WorkDoneProgressCancelParams &params);
+    void requestWorkDoneProgressCreate(
+            const WorkDoneProgressCreateParams &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
     // ClientCapability::WorkspaceWorkspaceEdit
 
-    void registerInitializeRequestHandler(
-            const std::function<void(const QByteArray &, const InitializeParams &,
-                                     LSPResponse<InitializeResult> &&)> &handler);
-    void registerInitializedNotificationHandler(
-            const std::function<void(const QByteArray &, const InitializedParams &)> &handler);
-    void registerShutdownRequestHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                     LSPResponse<std::nullptr_t> &&)> &handler);
-    void registerExitNotificationHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler);
-    void registerLogTraceNotificationHandler(
-            const std::function<void(const QByteArray &, const LogTraceParams &)> &handler);
-    void registerSetTraceNotificationHandler(
-            const std::function<void(const QByteArray &, const SetTraceParams &)> &handler);
-    void registerShowMessageNotificationHandler(
-            const std::function<void(const QByteArray &, const ShowMessageParams &)> &handler);
+    // ClientCapability::WorkspaceApplyEdit
+    void requestApplyWorkspaceEdit(
+            const ApplyWorkspaceEditParams &,
+            std::function<void(const ApplyWorkspaceEditResponse &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ClientCapability::WindowShowMessage
-    void registerShowMessageRequestRequestHandler(
-            const std::function<void(
-                    const QByteArray &, const ShowMessageRequestParams &,
-                    LSPResponse<std::variant<MessageActionItem, std::nullptr_t>> &&)> &handler);
+    // ClientCapability::WorkspaceConfiguration
+    void requestConfiguration(
+            const ConfigurationParams &,
+            std::function<void(const QList<QJsonValue> &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
 
-    // ClientCapability::WindowShowDocument
-    void registerShowDocumentRequestHandler(
-            const std::function<void(const QByteArray &, const ShowDocumentParams &,
-                                     LSPResponse<ShowDocumentResult> &&)> &handler);
+    // ClientCapability::WorkspaceDidChangeConfiguration
+    void notifyDidChangeConfiguration(const DidChangeConfigurationParams &params);
 
-    void registerLogMessageNotificationHandler(
-            const std::function<void(const QByteArray &, const LogMessageParams &)> &handler);
-    void registerWorkDoneProgressCreateRequestHandler(
-            const std::function<void(const QByteArray &, const WorkDoneProgressCreateParams &,
-                                     LSPResponse<std::nullptr_t> &&)> &handler);
-    void registerWorkDoneProgressCancelNotificationHandler(
-            const std::function<void(const QByteArray &, const WorkDoneProgressCancelParams &)>
-                    &handler);
-    void registerTelemetryEventNotificationHandler(
-            const std::function<void(const QByteArray &, const QJsonObject &)> &handler);
+    // ClientCapability::WorkspaceDidChangeWatchedFiles
+    void notifyDidChangeWatchedFiles(const DidChangeWatchedFilesParams &params);
+
+    void notifyDidChangeWorkspaceFolders(const DidChangeWorkspaceFoldersParams &params);
+
+    // ServerCapability::WorkspaceFileOperationsDidCreate
+    // ClientCapability::WorkspaceFileOperationsDidCreate
+    void notifyCreateFiles(const CreateFilesParams &params);
+
+    // ServerCapability::WorkspaceFileOperationsDidDelete
+    // ClientCapability::WorkspaceFileOperationsDidDelete
+    void notifyDeleteFiles(const DeleteFilesParams &params);
+
+    // ServerCapability::WorkspaceFileOperationsDidRename
+    // ClientCapability::WorkspaceFileOperationsDidRename
+    void notifyRenameFiles(const RenameFilesParams &params);
+
+    // ServerCapability::ExecuteCommandProvider
+    // ClientCapability::WorkspaceExecuteCommand
+    void requestExecuteCommand(
+            const ExecuteCommandParams &,
+            std::function<void(const std::variant<QJsonValue, std::nullptr_t> &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::WorkspaceSymbolProvider
+    // ClientCapability::WorkspaceSymbol
+    void requestWorkspaceSymbol(
+            const WorkspaceSymbolParams &,
+            std::function<void(const std::variant<QList<SymbolInformation>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::WorkspaceFileOperationsWillCreate
+    // ClientCapability::WorkspaceFileOperationsWillCreate
+    void requestCreateFiles(
+            const CreateFilesParams &,
+            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::WorkspaceFileOperationsWillDelete
+    // ClientCapability::WorkspaceFileOperationsWillDelete
+    void requestDeleteFiles(
+            const DeleteFilesParams &,
+            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::WorkspaceFileOperationsWillRename
+    // ClientCapability::WorkspaceFileOperationsWillRename
+    void requestRenameFiles(
+            const RenameFilesParams &,
+            std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // ServerCapability::WorkspaceWorkspaceFolders
+    // ClientCapability::WorkspaceWorkspaceFolders
+    void requestWorkspaceWorkspaceFolders(
+            const std::nullptr_t &,
+            std::function<void(const std::variant<QList<WorkspaceFolder>, std::nullptr_t> &)>
+                    responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+
+    // # receive protocol
+    void registerCallHierarchyIncomingCallsRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const CallHierarchyIncomingCallsParams &,
+                         LSPPartialResponse<
+                                 std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>,
+                                 QList<CallHierarchyIncomingCall>> &&)> &handler);
+    void registerCallHierarchyOutgoingCallsRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const CallHierarchyOutgoingCallsParams &,
+                         LSPPartialResponse<
+                                 std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>,
+                                 QList<CallHierarchyOutgoingCall>> &&)> &handler);
+    void registerCancelNotificationHandler(
+            const std::function<void(const QByteArray &, const CancelParams &)> &handler);
     void registerRegistrationRequestHandler(
             const std::function<void(const QByteArray &, const RegistrationParams &,
                                      LSPResponse<std::nullptr_t> &&)> &handler);
@@ -503,126 +468,68 @@ public:
             const std::function<void(const QByteArray &, const UnregistrationParams &,
                                      LSPResponse<std::nullptr_t> &&)> &handler);
 
-    // ServerCapability::WorkspaceWorkspaceFolders
-    // ClientCapability::WorkspaceWorkspaceFolders
-    void registerWorkspaceWorkspaceFoldersRequestHandler(
+    // ClientCapability::TextDocumentCodeActionResolveSupport
+    void registerCodeActionResolveRequestHandler(
+            const std::function<void(const QByteArray &, const CodeAction &,
+                                     LSPResponse<CodeAction> &&)> &handler);
+
+    // ClientCapability::WorkspaceCodeLens
+    void registerCodeLensRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+
+    void registerCodeLensResolveRequestHandler(
+            const std::function<void(const QByteArray &, const CodeLens &,
+                                     LSPResponse<CodeLens> &&)> &handler);
+    void registerCompletionItemResolveRequestHandler(
+            const std::function<void(const QByteArray &, const CompletionItem &,
+                                     LSPResponse<CompletionItem> &&)> &handler);
+    void registerDocumentLinkResolveRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentLink &,
+                                     LSPResponse<DocumentLink> &&)> &handler);
+    void registerExitNotificationHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &)> &handler);
+    void registerInitializeRequestHandler(
+            const std::function<void(const QByteArray &, const InitializeParams &,
+                                     LSPResponse<InitializeResult> &&)> &handler);
+    void registerInitializedNotificationHandler(
+            const std::function<void(const QByteArray &, const InitializedParams &)> &handler);
+    void registerLogTraceNotificationHandler(
+            const std::function<void(const QByteArray &, const LogTraceParams &)> &handler);
+    void registerProgressNotificationHandler(
+            const std::function<void(const QByteArray &, const ProgressParams &)> &handler);
+
+    // ClientCapability::GeneralRegularExpressions
+
+    void registerSetTraceNotificationHandler(
+            const std::function<void(const QByteArray &, const SetTraceParams &)> &handler);
+    void registerShutdownRequestHandler(
+            const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+    void registerTelemetryEventNotificationHandler(
+            const std::function<void(const QByteArray &, const QJsonObject &)> &handler);
+
+    // ServerCapability::CodeActionProvider
+    // ClientCapability::TextDocumentCodeAction
+    void registerCodeActionRequestHandler(
+            const std::function<void(
+                    const QByteArray &, const CodeActionParams &,
+                    LSPPartialResponse<
+                            std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>,
+                            QList<std::variant<Command, CodeAction>>> &&)> &handler);
+
+    // ServerCapability::CodeLensProvider
+    // ClientCapability::TextDocumentCodeLens
+    void registerCodeLensRequestHandler(
             const std::function<
-                    void(const QByteArray &, const std::nullptr_t &,
-                         LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> &&)>
-                    &handler);
+                    void(const QByteArray &, const CodeLensParams &,
+                         LSPPartialResponse<std::variant<QList<CodeLens>, std::nullptr_t>,
+                                            QList<CodeLens>> &&)> &handler);
 
-    void registerDidChangeWorkspaceFoldersNotificationHandler(
-            const std::function<void(const QByteArray &, const DidChangeWorkspaceFoldersParams &)>
-                    &handler);
-
-    // ClientCapability::WorkspaceDidChangeConfiguration
-    void registerDidChangeConfigurationNotificationHandler(
-            const std::function<void(const QByteArray &, const DidChangeConfigurationParams &)>
-                    &handler);
-
-    // ClientCapability::WorkspaceConfiguration
-    void registerConfigurationRequestHandler(
-            const std::function<void(const QByteArray &, const ConfigurationParams &,
-                                     LSPResponse<QList<QJsonValue>> &&)> &handler);
-
-    // ClientCapability::WorkspaceDidChangeWatchedFiles
-    void registerDidChangeWatchedFilesNotificationHandler(
-            const std::function<void(const QByteArray &, const DidChangeWatchedFilesParams &)>
-                    &handler);
-
-    // ServerCapability::WorkspaceSymbolProvider
-    // ClientCapability::WorkspaceSymbol
-    void registerWorkspaceSymbolRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const WorkspaceSymbolParams &,
-                         LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
-                                            QList<SymbolInformation>> &&)> &handler);
-
-    // ServerCapability::ExecuteCommandProvider
-    // ClientCapability::WorkspaceExecuteCommand
-    void registerExecuteCommandRequestHandler(
-            const std::function<void(const QByteArray &, const ExecuteCommandParams &,
-                                     LSPResponse<std::variant<QJsonValue, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ClientCapability::WorkspaceApplyEdit
-    void registerApplyWorkspaceEditRequestHandler(
-            const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
-                                     LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler);
-
-    // ServerCapability::WorkspaceFileOperationsWillCreate
-    // ClientCapability::WorkspaceFileOperationsWillCreate
-    void registerCreateFilesRequestHandler(
-            const std::function<void(const QByteArray &, const CreateFilesParams &,
-                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::WorkspaceFileOperationsDidCreate
-    // ClientCapability::WorkspaceFileOperationsDidCreate
-    void registerCreateFilesNotificationHandler(
-            const std::function<void(const QByteArray &, const CreateFilesParams &)> &handler);
-
-    // ServerCapability::WorkspaceFileOperationsWillRename
-    // ClientCapability::WorkspaceFileOperationsWillRename
-    void registerRenameFilesRequestHandler(
-            const std::function<void(const QByteArray &, const RenameFilesParams &,
-                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::WorkspaceFileOperationsDidRename
-    // ClientCapability::WorkspaceFileOperationsDidRename
-    void registerRenameFilesNotificationHandler(
-            const std::function<void(const QByteArray &, const RenameFilesParams &)> &handler);
-
-    // ServerCapability::WorkspaceFileOperationsWillDelete
-    // ClientCapability::WorkspaceFileOperationsWillDelete
-    void registerDeleteFilesRequestHandler(
-            const std::function<void(const QByteArray &, const DeleteFilesParams &,
-                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::WorkspaceFileOperationsDidDelete
-    // ClientCapability::WorkspaceFileOperationsDidDelete
-    void registerDeleteFilesNotificationHandler(
-            const std::function<void(const QByteArray &, const DeleteFilesParams &)> &handler);
-
-    // ServerCapability::TextDocumentSync
-    // ClientCapability::TextDocumentSynchronizationDynamicRegistration
-
-    void registerDidOpenTextDocumentNotificationHandler(
-            const std::function<void(const QByteArray &, const DidOpenTextDocumentParams &)>
-                    &handler);
-    void registerDidChangeTextDocumentNotificationHandler(
-            const std::function<void(const QByteArray &, const DidChangeTextDocumentParams &)>
-                    &handler);
-
-    // ServerCapability::TextDocumentSyncWillSave
-    // ClientCapability::TextDocumentSynchronizationWillSave
-    void registerWillSaveTextDocumentNotificationHandler(
-            const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &)>
-                    &handler);
-
-    // ServerCapability::TextDocumentSyncWillSaveWaitUntil
-    // ClientCapability::TextDocumentSynchronizationWillSaveWaitUntil
-    void registerWillSaveTextDocumentRequestHandler(
-            const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &,
-                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::TextDocumentSyncSave
-    // ClientCapability::TextDocumentSynchronizationDidSave
-    void registerDidSaveTextDocumentNotificationHandler(
-            const std::function<void(const QByteArray &, const DidSaveTextDocumentParams &)>
-                    &handler);
-
-    void registerDidCloseTextDocumentNotificationHandler(
-            const std::function<void(const QByteArray &, const DidCloseTextDocumentParams &)>
-                    &handler);
-
-    // ClientCapability::TextDocumentPublishDiagnostics
-    void registerPublishDiagnosticsNotificationHandler(
-            const std::function<void(const QByteArray &, const PublishDiagnosticsParams &)>
-                    &handler);
+    void registerColorPresentationRequestHandler(
+            const std::function<void(const QByteArray &, const ColorPresentationParams &,
+                                     LSPPartialResponse<QList<ColorPresentation>,
+                                                        QList<ColorPresentation>> &&)> &handler);
 
     // ServerCapability::CompletionProvider
     // ClientCapability::TextDocumentCompletion
@@ -632,24 +539,6 @@ public:
                     LSPPartialResponse<
                             std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
                             std::variant<CompletionList, QList<CompletionItem>>> &&)> &handler);
-
-    void registerCompletionItemResolveRequestHandler(
-            const std::function<void(const QByteArray &, const CompletionItem &,
-                                     LSPResponse<CompletionItem> &&)> &handler);
-
-    // ServerCapability::HoverProvider
-    // ClientCapability::TextDocumentHover
-    void registerHoverRequestHandler(
-            const std::function<void(const QByteArray &, const HoverParams &,
-                                     LSPResponse<std::variant<Hover, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::SignatureHelpProvider
-    // ClientCapability::TextDocumentSignatureHelp
-    void registerSignatureHelpRequestHandler(
-            const std::function<void(const QByteArray &, const SignatureHelpParams &,
-                                     LSPResponse<std::variant<SignatureHelp, std::nullptr_t>> &&)>
-                    &handler);
 
     // ServerCapability::DeclarationProvider
     // ClientCapability::TextDocumentDeclaration
@@ -671,14 +560,75 @@ public:
                                             std::variant<QList<Location>, QList<LocationLink>>> &&)>
                     &handler);
 
-    // ServerCapability::TypeDefinitionProvider
-    // ClientCapability::TextDocumentTypeDefinition
-    void registerTypeDefinitionRequestHandler(
+    void registerDidChangeTextDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidChangeTextDocumentParams &)>
+                    &handler);
+    void registerDidCloseTextDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidCloseTextDocumentParams &)>
+                    &handler);
+    void registerDidOpenTextDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidOpenTextDocumentParams &)>
+                    &handler);
+
+    // ServerCapability::TextDocumentSyncSave
+    // ClientCapability::TextDocumentSynchronizationDidSave
+    void registerDidSaveTextDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const DidSaveTextDocumentParams &)>
+                    &handler);
+
+    // ServerCapability::ColorProvider
+    // ClientCapability::TextDocumentColorProvider
+    void registerDocumentColorRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentColorParams &,
+                                     LSPPartialResponse<QList<ColorInformation>,
+                                                        QList<ColorInformation>> &&)> &handler);
+
+    // ServerCapability::DocumentHighlightProvider
+    // ClientCapability::TextDocumentDocumentHighlight
+    void registerDocumentHighlightRequestHandler(
             const std::function<
-                    void(const QByteArray &, const TypeDefinitionParams &,
-                         LSPPartialResponse<std::variant<Location, QList<Location>,
-                                                         QList<LocationLink>, std::nullptr_t>,
-                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                    void(const QByteArray &, const DocumentHighlightParams &,
+                         LSPPartialResponse<std::variant<QList<DocumentHighlight>, std::nullptr_t>,
+                                            QList<DocumentHighlight>> &&)> &handler);
+
+    // ServerCapability::DocumentLinkProvider
+    // ClientCapability::TextDocumentDocumentLink
+    void registerDocumentLinkRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const DocumentLinkParams &,
+                         LSPPartialResponse<std::variant<QList<DocumentLink>, std::nullptr_t>,
+                                            QList<DocumentLink>> &&)> &handler);
+
+    // ServerCapability::DocumentSymbolProvider
+    // ClientCapability::TextDocumentDocumentSymbol
+    void registerDocumentSymbolRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const DocumentSymbolParams &,
+                         LSPPartialResponse<std::variant<QList<DocumentSymbol>,
+                                                         QList<SymbolInformation>, std::nullptr_t>,
+                                            std::variant<QList<DocumentSymbol>,
+                                                         QList<SymbolInformation>>> &&)> &handler);
+
+    // ServerCapability::FoldingRangeProvider
+    // ClientCapability::TextDocumentFoldingRange
+    void registerFoldingRangeRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const FoldingRangeParams &,
+                         LSPPartialResponse<std::variant<QList<FoldingRange>, std::nullptr_t>,
+                                            QList<FoldingRange>> &&)> &handler);
+
+    // ServerCapability::DocumentFormattingProvider
+    // ClientCapability::TextDocumentFormatting
+    void registerDocumentFormattingRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentFormattingParams &,
+                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::HoverProvider
+    // ClientCapability::TextDocumentHover
+    void registerHoverRequestHandler(
+            const std::function<void(const QByteArray &, const HoverParams &,
+                                     LSPResponse<std::variant<Hover, std::nullptr_t>> &&)>
                     &handler);
 
     // ServerCapability::ImplementationProvider
@@ -691,100 +641,18 @@ public:
                                             std::variant<QList<Location>, QList<LocationLink>>> &&)>
                     &handler);
 
-    // ServerCapability::ReferencesProvider
-    // ClientCapability::TextDocumentReferences
-    void registerReferenceRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const ReferenceParams &,
-                         LSPPartialResponse<std::variant<QList<Location>, std::nullptr_t>,
-                                            QList<Location>> &&)> &handler);
-
-    // ServerCapability::DocumentHighlightProvider
-    // ClientCapability::TextDocumentDocumentHighlight
-    void registerDocumentHighlightRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const DocumentHighlightParams &,
-                         LSPPartialResponse<std::variant<QList<DocumentHighlight>, std::nullptr_t>,
-                                            QList<DocumentHighlight>> &&)> &handler);
-
-    // ServerCapability::DocumentSymbolProvider
-    // ClientCapability::TextDocumentDocumentSymbol
-    void registerDocumentSymbolRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const DocumentSymbolParams &,
-                         LSPPartialResponse<std::variant<QList<DocumentSymbol>,
-                                                         QList<SymbolInformation>, std::nullptr_t>,
-                                            std::variant<QList<DocumentSymbol>,
-                                                         QList<SymbolInformation>>> &&)> &handler);
-
-    // ServerCapability::CodeActionProvider
-    // ClientCapability::TextDocumentCodeAction
-    void registerCodeActionRequestHandler(
+    // ServerCapability::LinkedEditingRangeProvider
+    void registerLinkedEditingRangeRequestHandler(
             const std::function<void(
-                    const QByteArray &, const CodeActionParams &,
-                    LSPPartialResponse<
-                            std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>,
-                            QList<std::variant<Command, CodeAction>>> &&)> &handler);
+                    const QByteArray &, const LinkedEditingRangeParams &,
+                    LSPResponse<std::variant<LinkedEditingRanges, std::nullptr_t>> &&)> &handler);
 
-    // ClientCapability::TextDocumentCodeActionResolveSupport
-    void registerCodeActionResolveRequestHandler(
-            const std::function<void(const QByteArray &, const CodeAction &,
-                                     LSPResponse<CodeAction> &&)> &handler);
-
-    // ServerCapability::CodeLensProvider
-    // ClientCapability::TextDocumentCodeLens
-    void registerCodeLensRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const CodeLensParams &,
-                         LSPPartialResponse<std::variant<QList<CodeLens>, std::nullptr_t>,
-                                            QList<CodeLens>> &&)> &handler);
-
-    void registerCodeLensResolveRequestHandler(
-            const std::function<void(const QByteArray &, const CodeLens &,
-                                     LSPResponse<CodeLens> &&)> &handler);
-
-    // ClientCapability::WorkspaceCodeLens
-    void registerCodeLensRefreshRequestHandler(
-            const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                     LSPResponse<std::nullptr_t> &&)> &handler);
-
-    // ServerCapability::DocumentLinkProvider
-    // ClientCapability::TextDocumentDocumentLink
-    void registerDocumentLinkRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const DocumentLinkParams &,
-                         LSPPartialResponse<std::variant<QList<DocumentLink>, std::nullptr_t>,
-                                            QList<DocumentLink>> &&)> &handler);
-
-    void registerDocumentLinkResolveRequestHandler(
-            const std::function<void(const QByteArray &, const DocumentLink &,
-                                     LSPResponse<DocumentLink> &&)> &handler);
-
-    // ServerCapability::ColorProvider
-    // ClientCapability::TextDocumentColorProvider
-    void registerDocumentColorRequestHandler(
-            const std::function<void(const QByteArray &, const DocumentColorParams &,
-                                     LSPPartialResponse<QList<ColorInformation>,
-                                                        QList<ColorInformation>> &&)> &handler);
-
-    void registerColorPresentationRequestHandler(
-            const std::function<void(const QByteArray &, const ColorPresentationParams &,
-                                     LSPPartialResponse<QList<ColorPresentation>,
-                                                        QList<ColorPresentation>> &&)> &handler);
-
-    // ServerCapability::DocumentFormattingProvider
-    // ClientCapability::TextDocumentFormatting
-    void registerDocumentFormattingRequestHandler(
-            const std::function<void(const QByteArray &, const DocumentFormattingParams &,
-                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                    &handler);
-
-    // ServerCapability::DocumentRangeFormattingProvider
-    // ClientCapability::TextDocumentRangeFormatting
-    void registerDocumentRangeFormattingRequestHandler(
-            const std::function<void(const QByteArray &, const DocumentRangeFormattingParams &,
-                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                    &handler);
+    // ServerCapability::MonikerProvider
+    void registerMonikerRequestHandler(
+            const std::function<void(
+                    const QByteArray &, const MonikerParams &,
+                    LSPPartialResponse<std::variant<QList<Moniker>, std::nullptr_t>, QList<Moniker>>
+                            &&)> &handler);
 
     // ServerCapability::DocumentOnTypeFormattingProvider
     // ClientCapability::TextDocumentOnTypeFormatting
@@ -792,35 +660,6 @@ public:
             const std::function<void(const QByteArray &, const DocumentOnTypeFormattingParams &,
                                      LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
                     &handler);
-
-    // ServerCapability::RenameProvider
-    // ClientCapability::TextDocumentRename
-    void registerRenameRequestHandler(
-            const std::function<void(const QByteArray &, const RenameParams &,
-                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                    &handler);
-
-    void registerPrepareRenameRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const PrepareRenameParams &,
-                         LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                                  std::nullptr_t>> &&)> &handler);
-
-    // ServerCapability::FoldingRangeProvider
-    // ClientCapability::TextDocumentFoldingRange
-    void registerFoldingRangeRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const FoldingRangeParams &,
-                         LSPPartialResponse<std::variant<QList<FoldingRange>, std::nullptr_t>,
-                                            QList<FoldingRange>> &&)> &handler);
-
-    // ServerCapability::SelectionRangeProvider
-    // ClientCapability::TextDocumentSelectionRange
-    void registerSelectionRangeRequestHandler(
-            const std::function<
-                    void(const QByteArray &, const SelectionRangeParams &,
-                         LSPPartialResponse<std::variant<QList<SelectionRange>, std::nullptr_t>,
-                                            QList<SelectionRange>> &&)> &handler);
 
     // ServerCapability::CallHierarchyProvider
     // ClientCapability::TextDocumentCallHierarchy
@@ -830,18 +669,46 @@ public:
                          LSPResponse<std::variant<QList<CallHierarchyItem>, std::nullptr_t>> &&)>
                     &handler);
 
-    void registerCallHierarchyIncomingCallsRequestHandler(
+    void registerPrepareRenameRequestHandler(
             const std::function<
-                    void(const QByteArray &, const CallHierarchyIncomingCallsParams &,
-                         LSPPartialResponse<
-                                 std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>,
-                                 QList<CallHierarchyIncomingCall>> &&)> &handler);
-    void registerCallHierarchyOutgoingCallsRequestHandler(
+                    void(const QByteArray &, const PrepareRenameParams &,
+                         LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
+                                                  std::nullptr_t>> &&)> &handler);
+
+    // ClientCapability::TextDocumentPublishDiagnostics
+    void registerPublishDiagnosticsNotificationHandler(
+            const std::function<void(const QByteArray &, const PublishDiagnosticsParams &)>
+                    &handler);
+
+    // ServerCapability::DocumentRangeFormattingProvider
+    // ClientCapability::TextDocumentRangeFormatting
+    void registerDocumentRangeFormattingRequestHandler(
+            const std::function<void(const QByteArray &, const DocumentRangeFormattingParams &,
+                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::ReferencesProvider
+    // ClientCapability::TextDocumentReferences
+    void registerReferenceRequestHandler(
             const std::function<
-                    void(const QByteArray &, const CallHierarchyOutgoingCallsParams &,
-                         LSPPartialResponse<
-                                 std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>,
-                                 QList<CallHierarchyOutgoingCall>> &&)> &handler);
+                    void(const QByteArray &, const ReferenceParams &,
+                         LSPPartialResponse<std::variant<QList<Location>, std::nullptr_t>,
+                                            QList<Location>> &&)> &handler);
+
+    // ServerCapability::RenameProvider
+    // ClientCapability::TextDocumentRename
+    void registerRenameRequestHandler(
+            const std::function<void(const QByteArray &, const RenameParams &,
+                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::SelectionRangeProvider
+    // ClientCapability::TextDocumentSelectionRange
+    void registerSelectionRangeRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const SelectionRangeParams &,
+                         LSPPartialResponse<std::variant<QList<SelectionRange>, std::nullptr_t>,
+                                            QList<SelectionRange>> &&)> &handler);
 
     // ServerCapability::SemanticTokensProvider
     // ClientCapability::TextDocumentSemanticTokens
@@ -867,18 +734,147 @@ public:
             const std::function<void(const QByteArray &, const std::nullptr_t &,
                                      LSPResponse<std::nullptr_t> &&)> &handler);
 
-    // ServerCapability::LinkedEditingRangeProvider
-    void registerLinkedEditingRangeRequestHandler(
-            const std::function<void(
-                    const QByteArray &, const LinkedEditingRangeParams &,
-                    LSPResponse<std::variant<LinkedEditingRanges, std::nullptr_t>> &&)> &handler);
+    // ServerCapability::SignatureHelpProvider
+    // ClientCapability::TextDocumentSignatureHelp
+    void registerSignatureHelpRequestHandler(
+            const std::function<void(const QByteArray &, const SignatureHelpParams &,
+                                     LSPResponse<std::variant<SignatureHelp, std::nullptr_t>> &&)>
+                    &handler);
 
-    // ServerCapability::MonikerProvider
-    void registerMonikerRequestHandler(
+    // ServerCapability::TextDocumentSync
+    // ClientCapability::TextDocumentSynchronizationDynamicRegistration
+
+    // ServerCapability::TypeDefinitionProvider
+    // ClientCapability::TextDocumentTypeDefinition
+    void registerTypeDefinitionRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const TypeDefinitionParams &,
+                         LSPPartialResponse<std::variant<Location, QList<Location>,
+                                                         QList<LocationLink>, std::nullptr_t>,
+                                            std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                    &handler);
+
+    // ServerCapability::TextDocumentSyncWillSave
+    // ClientCapability::TextDocumentSynchronizationWillSave
+    void registerWillSaveTextDocumentNotificationHandler(
+            const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &)>
+                    &handler);
+
+    // ServerCapability::TextDocumentSyncWillSaveWaitUntil
+    // ClientCapability::TextDocumentSynchronizationWillSaveWaitUntil
+    void registerWillSaveTextDocumentRequestHandler(
+            const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &,
+                                     LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                    &handler);
+
+    void registerLogMessageNotificationHandler(
+            const std::function<void(const QByteArray &, const LogMessageParams &)> &handler);
+
+    // ClientCapability::WindowShowDocument
+    void registerShowDocumentRequestHandler(
+            const std::function<void(const QByteArray &, const ShowDocumentParams &,
+                                     LSPResponse<ShowDocumentResult> &&)> &handler);
+
+    void registerShowMessageNotificationHandler(
+            const std::function<void(const QByteArray &, const ShowMessageParams &)> &handler);
+
+    // ClientCapability::WindowShowMessage
+    void registerShowMessageRequestRequestHandler(
             const std::function<void(
-                    const QByteArray &, const MonikerParams &,
-                    LSPPartialResponse<std::variant<QList<Moniker>, std::nullptr_t>, QList<Moniker>>
-                            &&)> &handler);
+                    const QByteArray &, const ShowMessageRequestParams &,
+                    LSPResponse<std::variant<MessageActionItem, std::nullptr_t>> &&)> &handler);
+
+    void registerWorkDoneProgressCancelNotificationHandler(
+            const std::function<void(const QByteArray &, const WorkDoneProgressCancelParams &)>
+                    &handler);
+    void registerWorkDoneProgressCreateRequestHandler(
+            const std::function<void(const QByteArray &, const WorkDoneProgressCreateParams &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
+
+    // ClientCapability::WorkspaceWorkspaceEdit
+
+    // ClientCapability::WorkspaceApplyEdit
+    void registerApplyWorkspaceEditRequestHandler(
+            const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
+                                     LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler);
+
+    // ClientCapability::WorkspaceConfiguration
+    void registerConfigurationRequestHandler(
+            const std::function<void(const QByteArray &, const ConfigurationParams &,
+                                     LSPResponse<QList<QJsonValue>> &&)> &handler);
+
+    // ClientCapability::WorkspaceDidChangeConfiguration
+    void registerDidChangeConfigurationNotificationHandler(
+            const std::function<void(const QByteArray &, const DidChangeConfigurationParams &)>
+                    &handler);
+
+    // ClientCapability::WorkspaceDidChangeWatchedFiles
+    void registerDidChangeWatchedFilesNotificationHandler(
+            const std::function<void(const QByteArray &, const DidChangeWatchedFilesParams &)>
+                    &handler);
+
+    void registerDidChangeWorkspaceFoldersNotificationHandler(
+            const std::function<void(const QByteArray &, const DidChangeWorkspaceFoldersParams &)>
+                    &handler);
+
+    // ServerCapability::WorkspaceFileOperationsDidCreate
+    // ClientCapability::WorkspaceFileOperationsDidCreate
+    void registerCreateFilesNotificationHandler(
+            const std::function<void(const QByteArray &, const CreateFilesParams &)> &handler);
+
+    // ServerCapability::WorkspaceFileOperationsDidDelete
+    // ClientCapability::WorkspaceFileOperationsDidDelete
+    void registerDeleteFilesNotificationHandler(
+            const std::function<void(const QByteArray &, const DeleteFilesParams &)> &handler);
+
+    // ServerCapability::WorkspaceFileOperationsDidRename
+    // ClientCapability::WorkspaceFileOperationsDidRename
+    void registerRenameFilesNotificationHandler(
+            const std::function<void(const QByteArray &, const RenameFilesParams &)> &handler);
+
+    // ServerCapability::ExecuteCommandProvider
+    // ClientCapability::WorkspaceExecuteCommand
+    void registerExecuteCommandRequestHandler(
+            const std::function<void(const QByteArray &, const ExecuteCommandParams &,
+                                     LSPResponse<std::variant<QJsonValue, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::WorkspaceSymbolProvider
+    // ClientCapability::WorkspaceSymbol
+    void registerWorkspaceSymbolRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const WorkspaceSymbolParams &,
+                         LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
+                                            QList<SymbolInformation>> &&)> &handler);
+
+    // ServerCapability::WorkspaceFileOperationsWillCreate
+    // ClientCapability::WorkspaceFileOperationsWillCreate
+    void registerCreateFilesRequestHandler(
+            const std::function<void(const QByteArray &, const CreateFilesParams &,
+                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::WorkspaceFileOperationsWillDelete
+    // ClientCapability::WorkspaceFileOperationsWillDelete
+    void registerDeleteFilesRequestHandler(
+            const std::function<void(const QByteArray &, const DeleteFilesParams &,
+                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::WorkspaceFileOperationsWillRename
+    // ClientCapability::WorkspaceFileOperationsWillRename
+    void registerRenameFilesRequestHandler(
+            const std::function<void(const QByteArray &, const RenameFilesParams &,
+                                     LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                    &handler);
+
+    // ServerCapability::WorkspaceWorkspaceFolders
+    // ClientCapability::WorkspaceWorkspaceFolders
+    void registerWorkspaceWorkspaceFoldersRequestHandler(
+            const std::function<
+                    void(const QByteArray &, const std::nullptr_t &,
+                         LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> &&)>
+                    &handler);
 
 private:
     Q_DISABLE_COPY(ProtocolGen)

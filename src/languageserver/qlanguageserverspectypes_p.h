@@ -65,57 +65,17 @@ enum class ErrorCodes {
 };
 Q_ENUM_NS(ErrorCodes)
 
-enum class DiagnosticSeverity { Error = 1, Warning = 2, Information = 3, Hint = 4 };
-Q_ENUM_NS(DiagnosticSeverity)
-
-enum class DiagnosticTag { Unnecessary = 1, Deprecated = 2 };
-Q_ENUM_NS(DiagnosticTag)
-
-enum class ResourceOperationKind { Create, Rename, Delete };
-Q_ENUM_NS(ResourceOperationKind)
-
-enum class FailureHandlingKind { Abort, Transactional, TextOnlyTransactional, Undo };
-Q_ENUM_NS(FailureHandlingKind)
-
-enum class MarkupKind { PlainText, Markdown };
-Q_ENUM_NS(MarkupKind)
-
-enum class InitializeErrorCode { UnknownProtocolVersion = 1 };
-Q_ENUM_NS(InitializeErrorCode)
-
-enum class MessageType { Error = 1, Warning = 2, Info = 3, Log = 4 };
-Q_ENUM_NS(MessageType)
-
-enum class WatchKind { Create = 1, Change = 2, Delete = 4 };
-Q_ENUM_NS(WatchKind)
-
-enum class FileChangeType { Created = 1, Changed = 2, Deleted = 3 };
-Q_ENUM_NS(FileChangeType)
-
-enum class FileOperationPatternKind { File, Folder };
-Q_ENUM_NS(FileOperationPatternKind)
-
-enum class TextDocumentSyncKind { None = 0, Full = 1, Incremental = 2 };
-Q_ENUM_NS(TextDocumentSyncKind)
-
-enum class TextDocumentSaveReason { Manual = 1, AfterDelay = 2, FocusOut = 3 };
-Q_ENUM_NS(TextDocumentSaveReason)
-
-enum class CompletionTriggerKind {
-    Invoked = 1,
-    TriggerCharacter = 2,
-    TriggerForIncompleteCompletions = 3
+enum class CodeActionKind {
+    Empty,
+    QuickFix,
+    Refactor,
+    RefactorExtract,
+    RefactorInline,
+    RefactorRewrite,
+    Source,
+    SourceOrganizeImports
 };
-Q_ENUM_NS(CompletionTriggerKind)
-
-enum class InsertTextFormat { PlainText = 1, Snippet = 2 };
-Q_ENUM_NS(InsertTextFormat)
-
-enum class CompletionItemTag { Deprecated = 1 };
-Q_ENUM_NS(CompletionItemTag)
-
-enum class InsertTextMode { AsIs = 1, AdjustIndentation = 2 };
-Q_ENUM_NS(InsertTextMode)
+Q_ENUM_NS(CodeActionKind)
 
 enum class CompletionItemKind {
     Text = 1,
@@ -146,11 +106,103 @@ enum class CompletionItemKind {
 };
 Q_ENUM_NS(CompletionItemKind)
 
-enum class SignatureHelpTriggerKind { Invoked = 1, TriggerCharacter = 2, ContentChange = 3 };
-Q_ENUM_NS(SignatureHelpTriggerKind)
+enum class CompletionItemTag { Deprecated = 1 };
+Q_ENUM_NS(CompletionItemTag)
+
+enum class CompletionTriggerKind {
+    Invoked = 1,
+    TriggerCharacter = 2,
+    TriggerForIncompleteCompletions = 3
+};
+Q_ENUM_NS(CompletionTriggerKind)
+
+enum class DiagnosticSeverity { Error = 1, Warning = 2, Information = 3, Hint = 4 };
+Q_ENUM_NS(DiagnosticSeverity)
+
+enum class DiagnosticTag { Unnecessary = 1, Deprecated = 2 };
+Q_ENUM_NS(DiagnosticTag)
 
 enum class DocumentHighlightKind { Text = 1, Read = 2, Write = 3 };
 Q_ENUM_NS(DocumentHighlightKind)
+
+enum class FailureHandlingKind { Abort, Transactional, TextOnlyTransactional, Undo };
+Q_ENUM_NS(FailureHandlingKind)
+
+enum class FileChangeType { Created = 1, Changed = 2, Deleted = 3 };
+Q_ENUM_NS(FileChangeType)
+
+enum class FileOperationPatternKind { File, Folder };
+Q_ENUM_NS(FileOperationPatternKind)
+
+enum class FoldingRangeKind { Comment, Imports, Region };
+Q_ENUM_NS(FoldingRangeKind)
+
+enum class InitializeErrorCode { UnknownProtocolVersion = 1 };
+Q_ENUM_NS(InitializeErrorCode)
+
+enum class InsertTextFormat { PlainText = 1, Snippet = 2 };
+Q_ENUM_NS(InsertTextFormat)
+
+enum class InsertTextMode { AsIs = 1, AdjustIndentation = 2 };
+Q_ENUM_NS(InsertTextMode)
+
+enum class MarkupKind { PlainText, Markdown };
+Q_ENUM_NS(MarkupKind)
+
+enum class MessageType { Error = 1, Warning = 2, Info = 3, Log = 4 };
+Q_ENUM_NS(MessageType)
+
+enum class MonikerKind { Import, Export, Local };
+Q_ENUM_NS(MonikerKind)
+
+enum class PrepareSupportDefaultBehavior { Identifier = 1 };
+Q_ENUM_NS(PrepareSupportDefaultBehavior)
+
+enum class ResourceOperationKind { Create, Rename, Delete };
+Q_ENUM_NS(ResourceOperationKind)
+
+enum class SemanticTokenModifiers {
+    Declaration,
+    Definition,
+    Readonly,
+    Static,
+    Deprecated,
+    Abstract,
+    Async,
+    Modification,
+    Documentation,
+    DefaultLibrary
+};
+Q_ENUM_NS(SemanticTokenModifiers)
+
+enum class SemanticTokenTypes {
+    Namespace,
+    Type,
+    Class,
+    Enum,
+    Interface,
+    Struct,
+    TypeParameter,
+    Parameter,
+    Variable,
+    Property,
+    EnumMember,
+    Event,
+    Function,
+    Method,
+    Macro,
+    Keyword,
+    Modifier,
+    Comment,
+    String,
+    Number,
+    Regexp,
+    Operator
+};
+Q_ENUM_NS(SemanticTokenTypes)
+
+enum class SignatureHelpTriggerKind { Invoked = 1, TriggerCharacter = 2, ContentChange = 3 };
+Q_ENUM_NS(SignatureHelpTriggerKind)
 
 enum class SymbolKind {
     File = 1,
@@ -185,63 +237,11 @@ Q_ENUM_NS(SymbolKind)
 enum class SymbolTag { Deprecated = 1 };
 Q_ENUM_NS(SymbolTag)
 
-enum class CodeActionKind {
-    Empty,
-    QuickFix,
-    Refactor,
-    RefactorExtract,
-    RefactorInline,
-    RefactorRewrite,
-    Source,
-    SourceOrganizeImports
-};
-Q_ENUM_NS(CodeActionKind)
+enum class TextDocumentSaveReason { Manual = 1, AfterDelay = 2, FocusOut = 3 };
+Q_ENUM_NS(TextDocumentSaveReason)
 
-enum class PrepareSupportDefaultBehavior { Identifier = 1 };
-Q_ENUM_NS(PrepareSupportDefaultBehavior)
-
-enum class FoldingRangeKind { Comment, Imports, Region };
-Q_ENUM_NS(FoldingRangeKind)
-
-enum class SemanticTokenTypes {
-    Namespace,
-    Type,
-    Class,
-    Enum,
-    Interface,
-    Struct,
-    TypeParameter,
-    Parameter,
-    Variable,
-    Property,
-    EnumMember,
-    Event,
-    Function,
-    Method,
-    Macro,
-    Keyword,
-    Modifier,
-    Comment,
-    String,
-    Number,
-    Regexp,
-    Operator
-};
-Q_ENUM_NS(SemanticTokenTypes)
-
-enum class SemanticTokenModifiers {
-    Declaration,
-    Definition,
-    Readonly,
-    Static,
-    Deprecated,
-    Abstract,
-    Async,
-    Modification,
-    Documentation,
-    DefaultLibrary
-};
-Q_ENUM_NS(SemanticTokenModifiers)
+enum class TextDocumentSyncKind { None = 0, Full = 1, Incremental = 2 };
+Q_ENUM_NS(TextDocumentSyncKind)
 
 enum class TokenFormat { Relative };
 Q_ENUM_NS(TokenFormat)
@@ -249,116 +249,8 @@ Q_ENUM_NS(TokenFormat)
 enum class UniquenessLevel { Document, Project, Group, Scheme, Global };
 Q_ENUM_NS(UniquenessLevel)
 
-enum class MonikerKind { Import, Export, Local };
-Q_ENUM_NS(MonikerKind)
-
-class Q_LANGUAGESERVER_EXPORT ResponseError
-{
-public:
-    int code = {};
-    QByteArray message = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "code", code);
-        field(w, "message", message);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CancelParams
-{
-public:
-    std::variant<QByteArray, int> id = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "id", id);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
-{
-public:
-    static constexpr QByteArrayView kind = "begin";
-    QByteArray title = {};
-    std::optional<bool> cancellable = {};
-    std::optional<QByteArray> message = {};
-    std::optional<int> percentage = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "title", title);
-        field(w, "cancellable", cancellable);
-        field(w, "message", message);
-        field(w, "percentage", percentage);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressReport
-{
-public:
-    static constexpr QByteArrayView kind = "report";
-    std::optional<bool> cancellable = {};
-    std::optional<QByteArray> message = {};
-    std::optional<int> percentage = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "cancellable", cancellable);
-        field(w, "message", message);
-        field(w, "percentage", percentage);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressEnd
-{
-public:
-    static constexpr QByteArrayView kind = "end";
-    std::optional<QByteArray> message = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "message", message);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ProgressParams
-{
-public:
-    ProgressToken token = {};
-    std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> value = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "token", token);
-        field(w, "value", value);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RegularExpressionsClientCapabilities
-{
-public:
-    QByteArray engine = {};
-    std::optional<QByteArray> version = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "engine", engine);
-        field(w, "version", version);
-    }
-};
+enum class WatchKind { Create = 1, Change = 2, Delete = 4 };
+Q_ENUM_NS(WatchKind)
 
 class Q_LANGUAGESERVER_EXPORT Position
 {
@@ -366,7 +258,7 @@ public:
     int line = {};
     int character = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "line", line);
@@ -380,7 +272,7 @@ public:
     Position start = {};
     Position end = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "start", start);
@@ -395,7 +287,7 @@ public:
     std::optional<int> rangeLength = {};
     QByteArray text = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "range", range);
@@ -427,7 +319,7 @@ public:
     Range range = {};
     std::unique_ptr<SelectionRange> parent;
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "range", range);
@@ -441,7 +333,7 @@ public:
     Range range = {};
     QByteArray placeholder = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "range", range);
@@ -454,112 +346,10 @@ class Q_LANGUAGESERVER_EXPORT DefaultBehaviorStruct
 public:
     bool defaultBehavior = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "defaultBehavior", defaultBehavior);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Location
-{
-public:
-    QByteArray uri = {};
-    Range range = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-        field(w, "range", range);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT LocationLink
-{
-public:
-    std::optional<Range> originSelectionRange = {};
-    QByteArray targetUri = {};
-    Range targetRange = {};
-    Range targetSelectionRange = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "originSelectionRange", originSelectionRange);
-        field(w, "targetUri", targetUri);
-        field(w, "targetRange", targetRange);
-        field(w, "targetSelectionRange", targetSelectionRange);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DiagnosticRelatedInformation
-{
-public:
-    Location location = {};
-    QByteArray message = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "location", location);
-        field(w, "message", message);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeDescription
-{
-public:
-    QByteArray href = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "href", href);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Diagnostic
-{
-public:
-    Range range = {};
-    std::optional<DiagnosticSeverity> severity = {};
-    std::optional<std::variant<QByteArray, int>> code = {};
-    std::optional<CodeDescription> codeDescription = {};
-    std::optional<QByteArray> source = {};
-    QByteArray message = {};
-    std::optional<QList<DiagnosticTag>> tags = {};
-    std::optional<QList<DiagnosticRelatedInformation>> relatedInformation = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "severity", severity);
-        field(w, "code", code);
-        field(w, "codeDescription", codeDescription);
-        field(w, "source", source);
-        field(w, "message", message);
-        field(w, "tags", tags);
-        field(w, "relatedInformation", relatedInformation);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Command
-{
-public:
-    QByteArray title = {};
-    QByteArray command = {};
-    std::optional<QList<QJsonValue>> arguments = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "title", title);
-        field(w, "command", command);
-        field(w, "arguments", arguments);
     }
 };
 
@@ -567,9 +357,9 @@ class Q_LANGUAGESERVER_EXPORT TextEdit
 {
 public:
     Range range = {};
-    QByteArray newText = {};
+    QByteArray newText = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "range", range);
@@ -577,14 +367,27 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT AnnotatedTextEdit : public TextEdit
+{
+public:
+    QByteArray annotationId = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextEdit::walk(w);
+        field(w, "annotationId", annotationId);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT ChangeAnnotation
 {
 public:
-    QByteArray label = {};
-    std::optional<bool> needsConfirmation = {};
-    std::optional<QByteArray> description = {};
+    QByteArray label = { };
+    std::optional<bool> needsConfirmation = { };
+    std::optional<QByteArray> description = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "label", label);
@@ -593,66 +396,13 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT AnnotatedTextEdit : public TextEdit
-{
-public:
-    QByteArray annotationId = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextEdit::walk(w);
-        field(w, "annotationId", annotationId);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentIdentifier
-{
-public:
-    QByteArray uri = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT OptionalVersionedTextDocumentIdentifier
-    : public TextDocumentIdentifier
-{
-public:
-    std::variant<int, std::nullptr_t> version = nullptr;
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentIdentifier::walk(w);
-        field(w, "version", version);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentEdit
-{
-public:
-    OptionalVersionedTextDocumentIdentifier textDocument = {};
-    QList<std::variant<TextEdit, AnnotatedTextEdit>> edits = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-        field(w, "edits", edits);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT CreateFileOptions
 {
 public:
-    std::optional<bool> overwrite = {};
-    std::optional<bool> ignoreIfExists = {};
+    std::optional<bool> overwrite = { };
+    std::optional<bool> ignoreIfExists = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "overwrite", overwrite);
@@ -663,12 +413,44 @@ public:
 class Q_LANGUAGESERVER_EXPORT CreateFile
 {
 public:
-    QByteArray kind = {};
-    QByteArray uri = {};
-    std::optional<CreateFileOptions> options = {};
-    std::optional<QByteArray> annotationId = {};
+    QByteArray kind = { };
+    QByteArray uri = { };
+    std::optional<CreateFileOptions> options = { };
+    std::optional<QByteArray> annotationId = { };
 
-    template<typename W>
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "uri", uri);
+        field(w, "options", options);
+        field(w, "annotationId", annotationId);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeleteFileOptions
+{
+public:
+    std::optional<bool> recursive = { };
+    std::optional<bool> ignoreIfNotExists = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "recursive", recursive);
+        field(w, "ignoreIfNotExists", ignoreIfNotExists);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeleteFile
+{
+public:
+    QByteArray kind = { };
+    QByteArray uri = { };
+    std::optional<DeleteFileOptions> options = { };
+    std::optional<QByteArray> annotationId = { };
+
+    template <typename W>
     void walk(W &w)
     {
         field(w, "kind", kind);
@@ -681,10 +463,10 @@ public:
 class Q_LANGUAGESERVER_EXPORT RenameFileOptions
 {
 public:
-    std::optional<bool> overwrite = {};
-    std::optional<bool> ignoreIfExists = {};
+    std::optional<bool> overwrite = { };
+    std::optional<bool> ignoreIfExists = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "overwrite", overwrite);
@@ -695,13 +477,13 @@ public:
 class Q_LANGUAGESERVER_EXPORT RenameFile
 {
 public:
-    QByteArray kind = {};
-    QByteArray oldUri = {};
-    QByteArray newUri = {};
-    std::optional<RenameFileOptions> options = {};
-    std::optional<QByteArray> annotationId = {};
+    QByteArray kind = { };
+    QByteArray oldUri = { };
+    QByteArray newUri = { };
+    std::optional<RenameFileOptions> options = { };
+    std::optional<QByteArray> annotationId = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "kind", kind);
@@ -712,47 +494,55 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DeleteFileOptions
+class Q_LANGUAGESERVER_EXPORT TextDocumentIdentifier
 {
 public:
-    std::optional<bool> recursive = {};
-    std::optional<bool> ignoreIfNotExists = {};
+    QByteArray uri = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "recursive", recursive);
-        field(w, "ignoreIfNotExists", ignoreIfNotExists);
+        field(w, "uri", uri);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DeleteFile
+class Q_LANGUAGESERVER_EXPORT OptionalVersionedTextDocumentIdentifier
+    : public TextDocumentIdentifier
 {
 public:
-    QByteArray kind = {};
-    QByteArray uri = {};
-    std::optional<DeleteFileOptions> options = {};
-    std::optional<QByteArray> annotationId = {};
+    std::variant<int, std::nullptr_t> version = nullptr;
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "kind", kind);
-        field(w, "uri", uri);
-        field(w, "options", options);
-        field(w, "annotationId", annotationId);
+        TextDocumentIdentifier::walk(w);
+        field(w, "version", version);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentEdit
+{
+public:
+    OptionalVersionedTextDocumentIdentifier textDocument = { };
+    QList<std::variant<TextEdit, AnnotatedTextEdit>> edits = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+        field(w, "edits", edits);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT WorkspaceEdit
 {
 public:
-    std::optional<QJsonObject> changes = {};
+    std::optional<QJsonObject> changes = { };
     using DocumentChange = std::variant<TextDocumentEdit, CreateFile, RenameFile, DeleteFile>;
-    std::optional<QList<DocumentChange>> documentChanges = {};
-    std::optional<QJsonObject> changeAnnotations = {};
+    std::optional<QList<DocumentChange>> documentChanges = { };
+    std::optional<QJsonObject> changeAnnotations = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "changes", changes);
@@ -761,64 +551,185 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkspaceEditClientCapabilities
+class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditParams
 {
 public:
-    std::optional<bool> documentChanges = {};
-    std::optional<QList<ResourceOperationKind>> resourceOperations = {};
-    std::optional<FailureHandlingKind> failureHandling = {};
-    std::optional<bool> normalizesLineEndings = {};
-    std::optional<QJsonObject> changeAnnotationSupport = {};
+    std::optional<QByteArray> label = { };
+    WorkspaceEdit edit = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "documentChanges", documentChanges);
-        field(w, "resourceOperations", resourceOperations);
-        field(w, "failureHandling", failureHandling);
-        field(w, "normalizesLineEndings", normalizesLineEndings);
-        field(w, "changeAnnotationSupport", changeAnnotationSupport);
+        field(w, "label", label);
+        field(w, "edit", edit);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT TextDocumentItem
+class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditResponse
 {
 public:
+    bool applied = { };
+    std::optional<QByteArray> failureReason = { };
+    std::optional<int> failedChange = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "applied", applied);
+        field(w, "failureReason", failureReason);
+        field(w, "failedChange", failedChange);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyItem
+{
+public:
+    QByteArray name = { };
+    SymbolKind kind = { };
+    std::optional<QList<int>> tags = { };
+    std::optional<QByteArray> detail = { };
     QByteArray uri = {};
-    QByteArray languageId = {};
-    int version = {};
-    QByteArray text = {};
+    Range range = { };
+    Range selectionRange = { };
+    std::optional<QJsonValue> data = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
+        field(w, "name", name);
+        field(w, "kind", kind);
+        field(w, "tags", tags);
+        field(w, "detail", detail);
         field(w, "uri", uri);
-        field(w, "languageId", languageId);
-        field(w, "version", version);
-        field(w, "text", text);
+        field(w, "range", range);
+        field(w, "selectionRange", selectionRange);
+        field(w, "data", data);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT VersionedTextDocumentIdentifier : public TextDocumentIdentifier
+class Q_LANGUAGESERVER_EXPORT CallHierarchyIncomingCall
 {
 public:
-    int version = {};
+    CallHierarchyItem from = { };
+    QList<Range> fromRanges = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        TextDocumentIdentifier::walk(w);
-        field(w, "version", version);
+        field(w, "from", from);
+        field(w, "fromRanges", fromRanges);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT PartialResultParams
+{
+public:
+    std::optional<ProgressToken> partialResultToken = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "partialResultToken", partialResultToken);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressParams
+{
+public:
+    std::optional<ProgressToken> workDoneToken = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "workDoneToken", workDoneToken);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyIncomingCallsParams : public WorkDoneProgressParams,
+                                                                 PartialResultParams
+{
+public:
+    CallHierarchyItem item = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "item", item);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressOptions
+{
+public:
+    std::optional<bool> workDoneProgress = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "workDoneProgress", workDoneProgress);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyOutgoingCall
+{
+public:
+    CallHierarchyItem to = { };
+    QList<Range> fromRanges = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "to", to);
+        field(w, "fromRanges", fromRanges);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CallHierarchyOutgoingCallsParams : public WorkDoneProgressParams,
+                                                                 PartialResultParams
+{
+public:
+    CallHierarchyItem item = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "item", item);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT TextDocumentPositionParams
 {
 public:
-    TextDocumentIdentifier textDocument = {};
-    Position position = {};
+    TextDocumentIdentifier textDocument = { };
+    Position position = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "textDocument", textDocument);
@@ -826,14 +737,38 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT CallHierarchyPrepareParams : public TextDocumentPositionParams,
+                                                           WorkDoneProgressParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT StaticRegistrationOptions
+{
+public:
+    std::optional<QByteArray> id = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "id", id);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT DocumentFilter
 {
 public:
-    std::optional<QByteArray> language = {};
-    std::optional<QByteArray> scheme = {};
-    std::optional<QByteArray> pattern = {};
+    std::optional<QByteArray> language = { };
+    std::optional<QByteArray> scheme = { };
+    std::optional<QByteArray> pattern = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "language", language);
@@ -844,41 +779,54 @@ public:
 
 using DocumentSelector = QList<DocumentFilter>;
 
-class Q_LANGUAGESERVER_EXPORT StaticRegistrationOptions
-{
-public:
-    std::optional<QByteArray> id = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "id", id);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT TextDocumentRegistrationOptions
 {
 public:
     std::variant<DocumentSelector, std::nullptr_t> documentSelector = nullptr;
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "documentSelector", documentSelector);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT MarkupContent
+class Q_LANGUAGESERVER_EXPORT CallHierarchyRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      CallHierarchyOptions,
+      StaticRegistrationOptions
 {
 public:
-    MarkupKind kind = {};
-    QByteArray value = {};
-
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "kind", kind);
-        field(w, "value", value);
+        TextDocumentRegistrationOptions::walk(w);
+        CallHierarchyOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CancelParams
+{
+public:
+    std::variant<QByteArray, int> id = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "id", id);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeConfigurationClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
     }
 };
 
@@ -888,7 +836,7 @@ public:
     QByteArray parser = {};
     std::optional<QByteArray> version = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "parser", parser);
@@ -896,225 +844,41 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressParams
+class Q_LANGUAGESERVER_EXPORT RegularExpressionsClientCapabilities
 {
 public:
-    std::optional<ProgressToken> workDoneToken = {};
+    QByteArray engine = { };
+    std::optional<QByteArray> version = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "workDoneToken", workDoneToken);
+        field(w, "engine", engine);
+        field(w, "version", version);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressOptions
+class Q_LANGUAGESERVER_EXPORT ShowDocumentClientCapabilities
 {
 public:
-    std::optional<bool> workDoneProgress = {};
+    bool support = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "workDoneProgress", workDoneProgress);
+        field(w, "support", support);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT PartialResultParams
+class Q_LANGUAGESERVER_EXPORT ShowMessageRequestClientCapabilities
 {
 public:
-    std::optional<ProgressToken> partialResultToken = {};
+    std::optional<QJsonObject> messageActionItem = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "partialResultToken", partialResultToken);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentSyncClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> willSave = {};
-    std::optional<bool> willSaveWaitUntil = {};
-    std::optional<bool> didSave = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "willSave", willSave);
-        field(w, "willSaveWaitUntil", willSaveWaitUntil);
-        field(w, "didSave", didSave);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsClientCapabilities
-{
-public:
-    std::optional<bool> relatedInformation = {};
-    std::optional<QJsonObject> tagSupport = {};
-    std::optional<bool> versionSupport = {};
-    std::optional<bool> codeDescriptionSupport = {};
-    std::optional<bool> dataSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "relatedInformation", relatedInformation);
-        field(w, "tagSupport", tagSupport);
-        field(w, "versionSupport", versionSupport);
-        field(w, "codeDescriptionSupport", codeDescriptionSupport);
-        field(w, "dataSupport", dataSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> completionItem = {};
-    std::optional<QJsonObject> completionItemKind = {};
-    std::optional<bool> contextSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "completionItem", completionItem);
-        field(w, "completionItemKind", completionItemKind);
-        field(w, "contextSupport", contextSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT HoverClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QList<MarkupKind>> contentFormat = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "contentFormat", contentFormat);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SignatureHelpClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> signatureInformation = {};
-    std::optional<bool> contextSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "signatureInformation", signatureInformation);
-        field(w, "contextSupport", contextSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DeclarationClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> linkSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "linkSupport", linkSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DefinitionClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> linkSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "linkSupport", linkSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TypeDefinitionClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> linkSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "linkSupport", linkSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ImplementationClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> linkSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "linkSupport", linkSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ReferenceClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentHighlightClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentSymbolClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> symbolKind = {};
-    std::optional<bool> hierarchicalDocumentSymbolSupport = {};
-    std::optional<QJsonObject> tagSupport = {};
-    std::optional<bool> labelSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "symbolKind", symbolKind);
-        field(w, "hierarchicalDocumentSymbolSupport", hierarchicalDocumentSymbolSupport);
-        field(w, "tagSupport", tagSupport);
-        field(w, "labelSupport", labelSupport);
+        field(w, "messageActionItem", messageActionItem);
     }
 };
 
@@ -1122,14 +886,14 @@ class Q_LANGUAGESERVER_EXPORT CodeActionClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> codeActionLiteralSupport = {};
-    std::optional<bool> isPreferredSupport = {};
-    std::optional<bool> disabledSupport = {};
-    std::optional<bool> dataSupport = {};
-    std::optional<QJsonObject> resolveSupport = {};
-    std::optional<bool> honorsChangeAnnotations = {};
+    std::optional<QJsonObject> codeActionLiteralSupport = { };
+    std::optional<bool> isPreferredSupport = { };
+    std::optional<bool> disabledSupport = { };
+    std::optional<bool> dataSupport = { };
+    std::optional<QJsonObject> resolveSupport = { };
+    std::optional<bool> honorsChangeAnnotations = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1145,9 +909,91 @@ public:
 class Q_LANGUAGESERVER_EXPORT CodeLensClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
 
-    template<typename W>
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<QJsonObject> completionItem = {};
+    std::optional<QJsonObject> completionItemKind = {};
+    std::optional<bool> contextSupport = {};
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "completionItem", completionItem);
+        field(w, "completionItemKind", completionItemKind);
+        field(w, "contextSupport", contextSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeclarationClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> linkSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "linkSupport", linkSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DefinitionClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> linkSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "linkSupport", linkSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentColorClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentFormattingClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentHighlightClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1158,9 +1004,9 @@ class Q_LANGUAGESERVER_EXPORT DocumentLinkClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
-    std::optional<bool> tooltipSupport = {};
+    std::optional<bool> tooltipSupport = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1168,24 +1014,12 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DocumentColorClientCapabilities
+class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
 
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentFormattingClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1197,19 +1031,127 @@ class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingClientCapabilities
 public:
     std::optional<bool> dynamicRegistration = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingClientCapabilities
+class Q_LANGUAGESERVER_EXPORT DocumentSymbolClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<QJsonObject> symbolKind = {};
+    std::optional<bool> hierarchicalDocumentSymbolSupport = {};
+    std::optional<QJsonObject> tagSupport = {};
+    std::optional<bool> labelSupport = {};
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "symbolKind", symbolKind);
+        field(w, "hierarchicalDocumentSymbolSupport", hierarchicalDocumentSymbolSupport);
+        field(w, "tagSupport", tagSupport);
+        field(w, "labelSupport", labelSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FoldingRangeClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<int> rangeLimit = { };
+    std::optional<bool> lineFoldingOnly = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "rangeLimit", rangeLimit);
+        field(w, "lineFoldingOnly", lineFoldingOnly);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT HoverClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<QList<MarkupKind>> contentFormat = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "contentFormat", contentFormat);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ImplementationClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> linkSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "linkSupport", linkSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
 
-    template<typename W>
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT MonikerClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsClientCapabilities
+{
+public:
+    std::optional<bool> relatedInformation = { };
+    std::optional<QJsonObject> tagSupport = { };
+    std::optional<bool> versionSupport = { };
+    std::optional<bool> codeDescriptionSupport = { };
+    std::optional<bool> dataSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "relatedInformation", relatedInformation);
+        field(w, "tagSupport", tagSupport);
+        field(w, "versionSupport", versionSupport);
+        field(w, "codeDescriptionSupport", codeDescriptionSupport);
+        field(w, "dataSupport", dataSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ReferenceClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = {};
+
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1224,7 +1166,7 @@ public:
     std::optional<QJsonValue> prepareSupportDefaultBehavior = {};
     std::optional<bool> honorsChangeAnnotations = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1234,40 +1176,12 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT FoldingRangeClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<int> rangeLimit = {};
-    std::optional<bool> lineFoldingOnly = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "rangeLimit", rangeLimit);
-        field(w, "lineFoldingOnly", lineFoldingOnly);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT SelectionRangeClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
 
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1285,7 +1199,7 @@ public:
         std::optional<std::variant<bool, QJsonObject>> range = {};
         std::optional<std::variant<bool, QJsonObject>> full = {};
 
-        template<typename W>
+        template <typename W>
         void walk(W &w)
         {
             field(w, "range", range);
@@ -1300,7 +1214,7 @@ public:
     std::optional<bool> overlappingTokenSupport = {};
     std::optional<bool> multilineTokenSupport = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
@@ -1313,27 +1227,51 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeClientCapabilities
+class Q_LANGUAGESERVER_EXPORT SignatureHelpClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
+    std::optional<QJsonObject> signatureInformation = { };
+    std::optional<bool> contextSupport = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "signatureInformation", signatureInformation);
+        field(w, "contextSupport", contextSupport);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT MonikerClientCapabilities
+class Q_LANGUAGESERVER_EXPORT TextDocumentSyncClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> willSave = { };
+    std::optional<bool> willSaveWaitUntil = { };
+    std::optional<bool> didSave = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "willSave", willSave);
+        field(w, "willSaveWaitUntil", willSaveWaitUntil);
+        field(w, "didSave", didSave);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TypeDefinitionClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+    std::optional<bool> linkSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "linkSupport", linkSupport);
     }
 };
 
@@ -1367,7 +1305,7 @@ public:
     std::optional<SemanticTokensClientCapabilities> semanticTokens = {};
     std::optional<MonikerClientCapabilities> moniker = {};
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "synchronization", synchronization);
@@ -1399,52 +1337,36 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT ShowMessageRequestClientCapabilities
+class Q_LANGUAGESERVER_EXPORT WorkspaceEditClientCapabilities
 {
 public:
-    std::optional<QJsonObject> messageActionItem = {};
+    std::optional<bool> documentChanges = { };
+    std::optional<QList<ResourceOperationKind>> resourceOperations = { };
+    std::optional<FailureHandlingKind> failureHandling = { };
+    std::optional<bool> normalizesLineEndings = { };
+    std::optional<QJsonObject> changeAnnotationSupport = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "messageActionItem", messageActionItem);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ShowDocumentClientCapabilities
-{
-public:
-    bool support = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "support", support);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeConfigurationClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "documentChanges", documentChanges);
+        field(w, "resourceOperations", resourceOperations);
+        field(w, "failureHandling", failureHandling);
+        field(w, "normalizesLineEndings", normalizesLineEndings);
+        field(w, "changeAnnotationSupport", changeAnnotationSupport);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT ClientCapabilities
 {
 public:
-    std::optional<QJsonObject> workspace = {};
-    std::optional<TextDocumentClientCapabilities> textDocument = {};
-    std::optional<QJsonObject> window = {};
-    std::optional<QJsonObject> general = {};
-    std::optional<QJsonValue> experimental = {};
+    std::optional<QJsonObject> workspace = { };
+    std::optional<TextDocumentClientCapabilities> textDocument = { };
+    std::optional<QJsonObject> window = { };
+    std::optional<QJsonObject> general = { };
+    std::optional<QJsonValue> experimental = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "workspace", workspace);
@@ -1455,13 +1377,718 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkspaceFolder
+class Q_LANGUAGESERVER_EXPORT Command
+{
+public:
+    QByteArray title = { };
+    QByteArray command = { };
+    std::optional<QList<QJsonValue>> arguments = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "title", title);
+        field(w, "command", command);
+        field(w, "arguments", arguments);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeDescription
+{
+public:
+    QByteArray href = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "href", href);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Location
 {
 public:
     QByteArray uri = {};
-    QByteArray name = {};
+    Range range = { };
 
-    template<typename W>
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "range", range);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DiagnosticRelatedInformation
+{
+public:
+    Location location = { };
+    QByteArray message = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "location", location);
+        field(w, "message", message);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Diagnostic
+{
+public:
+    Range range = { };
+    std::optional<DiagnosticSeverity> severity = { };
+    std::optional<std::variant<QByteArray, int>> code = { };
+    std::optional<CodeDescription> codeDescription = { };
+    std::optional<QByteArray> source = { };
+    QByteArray message = { };
+    std::optional<QList<DiagnosticTag>> tags = { };
+    std::optional<QList<DiagnosticRelatedInformation>> relatedInformation = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "severity", severity);
+        field(w, "code", code);
+        field(w, "codeDescription", codeDescription);
+        field(w, "source", source);
+        field(w, "message", message);
+        field(w, "tags", tags);
+        field(w, "relatedInformation", relatedInformation);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeAction
+{
+public:
+    QByteArray title = { };
+    std::optional<QByteArray> kind = { };
+    std::optional<QList<Diagnostic>> diagnostics = { };
+    std::optional<bool> isPreferred = { };
+    std::optional<QJsonObject> disabled = { };
+    std::optional<WorkspaceEdit> edit = { };
+    std::optional<Command> command = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "title", title);
+        field(w, "kind", kind);
+        field(w, "diagnostics", diagnostics);
+        field(w, "isPreferred", isPreferred);
+        field(w, "disabled", disabled);
+        field(w, "edit", edit);
+        field(w, "command", command);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionContext
+{
+public:
+    QList<Diagnostic> diagnostics = { };
+    std::optional<QList<QByteArray>> only = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "diagnostics", diagnostics);
+        field(w, "only", only);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionOptions : public WorkDoneProgressOptions
+{
+public:
+    std::optional<QList<QByteArray>> codeActionKinds = { };
+    std::optional<bool> resolveProvider = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "codeActionKinds", codeActionKinds);
+        field(w, "resolveProvider", resolveProvider);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionParams : public WorkDoneProgressParams, PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    Range range = { };
+    CodeActionContext context = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "range", range);
+        field(w, "context", context);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      CodeActionOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        CodeActionOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeLens
+{
+public:
+    Range range = { };
+    std::optional<Command> command = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "command", command);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeLensOptions : public WorkDoneProgressOptions
+{
+public:
+    std::optional<bool> resolveProvider = {};
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "resolveProvider", resolveProvider);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeLensParams : public WorkDoneProgressParams, PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeLensRegistrationOptions : public TextDocumentRegistrationOptions,
+                                                            CodeLensOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        CodeLensOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeLensWorkspaceClientCapabilities
+{
+public:
+    std::optional<bool> refreshSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "refreshSupport", refreshSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Color
+{
+public:
+    int red = { };
+    int green = { };
+    int blue = { };
+    int alpha = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "red", red);
+        field(w, "green", green);
+        field(w, "blue", blue);
+        field(w, "alpha", alpha);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ColorInformation
+{
+public:
+    Range range = { };
+    Color color = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "color", color);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ColorPresentation
+{
+public:
+    QByteArray label = { };
+    std::optional<TextEdit> textEdit = { };
+    std::optional<QList<TextEdit>> additionalTextEdits = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "label", label);
+        field(w, "textEdit", textEdit);
+        field(w, "additionalTextEdits", additionalTextEdits);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ColorPresentationParams : public WorkDoneProgressParams,
+                                                        PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    Color color = { };
+    Range range = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "color", color);
+        field(w, "range", range);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionContext
+{
+public:
+    CompletionTriggerKind triggerKind = { };
+    std::optional<QByteArray> triggerCharacter = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "triggerKind", triggerKind);
+        field(w, "triggerCharacter", triggerCharacter);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT InsertReplaceEdit
+{
+public:
+    QByteArray newText = { };
+    Range insert = { };
+    Range replace = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "newText", newText);
+        field(w, "insert", insert);
+        field(w, "replace", replace);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT MarkupContent
+{
+public:
+    MarkupKind kind = { };
+    QByteArray value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "value", value);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionItem
+{
+public:
+    QByteArray label = { };
+    std::optional<QJsonValue> kind = { };
+    std::optional<QList<int>> tags = { };
+    std::optional<QByteArray> detail = { };
+    std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
+    std::optional<bool> deprecated = { };
+    std::optional<bool> preselect = { };
+    std::optional<QByteArray> sortText = { };
+    std::optional<QByteArray> filterText = { };
+    std::optional<QByteArray> insertText = { };
+    std::optional<InsertTextFormat> insertTextFormat = { };
+    std::optional<InsertTextMode> insertTextMode = { };
+    std::optional<std::variant<TextEdit, InsertReplaceEdit>> textEdit = { };
+    std::optional<QList<TextEdit>> additionalTextEdits = { };
+    std::optional<QList<QByteArray>> commitCharacters = { };
+    std::optional<Command> command = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "label", label);
+        field(w, "kind", kind);
+        field(w, "tags", tags);
+        field(w, "detail", detail);
+        field(w, "documentation", documentation);
+        field(w, "deprecated", deprecated);
+        field(w, "preselect", preselect);
+        field(w, "sortText", sortText);
+        field(w, "filterText", filterText);
+        field(w, "insertText", insertText);
+        field(w, "insertTextFormat", insertTextFormat);
+        field(w, "insertTextMode", insertTextMode);
+        field(w, "textEdit", textEdit);
+        field(w, "additionalTextEdits", additionalTextEdits);
+        field(w, "commitCharacters", commitCharacters);
+        field(w, "command", command);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionList
+{
+public:
+    bool isIncomplete = { };
+    QList<CompletionItem> items = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "isIncomplete", isIncomplete);
+        field(w, "items", items);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionOptions : public WorkDoneProgressOptions
+{
+public:
+    std::optional<QList<QByteArray>> triggerCharacters = { };
+    std::optional<QList<QByteArray>> allCommitCharacters = { };
+    std::optional<bool> resolveProvider = {};
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "triggerCharacters", triggerCharacters);
+        field(w, "allCommitCharacters", allCommitCharacters);
+        field(w, "resolveProvider", resolveProvider);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionParams : public TextDocumentPositionParams,
+                                                 WorkDoneProgressParams,
+                                                 PartialResultParams
+{
+public:
+    std::optional<CompletionContext> context = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "context", context);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      CompletionOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        CompletionOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ConfigurationItem
+{
+public:
+    std::optional<QByteArray> scopeUri = { };
+    std::optional<QByteArray> section = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "scopeUri", scopeUri);
+        field(w, "section", section);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ConfigurationParams
+{
+public:
+    QList<ConfigurationItem> items = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "items", items);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileCreate
+{
+public:
+    QByteArray uri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CreateFilesParams
+{
+public:
+    QList<FileCreate> files = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "files", files);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeclarationOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeclarationParams : public TextDocumentPositionParams,
+                                                  WorkDoneProgressParams,
+                                                  PartialResultParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeclarationRegistrationOptions : public DeclarationOptions,
+                                                               TextDocumentRegistrationOptions,
+                                                               StaticRegistrationOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        DeclarationOptions::walk(w);
+        TextDocumentRegistrationOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DefinitionOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DefinitionParams : public TextDocumentPositionParams,
+                                                 WorkDoneProgressParams,
+                                                 PartialResultParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DefinitionRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DefinitionOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DefinitionOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileDelete
+{
+public:
+    QByteArray uri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DeleteFilesParams
+{
+public:
+    QList<FileDelete> files = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "files", files);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeConfigurationParams
+{
+public:
+    QJsonValue settings = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "settings", settings);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT VersionedTextDocumentIdentifier : public TextDocumentIdentifier
+{
+public:
+    int version = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentIdentifier::walk(w);
+        field(w, "version", version);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeTextDocumentParams
+{
+public:
+    VersionedTextDocumentIdentifier textDocument = { };
+    QList<TextDocumentContentChangeEvent> contentChanges = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+        field(w, "contentChanges", contentChanges);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileEvent
+{
+public:
+    QByteArray uri = { };
+    int type = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "type", type);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesParams
+{
+public:
+    QList<FileEvent> changes = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "changes", changes);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileSystemWatcher
+{
+public:
+    QByteArray globPattern = { };
+    std::optional<int> kind = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "globPattern", globPattern);
+        field(w, "kind", kind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesRegistrationOptions
+{
+public:
+    QList<FileSystemWatcher> watchers = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "watchers", watchers);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceFolder
+{
+public:
+    QByteArray uri = { };
+    QByteArray name = { };
+
+    template <typename W>
     void walk(W &w)
     {
         field(w, "uri", uri);
@@ -1469,20 +2096,742 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT WorkspaceFoldersChangeEvent
+{
+public:
+    QList<WorkspaceFolder> added = { };
+    QList<WorkspaceFolder> removed = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "added", added);
+        field(w, "removed", removed);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidChangeWorkspaceFoldersParams
+{
+public:
+    WorkspaceFoldersChangeEvent event = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "event", event);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidCloseTextDocumentParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentItem
+{
+public:
+    QByteArray uri = { };
+    QByteArray languageId = { };
+    int version = { };
+    QByteArray text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "languageId", languageId);
+        field(w, "version", version);
+        field(w, "text", text);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidOpenTextDocumentParams
+{
+public:
+    TextDocumentItem textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DidSaveTextDocumentParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    std::optional<QByteArray> text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+        field(w, "text", text);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentColorOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentColorParams : public WorkDoneProgressParams,
+                                                    PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentColorRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      StaticRegistrationOptions,
+      DocumentColorOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+        DocumentColorOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentFormattingOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FormattingOptions
+{
+public:
+    int tabSize = { };
+    bool insertSpaces = { };
+    std::optional<bool> trimTrailingWhitespace = { };
+    std::optional<bool> insertFinalNewline = { };
+    std::optional<bool> trimFinalNewlines = { };
+    QJsonObject extraFields;
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "tabSize", tabSize);
+        field(w, "insertSpaces", insertSpaces);
+        field(w, "trimTrailingWhitespace", trimTrailingWhitespace);
+        field(w, "insertFinalNewline", insertFinalNewline);
+        field(w, "trimFinalNewlines", trimFinalNewlines);
+    }
+    template <typename W>
+    void walkExtra(W &w)
+    {
+        w.handleExtras(extraFields);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentFormattingParams : public WorkDoneProgressParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    FormattingOptions options = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "options", options);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentFormattingRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentFormattingOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentFormattingOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentHighlight
+{
+public:
+    Range range = { };
+    std::optional<DocumentHighlightKind> kind = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "kind", kind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentHighlightOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentHighlightParams : public TextDocumentPositionParams,
+                                                        WorkDoneProgressParams,
+                                                        PartialResultParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentHighlightRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentHighlightOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentHighlightOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentLink
+{
+public:
+    Range range = { };
+    std::optional<QByteArray> target = { };
+    std::optional<QByteArray> tooltip = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "target", target);
+        field(w, "tooltip", tooltip);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentLinkOptions : public WorkDoneProgressOptions
+{
+public:
+    std::optional<bool> resolveProvider = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "resolveProvider", resolveProvider);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentLinkParams : public WorkDoneProgressParams,
+                                                   PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentLinkRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentLinkOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentLinkOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingOptions
+{
+public:
+    QByteArray firstTriggerCharacter = { };
+    std::optional<QList<QByteArray>> moreTriggerCharacter = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "firstTriggerCharacter", firstTriggerCharacter);
+        field(w, "moreTriggerCharacter", moreTriggerCharacter);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingParams : public TextDocumentPositionParams
+{
+public:
+    QByteArray ch = { };
+    FormattingOptions options = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        field(w, "ch", ch);
+        field(w, "options", options);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentOnTypeFormattingOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentOnTypeFormattingOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingParams : public WorkDoneProgressParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    Range range = { };
+    FormattingOptions options = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "range", range);
+        field(w, "options", options);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentRangeFormattingOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentRangeFormattingOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentSymbol
+{
+public:
+    QByteArray name = { };
+    std::optional<QByteArray> detail = { };
+    SymbolKind kind = { };
+    std::optional<QList<int>> tags = { };
+    std::optional<bool> deprecated = { };
+    Range range = { };
+    Range selectionRange = { };
+    std::optional<QList<DocumentSymbol>> children = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "name", name);
+        field(w, "detail", detail);
+        field(w, "kind", kind);
+        field(w, "tags", tags);
+        field(w, "deprecated", deprecated);
+        field(w, "range", range);
+        field(w, "selectionRange", selectionRange);
+        field(w, "children", children);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentSymbolOptions : public WorkDoneProgressOptions
+{
+public:
+    std::optional<QByteArray> label = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "label", label);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentSymbolParams : public WorkDoneProgressParams,
+                                                     PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DocumentSymbolRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      DocumentSymbolOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        DocumentSymbolOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ExecuteCommandClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ExecuteCommandOptions : public WorkDoneProgressOptions
+{
+public:
+    QList<QByteArray> commands = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "commands", commands);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ExecuteCommandParams : public WorkDoneProgressParams
+{
+public:
+    QByteArray command = { };
+    std::optional<QList<QJsonValue>> arguments = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        field(w, "command", command);
+        field(w, "arguments", arguments);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ExecuteCommandRegistrationOptions : public ExecuteCommandOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        ExecuteCommandOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileOperationPatternOptions
+{
+public:
+    std::optional<bool> ignoreCase = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "ignoreCase", ignoreCase);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileOperationPattern
+{
+public:
+    QByteArray glob = { };
+    std::optional<FileOperationPatternKind> matches = { };
+    std::optional<FileOperationPatternOptions> options = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "glob", glob);
+        field(w, "matches", matches);
+        field(w, "options", options);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileOperationFilter
+{
+public:
+    std::optional<QByteArray> scheme = { };
+    FileOperationPattern pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileOperationRegistrationOptions
+{
+public:
+    QList<FileOperationFilter> filters = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "filters", filters);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FileRename
+{
+public:
+    QByteArray oldUri = { };
+    QByteArray newUri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "oldUri", oldUri);
+        field(w, "newUri", newUri);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FoldingRange
+{
+public:
+    int startLine = { };
+    std::optional<int> startCharacter = { };
+    int endLine = { };
+    std::optional<int> endCharacter = { };
+    std::optional<QByteArray> kind = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "startLine", startLine);
+        field(w, "startCharacter", startCharacter);
+        field(w, "endLine", endLine);
+        field(w, "endCharacter", endCharacter);
+        field(w, "kind", kind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FoldingRangeOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FoldingRangeParams : public WorkDoneProgressParams,
+                                                   PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT FoldingRangeRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      FoldingRangeOptions,
+      StaticRegistrationOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        FoldingRangeOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Hover
+{
+public:
+    std::variant<MarkupContent, MarkedString, QList<MarkedString>> contents = { };
+    std::optional<Range> range = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "contents", contents);
+        field(w, "range", range);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT HoverOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT HoverParams : public TextDocumentPositionParams,
+                                            WorkDoneProgressParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT HoverRegistrationOptions : public TextDocumentRegistrationOptions,
+                                                         HoverOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        HoverOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ImplementationOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ImplementationParams : public TextDocumentPositionParams,
+                                                     WorkDoneProgressParams,
+                                                     PartialResultParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ImplementationRegistrationOptions
+    : public TextDocumentRegistrationOptions,
+      ImplementationOptions,
+      StaticRegistrationOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        ImplementationOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT InitializeError
+{
+public:
+    bool retry = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "retry", retry);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT InitializeParams : public WorkDoneProgressParams
 {
 public:
     std::variant<int, std::nullptr_t> processId = nullptr;
-    std::optional<QJsonObject> clientInfo = {};
-    std::optional<QByteArray> locale = {};
+    std::optional<QJsonObject> clientInfo = { };
+    std::optional<QByteArray> locale = { };
     std::optional<std::variant<QByteArray, std::nullptr_t>> rootPath = nullptr;
     std::variant<QByteArray, std::nullptr_t> rootUri = nullptr;
-    std::optional<QJsonValue> initializationOptions = {};
-    ClientCapabilities capabilities = {};
-    std::optional<TraceValue> trace = {};
+    std::optional<QJsonValue> initializationOptions = { };
+    ClientCapabilities capabilities = { };
+    std::optional<TraceValue> trace = { };
     std::optional<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> workspaceFolders = nullptr;
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressParams::walk(w);
@@ -1498,376 +2847,69 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkspaceFoldersServerCapabilities
+class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeOptions : public WorkDoneProgressOptions
 {
 public:
-    std::optional<bool> supported = {};
-    std::optional<std::variant<QByteArray, bool>> changeNotifications = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "supported", supported);
-        field(w, "changeNotifications", changeNotifications);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT ExecuteCommandOptions : public WorkDoneProgressOptions
-{
-public:
-    QList<QByteArray> commands = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "commands", commands);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileOperationPatternOptions
-{
-public:
-    std::optional<bool> ignoreCase = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "ignoreCase", ignoreCase);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileOperationPattern
-{
-public:
-    QByteArray glob = {};
-    std::optional<FileOperationPatternKind> matches = {};
-    std::optional<FileOperationPatternOptions> options = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "glob", glob);
-        field(w, "matches", matches);
-        field(w, "options", options);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileOperationFilter
-{
-public:
-    std::optional<QByteArray> scheme = {};
-    FileOperationPattern pattern = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "scheme", scheme);
-        field(w, "pattern", pattern);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileOperationRegistrationOptions
-{
-public:
-    QList<FileOperationFilter> filters = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "filters", filters);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentSyncOptions
-{
-public:
-    std::optional<bool> openClose = {};
-    std::optional<TextDocumentSyncKind> change = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "openClose", openClose);
-        field(w, "change", change);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<QList<QByteArray>> triggerCharacters = {};
-    std::optional<QList<QByteArray>> allCommitCharacters = {};
-    std::optional<bool> resolveProvider = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "triggerCharacters", triggerCharacters);
-        field(w, "allCommitCharacters", allCommitCharacters);
-        field(w, "resolveProvider", resolveProvider);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT HoverOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SignatureHelpOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<QList<QByteArray>> triggerCharacters = {};
-    std::optional<QList<QByteArray>> retriggerCharacters = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "triggerCharacters", triggerCharacters);
-        field(w, "retriggerCharacters", retriggerCharacters);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DeclarationOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DeclarationRegistrationOptions : public DeclarationOptions,
-                                                               TextDocumentRegistrationOptions,
-                                                               StaticRegistrationOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        DeclarationOptions::walk(w);
-        TextDocumentRegistrationOptions::walk(w);
-        StaticRegistrationOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DefinitionOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TypeDefinitionOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TypeDefinitionRegistrationOptions
+class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeRegistrationOptions
     : public TextDocumentRegistrationOptions,
-      TypeDefinitionOptions,
+      LinkedEditingRangeOptions,
       StaticRegistrationOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        TypeDefinitionOptions::walk(w);
+        LinkedEditingRangeOptions::walk(w);
         StaticRegistrationOptions::walk(w);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT ImplementationOptions : public WorkDoneProgressOptions
+class Q_LANGUAGESERVER_EXPORT MonikerOptions : public WorkDoneProgressOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT ImplementationRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      ImplementationOptions,
-      StaticRegistrationOptions
+class Q_LANGUAGESERVER_EXPORT MonikerRegistrationOptions : public TextDocumentRegistrationOptions,
+                                                           MonikerOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        ImplementationOptions::walk(w);
-        StaticRegistrationOptions::walk(w);
+        MonikerOptions::walk(w);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT ReferenceOptions : public WorkDoneProgressOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentHighlightOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentSymbolOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<QByteArray> label = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "label", label);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeActionOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<QList<QByteArray>> codeActionKinds = {};
-    std::optional<bool> resolveProvider = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "codeActionKinds", codeActionKinds);
-        field(w, "resolveProvider", resolveProvider);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeLensOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<bool> resolveProvider = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "resolveProvider", resolveProvider);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentLinkOptions : public WorkDoneProgressOptions
-{
-public:
-    std::optional<bool> resolveProvider = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-        field(w, "resolveProvider", resolveProvider);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentColorOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentColorRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      StaticRegistrationOptions,
-      DocumentColorOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        StaticRegistrationOptions::walk(w);
-        DocumentColorOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentFormattingOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingOptions
-{
-public:
-    QByteArray firstTriggerCharacter = {};
-    std::optional<QList<QByteArray>> moreTriggerCharacter = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "firstTriggerCharacter", firstTriggerCharacter);
-        field(w, "moreTriggerCharacter", moreTriggerCharacter);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT RenameOptions : public WorkDoneProgressOptions
 {
 public:
-    std::optional<bool> prepareProvider = {};
+    std::optional<bool> prepareProvider = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
@@ -1875,35 +2917,10 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT FoldingRangeOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FoldingRangeRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      FoldingRangeOptions,
-      StaticRegistrationOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        FoldingRangeOptions::walk(w);
-        StaticRegistrationOptions::walk(w);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT SelectionRangeOptions : public WorkDoneProgressOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
@@ -1915,7 +2932,7 @@ class Q_LANGUAGESERVER_EXPORT SelectionRangeRegistrationOptions : public Selecti
                                                                   StaticRegistrationOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         SelectionRangeOptions::walk(w);
@@ -1924,38 +2941,13 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT CallHierarchyOptions : public WorkDoneProgressOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      CallHierarchyOptions,
-      StaticRegistrationOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        CallHierarchyOptions::walk(w);
-        StaticRegistrationOptions::walk(w);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT SemanticTokensLegend
 {
 public:
-    QList<QByteArray> tokenTypes = {};
-    QList<QByteArray> tokenModifiers = {};
+    QList<QByteArray> tokenTypes = { };
+    QList<QByteArray> tokenModifiers = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "tokenTypes", tokenTypes);
@@ -1966,11 +2958,11 @@ public:
 class Q_LANGUAGESERVER_EXPORT SemanticTokensOptions : public WorkDoneProgressOptions
 {
 public:
-    SemanticTokensLegend legend = {};
-    std::optional<std::variant<bool, QJsonObject>> range = {};
-    std::optional<std::variant<bool, QJsonObject>> full = {};
+    SemanticTokensLegend legend = { };
+    std::optional<std::variant<bool, QJsonObject>> range = { };
+    std::optional<std::variant<bool, QJsonObject>> full = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
@@ -1986,7 +2978,7 @@ class Q_LANGUAGESERVER_EXPORT SemanticTokensRegistrationOptions
       StaticRegistrationOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
@@ -1995,50 +2987,81 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeOptions : public WorkDoneProgressOptions
+class Q_LANGUAGESERVER_EXPORT SignatureHelpOptions : public WorkDoneProgressOptions
 {
 public:
-    template<typename W>
+    std::optional<QList<QByteArray>> triggerCharacters = { };
+    std::optional<QList<QByteArray>> retriggerCharacters = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressOptions::walk(w);
+        field(w, "triggerCharacters", triggerCharacters);
+        field(w, "retriggerCharacters", retriggerCharacters);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentSyncOptions
+{
+public:
+    std::optional<bool> openClose = { };
+    std::optional<TextDocumentSyncKind> change = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "openClose", openClose);
+        field(w, "change", change);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TypeDefinitionOptions : public WorkDoneProgressOptions
+{
+public:
+    template <typename W>
     void walk(W &w)
     {
         WorkDoneProgressOptions::walk(w);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeRegistrationOptions
+class Q_LANGUAGESERVER_EXPORT TypeDefinitionRegistrationOptions
     : public TextDocumentRegistrationOptions,
-      LinkedEditingRangeOptions,
+      TypeDefinitionOptions,
       StaticRegistrationOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        LinkedEditingRangeOptions::walk(w);
+        TypeDefinitionOptions::walk(w);
         StaticRegistrationOptions::walk(w);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT MonikerOptions : public WorkDoneProgressOptions
+class Q_LANGUAGESERVER_EXPORT WorkspaceFoldersServerCapabilities
 {
 public:
-    template<typename W>
+    std::optional<bool> supported = { };
+    std::optional<std::variant<QByteArray, bool>> changeNotifications = { };
+
+    template <typename W>
     void walk(W &w)
     {
-        WorkDoneProgressOptions::walk(w);
+        field(w, "supported", supported);
+        field(w, "changeNotifications", changeNotifications);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT MonikerRegistrationOptions : public TextDocumentRegistrationOptions,
-                                                           MonikerOptions
+class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolOptions : public WorkDoneProgressOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        TextDocumentRegistrationOptions::walk(w);
-        MonikerOptions::walk(w);
+        WorkDoneProgressOptions::walk(w);
     }
 };
 
@@ -2046,49 +3069,49 @@ class Q_LANGUAGESERVER_EXPORT ServerCapabilities
 {
 public:
     std::optional<std::variant<TextDocumentSyncOptions, TextDocumentSyncKind>>
-            textDocumentSync = {};
-    std::optional<CompletionOptions> completionProvider = {};
-    std::optional<std::variant<bool, HoverOptions>> hoverProvider = {};
-    std::optional<SignatureHelpOptions> signatureHelpProvider = {};
+            textDocumentSync = { };
+    std::optional<CompletionOptions> completionProvider = { };
+    std::optional<std::variant<bool, HoverOptions>> hoverProvider = { };
+    std::optional<SignatureHelpOptions> signatureHelpProvider = { };
     std::optional<std::variant<bool, DeclarationOptions, DeclarationRegistrationOptions>>
-            declarationProvider = {};
-    std::optional<std::variant<bool, DefinitionOptions>> definitionProvider = {};
+            declarationProvider = { };
+    std::optional<std::variant<bool, DefinitionOptions>> definitionProvider = { };
     std::optional<std::variant<bool, TypeDefinitionOptions, TypeDefinitionRegistrationOptions>>
-            typeDefinitionProvider = {};
+            typeDefinitionProvider = { };
     std::optional<std::variant<bool, ImplementationOptions, ImplementationRegistrationOptions>>
-            implementationProvider = {};
-    std::optional<std::variant<bool, ReferenceOptions>> referencesProvider = {};
-    std::optional<std::variant<bool, DocumentHighlightOptions>> documentHighlightProvider = {};
-    std::optional<std::variant<bool, DocumentSymbolOptions>> documentSymbolProvider = {};
-    std::optional<std::variant<bool, CodeActionOptions>> codeActionProvider = {};
-    std::optional<CodeLensOptions> codeLensProvider = {};
-    std::optional<DocumentLinkOptions> documentLinkProvider = {};
+            implementationProvider = { };
+    std::optional<std::variant<bool, ReferenceOptions>> referencesProvider = { };
+    std::optional<std::variant<bool, DocumentHighlightOptions>> documentHighlightProvider = { };
+    std::optional<std::variant<bool, DocumentSymbolOptions>> documentSymbolProvider = { };
+    std::optional<std::variant<bool, CodeActionOptions>> codeActionProvider = { };
+    std::optional<CodeLensOptions> codeLensProvider = { };
+    std::optional<DocumentLinkOptions> documentLinkProvider = { };
     std::optional<std::variant<bool, DocumentColorOptions, DocumentColorRegistrationOptions>>
-            colorProvider = {};
-    std::optional<std::variant<bool, DocumentFormattingOptions>> documentFormattingProvider = {};
+            colorProvider = { };
+    std::optional<std::variant<bool, DocumentFormattingOptions>> documentFormattingProvider = { };
     std::optional<std::variant<bool, DocumentRangeFormattingOptions>>
-            documentRangeFormattingProvider = {};
-    std::optional<DocumentOnTypeFormattingOptions> documentOnTypeFormattingProvider = {};
-    std::optional<std::variant<bool, RenameOptions>> renameProvider = {};
+            documentRangeFormattingProvider = { };
+    std::optional<DocumentOnTypeFormattingOptions> documentOnTypeFormattingProvider = { };
+    std::optional<std::variant<bool, RenameOptions>> renameProvider = { };
     std::optional<std::variant<bool, FoldingRangeOptions, FoldingRangeRegistrationOptions>>
-            foldingRangeProvider = {};
-    std::optional<ExecuteCommandOptions> executeCommandProvider = {};
+            foldingRangeProvider = { };
+    std::optional<ExecuteCommandOptions> executeCommandProvider = { };
     std::optional<std::variant<bool, SelectionRangeOptions, SelectionRangeRegistrationOptions>>
-            selectionRangeProvider = {};
+            selectionRangeProvider = { };
     std::optional<
             std::variant<bool, LinkedEditingRangeOptions, LinkedEditingRangeRegistrationOptions>>
-            linkedEditingRangeProvider = {};
+            linkedEditingRangeProvider = { };
     std::optional<std::variant<bool, CallHierarchyOptions, CallHierarchyRegistrationOptions>>
-            callHierarchyProvider = {};
+            callHierarchyProvider = { };
     std::optional<std::variant<SemanticTokensOptions, SemanticTokensRegistrationOptions>>
-            semanticTokensProvider = {};
+            semanticTokensProvider = { };
     std::optional<std::variant<bool, MonikerOptions, MonikerRegistrationOptions>>
-            monikerProvider = {};
-    std::optional<std::variant<bool, WorkspaceSymbolOptions>> workspaceSymbolProvider = {};
-    std::optional<QJsonObject> workspace = {};
-    std::optional<QJsonValue> experimental = {};
+            monikerProvider = { };
+    std::optional<std::variant<bool, WorkspaceSymbolOptions>> workspaceSymbolProvider = { };
+    std::optional<QJsonObject> workspace = { };
+    std::optional<QJsonValue> experimental = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "textDocumentSync", textDocumentSync);
@@ -2126,10 +3149,10 @@ public:
 class Q_LANGUAGESERVER_EXPORT InitializeResult
 {
 public:
-    ServerCapabilities capabilities = {};
-    std::optional<QJsonObject> serverInfo = {};
+    ServerCapabilities capabilities = { };
+    std::optional<QJsonObject> serverInfo = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "capabilities", capabilities);
@@ -2137,34 +3160,80 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT InitializeError
-{
-public:
-    bool retry = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "retry", retry);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT InitializedParams
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &)
     {
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeParams : public TextDocumentPositionParams,
+                                                         WorkDoneProgressParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT LinkedEditingRanges
+{
+public:
+    QList<Range> ranges = { };
+    std::optional<QByteArray> wordPattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "ranges", ranges);
+        field(w, "wordPattern", wordPattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT LocationLink
+{
+public:
+    std::optional<Range> originSelectionRange = { };
+    QByteArray targetUri = { };
+    Range targetRange = { };
+    Range targetSelectionRange = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "originSelectionRange", originSelectionRange);
+        field(w, "targetUri", targetUri);
+        field(w, "targetRange", targetRange);
+        field(w, "targetSelectionRange", targetSelectionRange);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT LogMessageParams
+{
+public:
+    MessageType type = { };
+    QByteArray message = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "type", type);
+        field(w, "message", message);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT LogTraceParams
 {
 public:
-    QByteArray message = {};
-    std::optional<QByteArray> verbose = {};
+    QByteArray message = { };
+    std::optional<QByteArray> verbose = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "message", message);
@@ -2172,69 +3241,459 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT SetTraceParams
-{
-public:
-    TraceValue value = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "value", value);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ShowMessageParams
-{
-public:
-    MessageType type = {};
-    QByteArray message = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "type", type);
-        field(w, "message", message);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT MessageActionItem
 {
 public:
-    QByteArray title = {};
+    QByteArray title = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "title", title);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT ShowMessageRequestParams
+class Q_LANGUAGESERVER_EXPORT Moniker
 {
 public:
-    MessageType type = {};
-    QByteArray message = {};
-    std::optional<QList<MessageActionItem>> actions = {};
+    QByteArray scheme = { };
+    QByteArray identifier = { };
+    UniquenessLevel unique = { };
+    std::optional<MonikerKind> kind = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "type", type);
+        field(w, "scheme", scheme);
+        field(w, "identifier", identifier);
+        field(w, "unique", unique);
+        field(w, "kind", kind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT MonikerParams : public TextDocumentPositionParams,
+                                              WorkDoneProgressParams,
+                                              PartialResultParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ParameterInformation
+{
+public:
+    std::variant<QByteArray, std::pair<int, int>> label = { };
+    std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "label", label);
+        field(w, "documentation", documentation);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT PrepareRenameParams : public TextDocumentPositionParams
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
+{
+public:
+    static constexpr QByteArrayView kind = "begin";
+    QByteArray title = {};
+    std::optional<bool> cancellable = { };
+    std::optional<QByteArray> message = { };
+    std::optional<int> percentage = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "title", title);
+        field(w, "cancellable", cancellable);
         field(w, "message", message);
-        field(w, "actions", actions);
+        field(w, "percentage", percentage);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressEnd
+{
+public:
+    static constexpr QByteArrayView kind = "end";
+    std::optional<QByteArray> message = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "message", message);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressReport
+{
+public:
+    static constexpr QByteArrayView kind = "report";
+    std::optional<bool> cancellable = { };
+    std::optional<QByteArray> message = { };
+    std::optional<int> percentage = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "cancellable", cancellable);
+        field(w, "message", message);
+        field(w, "percentage", percentage);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ProgressParams
+{
+public:
+    ProgressToken token = { };
+    std::variant<WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd> value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "token", token);
+        field(w, "value", value);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsParams
+{
+public:
+    QByteArray uri = { };
+    std::optional<int> version = { };
+    QList<Diagnostic> diagnostics = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "version", version);
+        field(w, "diagnostics", diagnostics);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ReferenceContext
+{
+public:
+    bool includeDeclaration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "includeDeclaration", includeDeclaration);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ReferenceParams : public TextDocumentPositionParams,
+                                                WorkDoneProgressParams,
+                                                PartialResultParams
+{
+public:
+    ReferenceContext context = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "context", context);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ReferenceRegistrationOptions : public TextDocumentRegistrationOptions,
+                                                             ReferenceOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        ReferenceOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Registration
+{
+public:
+    QByteArray id = { };
+    QByteArray method = { };
+    std::optional<QJsonValue> registerOptions = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "id", id);
+        field(w, "method", method);
+        field(w, "registerOptions", registerOptions);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RegistrationParams
+{
+public:
+    QList<Registration> registrations = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "registrations", registrations);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RenameFilesParams
+{
+public:
+    QList<FileRename> files = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "files", files);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RenameParams : public TextDocumentPositionParams,
+                                             WorkDoneProgressParams
+{
+public:
+    QByteArray newName = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentPositionParams::walk(w);
+        WorkDoneProgressParams::walk(w);
+        field(w, "newName", newName);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RenameRegistrationOptions : public TextDocumentRegistrationOptions,
+                                                          RenameOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentRegistrationOptions::walk(w);
+        RenameOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ResponseError
+{
+public:
+    int code = { };
+    QByteArray message = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "code", code);
+        field(w, "message", message);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SaveOptions
+{
+public:
+    std::optional<bool> includeText = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "includeText", includeText);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SelectionRangeParams : public WorkDoneProgressParams,
+                                                     PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = {};
+    QList<Position> positions = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "positions", positions);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokens
+{
+public:
+    std::optional<QByteArray> resultId = { };
+    QList<int> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "resultId", resultId);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensEdit
+{
+public:
+    int start = { };
+    int deleteCount = { };
+    std::optional<QList<int>> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "start", start);
+        field(w, "deleteCount", deleteCount);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensDelta
+{
+public:
+    std::optional<QByteArray> resultId = { };
+    QList<SemanticTokensEdit> edits = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "resultId", resultId);
+        field(w, "edits", edits);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensDeltaParams : public WorkDoneProgressParams,
+                                                          PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = {};
+    QByteArray previousResultId = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "previousResultId", previousResultId);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensDeltaPartialResult
+{
+public:
+    QList<SemanticTokensEdit> edits = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "edits", edits);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensParams : public WorkDoneProgressParams,
+                                                     PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensPartialResult
+{
+public:
+    QList<int> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensRangeParams : public WorkDoneProgressParams,
+                                                          PartialResultParams
+{
+public:
+    TextDocumentIdentifier textDocument = { };
+    Range range = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "textDocument", textDocument);
+        field(w, "range", range);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SemanticTokensWorkspaceClientCapabilities
+{
+public:
+    std::optional<bool> refreshSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "refreshSupport", refreshSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SetTraceParams
+{
+public:
+    TraceValue value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "value", value);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT ShowDocumentParams
 {
 public:
-    QByteArray uri = {};
-    std::optional<bool> external = {};
-    std::optional<bool> takeFocus = {};
-    std::optional<Range> selection = {};
+    QByteArray uri = { };
+    std::optional<bool> external = { };
+    std::optional<bool> takeFocus = { };
+    std::optional<Range> selection = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "uri", uri);
@@ -2247,22 +3706,22 @@ public:
 class Q_LANGUAGESERVER_EXPORT ShowDocumentResult
 {
 public:
-    bool success = {};
+    bool success = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "success", success);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT LogMessageParams
+class Q_LANGUAGESERVER_EXPORT ShowMessageParams
 {
 public:
-    MessageType type = {};
-    QByteArray message = {};
+    MessageType type = { };
+    QByteArray message = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "type", type);
@@ -2270,708 +3729,31 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressCreateParams
+class Q_LANGUAGESERVER_EXPORT ShowMessageRequestParams
 {
 public:
-    ProgressToken token = {};
+    MessageType type = { };
+    QByteArray message = { };
+    std::optional<QList<MessageActionItem>> actions = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "token", token);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkDoneProgressCancelParams
-{
-public:
-    ProgressToken token = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "token", token);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Registration
-{
-public:
-    QByteArray id = {};
-    QByteArray method = {};
-    std::optional<QJsonValue> registerOptions = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "id", id);
-        field(w, "method", method);
-        field(w, "registerOptions", registerOptions);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RegistrationParams
-{
-public:
-    QList<Registration> registrations = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "registrations", registrations);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Unregistration
-{
-public:
-    QByteArray id = {};
-    QByteArray method = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "id", id);
-        field(w, "method", method);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT UnregistrationParams
-{
-public:
-    QList<Unregistration> unregisterations = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "unregisterations", unregisterations);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceFoldersChangeEvent
-{
-public:
-    QList<WorkspaceFolder> added = {};
-    QList<WorkspaceFolder> removed = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "added", added);
-        field(w, "removed", removed);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeWorkspaceFoldersParams
-{
-public:
-    WorkspaceFoldersChangeEvent event = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "event", event);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeConfigurationParams
-{
-public:
-    QJsonValue settings = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "settings", settings);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ConfigurationItem
-{
-public:
-    std::optional<QByteArray> scopeUri = {};
-    std::optional<QByteArray> section = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "scopeUri", scopeUri);
-        field(w, "section", section);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ConfigurationParams
-{
-public:
-    QList<ConfigurationItem> items = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "items", items);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileSystemWatcher
-{
-public:
-    QByteArray globPattern = {};
-    std::optional<int> kind = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "globPattern", globPattern);
-        field(w, "kind", kind);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesRegistrationOptions
-{
-public:
-    QList<FileSystemWatcher> watchers = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "watchers", watchers);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileEvent
-{
-public:
-    QByteArray uri = {};
-    int type = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
         field(w, "type", type);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeWatchedFilesParams
-{
-public:
-    QList<FileEvent> changes = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "changes", changes);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> symbolKind = {};
-    std::optional<QJsonObject> tagSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-        field(w, "symbolKind", symbolKind);
-        field(w, "tagSupport", tagSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolRegistrationOptions : public WorkspaceSymbolOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkspaceSymbolOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolParams : public WorkDoneProgressParams,
-                                                      PartialResultParams
-{
-public:
-    QByteArray query = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "query", query);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ExecuteCommandClientCapabilities
-{
-public:
-    std::optional<bool> dynamicRegistration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "dynamicRegistration", dynamicRegistration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ExecuteCommandRegistrationOptions : public ExecuteCommandOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        ExecuteCommandOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ExecuteCommandParams : public WorkDoneProgressParams
-{
-public:
-    QByteArray command = {};
-    std::optional<QList<QJsonValue>> arguments = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        field(w, "command", command);
-        field(w, "arguments", arguments);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditParams
-{
-public:
-    std::optional<QByteArray> label = {};
-    WorkspaceEdit edit = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "label", label);
-        field(w, "edit", edit);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditResponse
-{
-public:
-    bool applied = {};
-    std::optional<QByteArray> failureReason = {};
-    std::optional<int> failedChange = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "applied", applied);
-        field(w, "failureReason", failureReason);
-        field(w, "failedChange", failedChange);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileCreate
-{
-public:
-    QByteArray uri = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CreateFilesParams
-{
-public:
-    QList<FileCreate> files = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "files", files);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileRename
-{
-public:
-    QByteArray oldUri = {};
-    QByteArray newUri = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "oldUri", oldUri);
-        field(w, "newUri", newUri);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RenameFilesParams
-{
-public:
-    QList<FileRename> files = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "files", files);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FileDelete
-{
-public:
-    QByteArray uri = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DeleteFilesParams
-{
-public:
-    QList<FileDelete> files = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "files", files);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidOpenTextDocumentParams
-{
-public:
-    TextDocumentItem textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentChangeRegistrationOptions
-    : public TextDocumentRegistrationOptions
-{
-public:
-    TextDocumentSyncKind syncKind = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        field(w, "syncKind", syncKind);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidChangeTextDocumentParams
-{
-public:
-    VersionedTextDocumentIdentifier textDocument = {};
-    QList<TextDocumentContentChangeEvent> contentChanges = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-        field(w, "contentChanges", contentChanges);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WillSaveTextDocumentParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    TextDocumentSaveReason reason = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-        field(w, "reason", reason);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SaveOptions
-{
-public:
-    std::optional<bool> includeText = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "includeText", includeText);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentSaveRegistrationOptions
-    : public TextDocumentRegistrationOptions
-{
-public:
-    std::optional<bool> includeText = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        field(w, "includeText", includeText);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidSaveTextDocumentParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    std::optional<QByteArray> text = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-        field(w, "text", text);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DidCloseTextDocumentParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsParams
-{
-public:
-    QByteArray uri = {};
-    std::optional<int> version = {};
-    QList<Diagnostic> diagnostics = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-        field(w, "version", version);
-        field(w, "diagnostics", diagnostics);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      CompletionOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        CompletionOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionContext
-{
-public:
-    CompletionTriggerKind triggerKind = {};
-    std::optional<QByteArray> triggerCharacter = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "triggerKind", triggerKind);
-        field(w, "triggerCharacter", triggerCharacter);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionParams : public TextDocumentPositionParams,
-                                                 WorkDoneProgressParams,
-                                                 PartialResultParams
-{
-public:
-    std::optional<CompletionContext> context = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "context", context);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT InsertReplaceEdit
-{
-public:
-    QByteArray newText = {};
-    Range insert = {};
-    Range replace = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "newText", newText);
-        field(w, "insert", insert);
-        field(w, "replace", replace);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionItem
-{
-public:
-    QByteArray label = {};
-    std::optional<QJsonValue> kind = {};
-    std::optional<QList<int>> tags = {};
-    std::optional<QByteArray> detail = {};
-    std::optional<std::variant<QByteArray, MarkupContent>> documentation = {};
-    std::optional<bool> deprecated = {};
-    std::optional<bool> preselect = {};
-    std::optional<QByteArray> sortText = {};
-    std::optional<QByteArray> filterText = {};
-    std::optional<QByteArray> insertText = {};
-    std::optional<InsertTextFormat> insertTextFormat = {};
-    std::optional<InsertTextMode> insertTextMode = {};
-    std::optional<std::variant<TextEdit, InsertReplaceEdit>> textEdit = {};
-    std::optional<QList<TextEdit>> additionalTextEdits = {};
-    std::optional<QList<QByteArray>> commitCharacters = {};
-    std::optional<Command> command = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "label", label);
-        field(w, "kind", kind);
-        field(w, "tags", tags);
-        field(w, "detail", detail);
-        field(w, "documentation", documentation);
-        field(w, "deprecated", deprecated);
-        field(w, "preselect", preselect);
-        field(w, "sortText", sortText);
-        field(w, "filterText", filterText);
-        field(w, "insertText", insertText);
-        field(w, "insertTextFormat", insertTextFormat);
-        field(w, "insertTextMode", insertTextMode);
-        field(w, "textEdit", textEdit);
-        field(w, "additionalTextEdits", additionalTextEdits);
-        field(w, "commitCharacters", commitCharacters);
-        field(w, "command", command);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CompletionList
-{
-public:
-    bool isIncomplete = {};
-    QList<CompletionItem> items = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "isIncomplete", isIncomplete);
-        field(w, "items", items);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT HoverRegistrationOptions : public TextDocumentRegistrationOptions,
-                                                         HoverOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        HoverOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT HoverParams : public TextDocumentPositionParams,
-                                            WorkDoneProgressParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Hover
-{
-public:
-    std::variant<MarkupContent, MarkedString, QList<MarkedString>> contents = {};
-    std::optional<Range> range = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "contents", contents);
-        field(w, "range", range);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SignatureHelpRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      SignatureHelpOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        SignatureHelpOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ParameterInformation
-{
-public:
-    std::variant<QByteArray, std::pair<int, int>> label = {};
-    std::optional<std::variant<QByteArray, MarkupContent>> documentation = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "label", label);
-        field(w, "documentation", documentation);
+        field(w, "message", message);
+        field(w, "actions", actions);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT SignatureInformation
 {
 public:
-    QByteArray label = {};
-    std::optional<std::variant<QByteArray, MarkupContent>> documentation = {};
-    std::optional<QList<ParameterInformation>> parameters = {};
-    std::optional<int> activeParameter = {};
+    QByteArray label = { };
+    std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
+    std::optional<QList<ParameterInformation>> parameters = { };
+    std::optional<int> activeParameter = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "label", label);
@@ -2984,11 +3766,11 @@ public:
 class Q_LANGUAGESERVER_EXPORT SignatureHelp
 {
 public:
-    QList<SignatureInformation> signatures = {};
-    std::optional<int> activeSignature = {};
-    std::optional<int> activeParameter = {};
+    QList<SignatureInformation> signatures = { };
+    std::optional<int> activeSignature = { };
+    std::optional<int> activeParameter = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "signatures", signatures);
@@ -3000,12 +3782,12 @@ public:
 class Q_LANGUAGESERVER_EXPORT SignatureHelpContext
 {
 public:
-    SignatureHelpTriggerKind triggerKind = {};
-    std::optional<QByteArray> triggerCharacter = {};
-    bool isRetrigger = {};
-    std::optional<SignatureHelp> activeSignatureHelp = {};
+    SignatureHelpTriggerKind triggerKind = { };
+    std::optional<QByteArray> triggerCharacter = { };
+    bool isRetrigger = { };
+    std::optional<SignatureHelp> activeSignatureHelp = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "triggerKind", triggerKind);
@@ -3019,9 +3801,9 @@ class Q_LANGUAGESERVER_EXPORT SignatureHelpParams : public TextDocumentPositionP
                                                     WorkDoneProgressParams
 {
 public:
-    std::optional<SignatureHelpContext> context = {};
+    std::optional<SignatureHelpContext> context = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentPositionParams::walk(w);
@@ -3030,222 +3812,30 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DeclarationParams : public TextDocumentPositionParams,
-                                                  WorkDoneProgressParams,
-                                                  PartialResultParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DefinitionRegistrationOptions
+class Q_LANGUAGESERVER_EXPORT SignatureHelpRegistrationOptions
     : public TextDocumentRegistrationOptions,
-      DefinitionOptions
+      SignatureHelpOptions
 {
 public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        DefinitionOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DefinitionParams : public TextDocumentPositionParams,
-                                                 WorkDoneProgressParams,
-                                                 PartialResultParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TypeDefinitionParams : public TextDocumentPositionParams,
-                                                     WorkDoneProgressParams,
-                                                     PartialResultParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ImplementationParams : public TextDocumentPositionParams,
-                                                     WorkDoneProgressParams,
-                                                     PartialResultParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ReferenceRegistrationOptions : public TextDocumentRegistrationOptions,
-                                                             ReferenceOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        ReferenceOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ReferenceContext
-{
-public:
-    bool includeDeclaration = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "includeDeclaration", includeDeclaration);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ReferenceParams : public TextDocumentPositionParams,
-                                                WorkDoneProgressParams,
-                                                PartialResultParams
-{
-public:
-    ReferenceContext context = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "context", context);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentHighlightRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentHighlightOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentHighlightOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentHighlightParams : public TextDocumentPositionParams,
-                                                        WorkDoneProgressParams,
-                                                        PartialResultParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentHighlight
-{
-public:
-    Range range = {};
-    std::optional<DocumentHighlightKind> kind = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "kind", kind);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentSymbolRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentSymbolOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentSymbolOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentSymbolParams : public WorkDoneProgressParams,
-                                                     PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentSymbol
-{
-public:
-    QByteArray name = {};
-    std::optional<QByteArray> detail = {};
-    SymbolKind kind = {};
-    std::optional<QList<int>> tags = {};
-    std::optional<bool> deprecated = {};
-    Range range = {};
-    Range selectionRange = {};
-    std::optional<QList<DocumentSymbol>> children = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "name", name);
-        field(w, "detail", detail);
-        field(w, "kind", kind);
-        field(w, "tags", tags);
-        field(w, "deprecated", deprecated);
-        field(w, "range", range);
-        field(w, "selectionRange", selectionRange);
-        field(w, "children", children);
+        SignatureHelpOptions::walk(w);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT SymbolInformation
 {
 public:
-    QByteArray name = {};
-    SymbolKind kind = {};
-    std::optional<QList<int>> tags = {};
-    std::optional<bool> deprecated = {};
-    Location location = {};
-    std::optional<QByteArray> containerName = {};
+    QByteArray name = { };
+    SymbolKind kind = { };
+    std::optional<QList<int>> tags = { };
+    std::optional<bool> deprecated = { };
+    Location location = { };
+    std::optional<QByteArray> containerName = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         field(w, "name", name);
@@ -3257,717 +3847,40 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT CodeActionRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      CodeActionOptions
+class Q_LANGUAGESERVER_EXPORT TextDocumentChangeRegistrationOptions
+    : public TextDocumentRegistrationOptions
 {
 public:
-    template<typename W>
+    TextDocumentSyncKind syncKind = { };
+
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        CodeActionOptions::walk(w);
+        field(w, "syncKind", syncKind);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT CodeActionContext
+class Q_LANGUAGESERVER_EXPORT TextDocumentSaveRegistrationOptions
+    : public TextDocumentRegistrationOptions
 {
 public:
-    QList<Diagnostic> diagnostics = {};
-    std::optional<QList<QByteArray>> only = {};
+    std::optional<bool> includeText = { };
 
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "diagnostics", diagnostics);
-        field(w, "only", only);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeActionParams : public WorkDoneProgressParams, PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    Range range = {};
-    CodeActionContext context = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "range", range);
-        field(w, "context", context);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeAction
-{
-public:
-    QByteArray title = {};
-    std::optional<QByteArray> kind = {};
-    std::optional<QList<Diagnostic>> diagnostics = {};
-    std::optional<bool> isPreferred = {};
-    std::optional<QJsonObject> disabled = {};
-    std::optional<WorkspaceEdit> edit = {};
-    std::optional<Command> command = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "title", title);
-        field(w, "kind", kind);
-        field(w, "diagnostics", diagnostics);
-        field(w, "isPreferred", isPreferred);
-        field(w, "disabled", disabled);
-        field(w, "edit", edit);
-        field(w, "command", command);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeLensRegistrationOptions : public TextDocumentRegistrationOptions,
-                                                            CodeLensOptions
-{
-public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentRegistrationOptions::walk(w);
-        CodeLensOptions::walk(w);
+        field(w, "includeText", includeText);
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT CodeLensParams : public WorkDoneProgressParams, PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeLens
-{
-public:
-    Range range = {};
-    std::optional<Command> command = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "command", command);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CodeLensWorkspaceClientCapabilities
-{
-public:
-    std::optional<bool> refreshSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "refreshSupport", refreshSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentLinkRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentLinkOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentLinkOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentLinkParams : public WorkDoneProgressParams,
-                                                   PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentLink
-{
-public:
-    Range range = {};
-    std::optional<QByteArray> target = {};
-    std::optional<QByteArray> tooltip = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "target", target);
-        field(w, "tooltip", tooltip);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentColorParams : public WorkDoneProgressParams,
-                                                    PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Color
-{
-public:
-    int red = {};
-    int green = {};
-    int blue = {};
-    int alpha = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "red", red);
-        field(w, "green", green);
-        field(w, "blue", blue);
-        field(w, "alpha", alpha);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ColorInformation
-{
-public:
-    Range range = {};
-    Color color = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "color", color);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ColorPresentationParams : public WorkDoneProgressParams,
-                                                        PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    Color color = {};
-    Range range = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "color", color);
-        field(w, "range", range);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT ColorPresentation
-{
-public:
-    QByteArray label = {};
-    std::optional<TextEdit> textEdit = {};
-    std::optional<QList<TextEdit>> additionalTextEdits = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "label", label);
-        field(w, "textEdit", textEdit);
-        field(w, "additionalTextEdits", additionalTextEdits);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentFormattingRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentFormattingOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentFormattingOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FormattingOptions
-{
-public:
-    int tabSize = {};
-    bool insertSpaces = {};
-    std::optional<bool> trimTrailingWhitespace = {};
-    std::optional<bool> insertFinalNewline = {};
-    std::optional<bool> trimFinalNewlines = {};
-    QJsonObject extraFields;
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "tabSize", tabSize);
-        field(w, "insertSpaces", insertSpaces);
-        field(w, "trimTrailingWhitespace", trimTrailingWhitespace);
-        field(w, "insertFinalNewline", insertFinalNewline);
-        field(w, "trimFinalNewlines", trimFinalNewlines);
-    }
-    template<typename W>
-    void walkExtra(W &w)
-    {
-        w.handleExtras(extraFields);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentFormattingParams : public WorkDoneProgressParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    FormattingOptions options = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "options", options);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentRangeFormattingOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentRangeFormattingOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentRangeFormattingParams : public WorkDoneProgressParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    Range range = {};
-    FormattingOptions options = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "range", range);
-        field(w, "options", options);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingRegistrationOptions
-    : public TextDocumentRegistrationOptions,
-      DocumentOnTypeFormattingOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        DocumentOnTypeFormattingOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DocumentOnTypeFormattingParams : public TextDocumentPositionParams
-{
-public:
-    QByteArray ch = {};
-    FormattingOptions options = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        field(w, "ch", ch);
-        field(w, "options", options);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RenameRegistrationOptions : public TextDocumentRegistrationOptions,
-                                                          RenameOptions
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentRegistrationOptions::walk(w);
-        RenameOptions::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RenameParams : public TextDocumentPositionParams,
-                                             WorkDoneProgressParams
-{
-public:
-    QByteArray newName = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-        field(w, "newName", newName);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT PrepareRenameParams : public TextDocumentPositionParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FoldingRangeParams : public WorkDoneProgressParams,
-                                                   PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FoldingRange
-{
-public:
-    int startLine = {};
-    std::optional<int> startCharacter = {};
-    int endLine = {};
-    std::optional<int> endCharacter = {};
-    std::optional<QByteArray> kind = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "startLine", startLine);
-        field(w, "startCharacter", startCharacter);
-        field(w, "endLine", endLine);
-        field(w, "endCharacter", endCharacter);
-        field(w, "kind", kind);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SelectionRangeParams : public WorkDoneProgressParams,
+class Q_LANGUAGESERVER_EXPORT TypeDefinitionParams : public TextDocumentPositionParams,
+                                                     WorkDoneProgressParams,
                                                      PartialResultParams
 {
 public:
-    TextDocumentIdentifier textDocument = {};
-    QList<Position> positions = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "positions", positions);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyPrepareParams : public TextDocumentPositionParams,
-                                                           WorkDoneProgressParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyItem
-{
-public:
-    QByteArray name = {};
-    SymbolKind kind = {};
-    std::optional<QList<int>> tags = {};
-    std::optional<QByteArray> detail = {};
-    QByteArray uri = {};
-    Range range = {};
-    Range selectionRange = {};
-    std::optional<QJsonValue> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "name", name);
-        field(w, "kind", kind);
-        field(w, "tags", tags);
-        field(w, "detail", detail);
-        field(w, "uri", uri);
-        field(w, "range", range);
-        field(w, "selectionRange", selectionRange);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyIncomingCallsParams : public WorkDoneProgressParams,
-                                                                 PartialResultParams
-{
-public:
-    CallHierarchyItem item = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "item", item);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyIncomingCall
-{
-public:
-    CallHierarchyItem from = {};
-    QList<Range> fromRanges = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "from", from);
-        field(w, "fromRanges", fromRanges);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyOutgoingCallsParams : public WorkDoneProgressParams,
-                                                                 PartialResultParams
-{
-public:
-    CallHierarchyItem item = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "item", item);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT CallHierarchyOutgoingCall
-{
-public:
-    CallHierarchyItem to = {};
-    QList<Range> fromRanges = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "to", to);
-        field(w, "fromRanges", fromRanges);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensParams : public WorkDoneProgressParams,
-                                                     PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokens
-{
-public:
-    std::optional<QByteArray> resultId = {};
-    QList<int> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "resultId", resultId);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensPartialResult
-{
-public:
-    QList<int> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensDeltaParams : public WorkDoneProgressParams,
-                                                          PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    QByteArray previousResultId = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "previousResultId", previousResultId);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensEdit
-{
-public:
-    int start = {};
-    int deleteCount = {};
-    std::optional<QList<int>> data = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "start", start);
-        field(w, "deleteCount", deleteCount);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensDelta
-{
-public:
-    std::optional<QByteArray> resultId = {};
-    QList<SemanticTokensEdit> edits = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "resultId", resultId);
-        field(w, "edits", edits);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensDeltaPartialResult
-{
-public:
-    QList<SemanticTokensEdit> edits = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "edits", edits);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensRangeParams : public WorkDoneProgressParams,
-                                                          PartialResultParams
-{
-public:
-    TextDocumentIdentifier textDocument = {};
-    Range range = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        WorkDoneProgressParams::walk(w);
-        PartialResultParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "range", range);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT SemanticTokensWorkspaceClientCapabilities
-{
-public:
-    std::optional<bool> refreshSupport = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "refreshSupport", refreshSupport);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT LinkedEditingRangeParams : public TextDocumentPositionParams,
-                                                         WorkDoneProgressParams
-{
-public:
-    template<typename W>
-    void walk(W &w)
-    {
-        TextDocumentPositionParams::walk(w);
-        WorkDoneProgressParams::walk(w);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT LinkedEditingRanges
-{
-public:
-    QList<Range> ranges = {};
-    std::optional<QByteArray> wordPattern = {};
-
-    template<typename W>
-    void walk(W &w)
-    {
-        field(w, "ranges", ranges);
-        field(w, "wordPattern", wordPattern);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT MonikerParams : public TextDocumentPositionParams,
-                                              WorkDoneProgressParams,
-                                              PartialResultParams
-{
-public:
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
         TextDocumentPositionParams::walk(w);
@@ -3976,21 +3889,108 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT Moniker
+class Q_LANGUAGESERVER_EXPORT Unregistration
 {
 public:
-    QByteArray scheme = {};
-    QByteArray identifier = {};
-    UniquenessLevel unique = {};
-    std::optional<MonikerKind> kind = {};
+    QByteArray id = { };
+    QByteArray method = { };
 
-    template<typename W>
+    template <typename W>
     void walk(W &w)
     {
-        field(w, "scheme", scheme);
-        field(w, "identifier", identifier);
-        field(w, "unique", unique);
-        field(w, "kind", kind);
+        field(w, "id", id);
+        field(w, "method", method);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT UnregistrationParams
+{
+public:
+    QList<Unregistration> unregisterations = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "unregisterations", unregisterations);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WillSaveTextDocumentParams
+{
+public:
+    TextDocumentIdentifier textDocument = {};
+    TextDocumentSaveReason reason = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "textDocument", textDocument);
+        field(w, "reason", reason);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressCancelParams
+{
+public:
+    ProgressToken token = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "token", token);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkDoneProgressCreateParams
+{
+public:
+    ProgressToken token = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "token", token);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+    std::optional<QJsonObject> symbolKind = { };
+    std::optional<QJsonObject> tagSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "symbolKind", symbolKind);
+        field(w, "tagSupport", tagSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolParams : public WorkDoneProgressParams,
+                                                      PartialResultParams
+{
+public:
+    QByteArray query = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkDoneProgressParams::walk(w);
+        PartialResultParams::walk(w);
+        field(w, "query", query);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolRegistrationOptions : public WorkspaceSymbolOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        WorkspaceSymbolOptions::walk(w);
     }
 };
 
@@ -4018,183 +4018,7 @@ inline QString enumToString<QLspSpecification::ErrorCodes>(QLspSpecification::Er
     return enumToIntString<QLspSpecification::ErrorCodes>(value);
 }
 
-template<>
-inline QString
-enumToString<QLspSpecification::DiagnosticSeverity>(QLspSpecification::DiagnosticSeverity value)
-{
-    return enumToIntString<QLspSpecification::DiagnosticSeverity>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::DiagnosticTag>(QLspSpecification::DiagnosticTag value)
-{
-    return enumToIntString<QLspSpecification::DiagnosticTag>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::ResourceOperationKind>(
-        QLspSpecification::ResourceOperationKind value)
-{
-    switch (value) {
-    case QLspSpecification::ResourceOperationKind::Create:
-        return QLatin1String("create");
-    case QLspSpecification::ResourceOperationKind::Rename:
-        return QLatin1String("rename");
-    case QLspSpecification::ResourceOperationKind::Delete:
-        return QLatin1String("delete");
-    default:
-        return QString::number(int(value));
-    }
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::FailureHandlingKind>(QLspSpecification::FailureHandlingKind value)
-{
-    switch (value) {
-    case QLspSpecification::FailureHandlingKind::Abort:
-        return QLatin1String("abort");
-    case QLspSpecification::FailureHandlingKind::Transactional:
-        return QLatin1String("transactional");
-    case QLspSpecification::FailureHandlingKind::TextOnlyTransactional:
-        return QLatin1String("textOnlyTransactional");
-    case QLspSpecification::FailureHandlingKind::Undo:
-        return QLatin1String("undo");
-    default:
-        return QString::number(int(value));
-    }
-}
-
-template<>
-inline QString enumToString<QLspSpecification::MarkupKind>(QLspSpecification::MarkupKind value)
-{
-    switch (value) {
-    case QLspSpecification::MarkupKind::PlainText:
-        return QLatin1String("plaintext");
-    case QLspSpecification::MarkupKind::Markdown:
-        return QLatin1String("markdown");
-    default:
-        return QString::number(int(value));
-    }
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::InitializeErrorCode>(QLspSpecification::InitializeErrorCode value)
-{
-    return enumToIntString<QLspSpecification::InitializeErrorCode>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::MessageType>(QLspSpecification::MessageType value)
-{
-    return enumToIntString<QLspSpecification::MessageType>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::WatchKind>(QLspSpecification::WatchKind value)
-{
-    return enumToIntString<QLspSpecification::WatchKind>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::FileChangeType>(QLspSpecification::FileChangeType value)
-{
-    return enumToIntString<QLspSpecification::FileChangeType>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::FileOperationPatternKind>(
-        QLspSpecification::FileOperationPatternKind value)
-{
-    switch (value) {
-    case QLspSpecification::FileOperationPatternKind::File:
-        return QLatin1String("file");
-    case QLspSpecification::FileOperationPatternKind::Folder:
-        return QLatin1String("folder");
-    default:
-        return QString::number(int(value));
-    }
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::TextDocumentSyncKind>(QLspSpecification::TextDocumentSyncKind value)
-{
-    return enumToIntString<QLspSpecification::TextDocumentSyncKind>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::TextDocumentSaveReason>(
-        QLspSpecification::TextDocumentSaveReason value)
-{
-    return enumToIntString<QLspSpecification::TextDocumentSaveReason>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::CompletionTriggerKind>(
-        QLspSpecification::CompletionTriggerKind value)
-{
-    return enumToIntString<QLspSpecification::CompletionTriggerKind>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::InsertTextFormat>(QLspSpecification::InsertTextFormat value)
-{
-    return enumToIntString<QLspSpecification::InsertTextFormat>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::CompletionItemTag>(QLspSpecification::CompletionItemTag value)
-{
-    return enumToIntString<QLspSpecification::CompletionItemTag>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::InsertTextMode>(QLspSpecification::InsertTextMode value)
-{
-    return enumToIntString<QLspSpecification::InsertTextMode>(value);
-}
-
-template<>
-inline QString
-enumToString<QLspSpecification::CompletionItemKind>(QLspSpecification::CompletionItemKind value)
-{
-    return enumToIntString<QLspSpecification::CompletionItemKind>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::SignatureHelpTriggerKind>(
-        QLspSpecification::SignatureHelpTriggerKind value)
-{
-    return enumToIntString<QLspSpecification::SignatureHelpTriggerKind>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::DocumentHighlightKind>(
-        QLspSpecification::DocumentHighlightKind value)
-{
-    return enumToIntString<QLspSpecification::DocumentHighlightKind>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::SymbolKind>(QLspSpecification::SymbolKind value)
-{
-    return enumToIntString<QLspSpecification::SymbolKind>(value);
-}
-
-template<>
-inline QString enumToString<QLspSpecification::SymbolTag>(QLspSpecification::SymbolTag value)
-{
-    return enumToIntString<QLspSpecification::SymbolTag>(value);
-}
-
-template<>
+template <>
 inline QString
 enumToString<QLspSpecification::CodeActionKind>(QLspSpecification::CodeActionKind value)
 {
@@ -4220,7 +4044,7 @@ enumToString<QLspSpecification::CodeActionKind>(QLspSpecification::CodeActionKin
     }
 }
 
-template<>
+template <>
 inline QLspSpecification::CodeActionKind
 enumFromString<QLspSpecification::CodeActionKind>(const QString &string)
 {
@@ -4240,17 +4064,91 @@ enumFromString<QLspSpecification::CodeActionKind>(const QString &string)
         return QLspSpecification::CodeActionKind::Source;
     else if (string.compare(QLatin1String("source.organizeImports"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::CodeActionKind::SourceOrganizeImports;
-    return QLspSpecification::CodeActionKind{};
+    return QLspSpecification::CodeActionKind{ };
 }
 
-template<>
-inline QString enumToString<QLspSpecification::PrepareSupportDefaultBehavior>(
-        QLspSpecification::PrepareSupportDefaultBehavior value)
+template <>
+inline QString
+enumToString<QLspSpecification::CompletionItemKind>(QLspSpecification::CompletionItemKind value)
 {
-    return enumToIntString<QLspSpecification::PrepareSupportDefaultBehavior>(value);
+    return enumToIntString<QLspSpecification::CompletionItemKind>(value);
 }
 
-template<>
+template <>
+inline QString
+enumToString<QLspSpecification::CompletionItemTag>(QLspSpecification::CompletionItemTag value)
+{
+    return enumToIntString<QLspSpecification::CompletionItemTag>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::CompletionTriggerKind>(
+        QLspSpecification::CompletionTriggerKind value)
+{
+    return enumToIntString<QLspSpecification::CompletionTriggerKind>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::DiagnosticSeverity>(QLspSpecification::DiagnosticSeverity value)
+{
+    return enumToIntString<QLspSpecification::DiagnosticSeverity>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::DiagnosticTag>(QLspSpecification::DiagnosticTag value)
+{
+    return enumToIntString<QLspSpecification::DiagnosticTag>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::DocumentHighlightKind>(
+        QLspSpecification::DocumentHighlightKind value)
+{
+    return enumToIntString<QLspSpecification::DocumentHighlightKind>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::FailureHandlingKind>(QLspSpecification::FailureHandlingKind value)
+{
+    switch (value) {
+    case QLspSpecification::FailureHandlingKind::Abort:
+        return QLatin1String("abort");
+    case QLspSpecification::FailureHandlingKind::Transactional:
+        return QLatin1String("transactional");
+    case QLspSpecification::FailureHandlingKind::TextOnlyTransactional:
+        return QLatin1String("textOnlyTransactional");
+    case QLspSpecification::FailureHandlingKind::Undo:
+        return QLatin1String("undo");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::FileChangeType>(QLspSpecification::FileChangeType value)
+{
+    return enumToIntString<QLspSpecification::FileChangeType>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::FileOperationPatternKind>(
+        QLspSpecification::FileOperationPatternKind value)
+{
+    switch (value) {
+    case QLspSpecification::FileOperationPatternKind::File:
+        return QLatin1String("file");
+    case QLspSpecification::FileOperationPatternKind::Folder:
+        return QLatin1String("folder");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
 inline QString
 enumToString<QLspSpecification::FoldingRangeKind>(QLspSpecification::FoldingRangeKind value)
 {
@@ -4266,7 +4164,115 @@ enumToString<QLspSpecification::FoldingRangeKind>(QLspSpecification::FoldingRang
     }
 }
 
-template<>
+template <>
+inline QString
+enumToString<QLspSpecification::InitializeErrorCode>(QLspSpecification::InitializeErrorCode value)
+{
+    return enumToIntString<QLspSpecification::InitializeErrorCode>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::InsertTextFormat>(QLspSpecification::InsertTextFormat value)
+{
+    return enumToIntString<QLspSpecification::InsertTextFormat>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::InsertTextMode>(QLspSpecification::InsertTextMode value)
+{
+    return enumToIntString<QLspSpecification::InsertTextMode>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::MarkupKind>(QLspSpecification::MarkupKind value)
+{
+    switch (value) {
+    case QLspSpecification::MarkupKind::PlainText:
+        return QLatin1String("plaintext");
+    case QLspSpecification::MarkupKind::Markdown:
+        return QLatin1String("markdown");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
+inline QString enumToString<QLspSpecification::MessageType>(QLspSpecification::MessageType value)
+{
+    return enumToIntString<QLspSpecification::MessageType>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::MonikerKind>(QLspSpecification::MonikerKind value)
+{
+    switch (value) {
+    case QLspSpecification::MonikerKind::Import:
+        return QLatin1String("import");
+    case QLspSpecification::MonikerKind::Export:
+        return QLatin1String("export");
+    case QLspSpecification::MonikerKind::Local:
+        return QLatin1String("local");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
+inline QString enumToString<QLspSpecification::PrepareSupportDefaultBehavior>(
+        QLspSpecification::PrepareSupportDefaultBehavior value)
+{
+    return enumToIntString<QLspSpecification::PrepareSupportDefaultBehavior>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::ResourceOperationKind>(
+        QLspSpecification::ResourceOperationKind value)
+{
+    switch (value) {
+    case QLspSpecification::ResourceOperationKind::Create:
+        return QLatin1String("create");
+    case QLspSpecification::ResourceOperationKind::Rename:
+        return QLatin1String("rename");
+    case QLspSpecification::ResourceOperationKind::Delete:
+        return QLatin1String("delete");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
+inline QString enumToString<QLspSpecification::SemanticTokenModifiers>(
+        QLspSpecification::SemanticTokenModifiers value)
+{
+    switch (value) {
+    case QLspSpecification::SemanticTokenModifiers::Declaration:
+        return QLatin1String("declaration");
+    case QLspSpecification::SemanticTokenModifiers::Definition:
+        return QLatin1String("definition");
+    case QLspSpecification::SemanticTokenModifiers::Readonly:
+        return QLatin1String("readonly");
+    case QLspSpecification::SemanticTokenModifiers::Static:
+        return QLatin1String("static");
+    case QLspSpecification::SemanticTokenModifiers::Deprecated:
+        return QLatin1String("deprecated");
+    case QLspSpecification::SemanticTokenModifiers::Abstract:
+        return QLatin1String("abstract");
+    case QLspSpecification::SemanticTokenModifiers::Async:
+        return QLatin1String("async");
+    case QLspSpecification::SemanticTokenModifiers::Modification:
+        return QLatin1String("modification");
+    case QLspSpecification::SemanticTokenModifiers::Documentation:
+        return QLatin1String("documentation");
+    case QLspSpecification::SemanticTokenModifiers::DefaultLibrary:
+        return QLatin1String("defaultLibrary");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
 inline QString
 enumToString<QLspSpecification::SemanticTokenTypes>(QLspSpecification::SemanticTokenTypes value)
 {
@@ -4320,34 +4326,37 @@ enumToString<QLspSpecification::SemanticTokenTypes>(QLspSpecification::SemanticT
     }
 }
 
-template<>
-inline QString enumToString<QLspSpecification::SemanticTokenModifiers>(
-        QLspSpecification::SemanticTokenModifiers value)
+template <>
+inline QString enumToString<QLspSpecification::SignatureHelpTriggerKind>(
+        QLspSpecification::SignatureHelpTriggerKind value)
 {
-    switch (value) {
-    case QLspSpecification::SemanticTokenModifiers::Declaration:
-        return QLatin1String("declaration");
-    case QLspSpecification::SemanticTokenModifiers::Definition:
-        return QLatin1String("definition");
-    case QLspSpecification::SemanticTokenModifiers::Readonly:
-        return QLatin1String("readonly");
-    case QLspSpecification::SemanticTokenModifiers::Static:
-        return QLatin1String("static");
-    case QLspSpecification::SemanticTokenModifiers::Deprecated:
-        return QLatin1String("deprecated");
-    case QLspSpecification::SemanticTokenModifiers::Abstract:
-        return QLatin1String("abstract");
-    case QLspSpecification::SemanticTokenModifiers::Async:
-        return QLatin1String("async");
-    case QLspSpecification::SemanticTokenModifiers::Modification:
-        return QLatin1String("modification");
-    case QLspSpecification::SemanticTokenModifiers::Documentation:
-        return QLatin1String("documentation");
-    case QLspSpecification::SemanticTokenModifiers::DefaultLibrary:
-        return QLatin1String("defaultLibrary");
-    default:
-        return QString::number(int(value));
-    }
+    return enumToIntString<QLspSpecification::SignatureHelpTriggerKind>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::SymbolKind>(QLspSpecification::SymbolKind value)
+{
+    return enumToIntString<QLspSpecification::SymbolKind>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::SymbolTag>(QLspSpecification::SymbolTag value)
+{
+    return enumToIntString<QLspSpecification::SymbolTag>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::TextDocumentSaveReason>(
+        QLspSpecification::TextDocumentSaveReason value)
+{
+    return enumToIntString<QLspSpecification::TextDocumentSaveReason>(value);
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::TextDocumentSyncKind>(QLspSpecification::TextDocumentSyncKind value)
+{
+    return enumToIntString<QLspSpecification::TextDocumentSyncKind>(value);
 }
 
 template<>
@@ -4361,7 +4370,7 @@ inline QString enumToString<QLspSpecification::TokenFormat>(QLspSpecification::T
     }
 }
 
-template<>
+template <>
 inline QString
 enumToString<QLspSpecification::UniquenessLevel>(QLspSpecification::UniquenessLevel value)
 {
@@ -4381,19 +4390,10 @@ enumToString<QLspSpecification::UniquenessLevel>(QLspSpecification::UniquenessLe
     }
 }
 
-template<>
-inline QString enumToString<QLspSpecification::MonikerKind>(QLspSpecification::MonikerKind value)
+template <>
+inline QString enumToString<QLspSpecification::WatchKind>(QLspSpecification::WatchKind value)
 {
-    switch (value) {
-    case QLspSpecification::MonikerKind::Import:
-        return QLatin1String("import");
-    case QLspSpecification::MonikerKind::Export:
-        return QLatin1String("export");
-    case QLspSpecification::MonikerKind::Local:
-        return QLatin1String("local");
-    default:
-        return QString::number(int(value));
-    }
+    return enumToIntString<QLspSpecification::WatchKind>(value);
 }
 
 } // namespace QTypedJson

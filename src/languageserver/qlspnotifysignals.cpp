@@ -24,13 +24,13 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
-    protocol->registerProgressNotificationHandler(
+    protocol->registerExitNotificationHandler(
             [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::ProgressParamsType &params) {
+                             const QLspSpecification::Notifications::ExitParamsType &params) {
                 static const QMetaMethod notificationSignal =
-                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedProgressNotification);
+                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedExitNotification);
                 if (isSignalConnected(notificationSignal))
-                    emit receivedProgressNotification(params);
+                    emit receivedExitNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });
@@ -47,17 +47,6 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
-    protocol->registerExitNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::ExitParamsType &params) {
-                static const QMetaMethod notificationSignal =
-                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedExitNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedExitNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
     protocol->registerLogTraceNotificationHandler(
             [this, protocol](const QByteArray &method,
                              const QLspSpecification::Notifications::LogTraceParamsType &params) {
@@ -69,6 +58,17 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
+    protocol->registerProgressNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::ProgressParamsType &params) {
+                static const QMetaMethod notificationSignal =
+                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedProgressNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedProgressNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
     protocol->registerSetTraceNotificationHandler(
             [this, protocol](const QByteArray &method,
                              const QLspSpecification::Notifications::SetTraceParamsType &params) {
@@ -76,42 +76,6 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                         QMetaMethod::fromSignal(&QLspNotifySignals::receivedSetTraceNotification);
                 if (isSignalConnected(notificationSignal))
                     emit receivedSetTraceNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerShowMessageNotificationHandler(
-            [this,
-             protocol](const QByteArray &method,
-                       const QLspSpecification::Notifications::ShowMessageParamsType &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedShowMessageNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedShowMessageNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerLogMessageNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::LogMessageParamsType &params) {
-                static const QMetaMethod notificationSignal =
-                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedLogMessageNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedLogMessageNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerWorkDoneProgressCancelNotificationHandler(
-            [this,
-             protocol](const QByteArray &method,
-                       const QLspSpecification::Notifications::WorkDoneProgressCancelParamsType
-                               &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedWorkDoneProgressCancelNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedWorkDoneProgressCancelNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });
@@ -128,15 +92,110 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
-    protocol->registerDidChangeWorkspaceFoldersNotificationHandler(
+    protocol->registerDidChangeTextDocumentNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::DidChangeTextDocumentParamsType
+                                     &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidChangeTextDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidChangeTextDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidCloseTextDocumentNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::DidCloseTextDocumentParamsType
+                                     &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidCloseTextDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidCloseTextDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidOpenTextDocumentNotificationHandler(
+            [this, protocol](
+                    const QByteArray &method,
+                    const QLspSpecification::Notifications::DidOpenTextDocumentParamsType &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidOpenTextDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidOpenTextDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerDidSaveTextDocumentNotificationHandler(
+            [this, protocol](
+                    const QByteArray &method,
+                    const QLspSpecification::Notifications::DidSaveTextDocumentParamsType &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidSaveTextDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidSaveTextDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerPublishDiagnosticsNotificationHandler(
+            [this, protocol](
+                    const QByteArray &method,
+                    const QLspSpecification::Notifications::PublishDiagnosticsParamsType &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedPublishDiagnosticsNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedPublishDiagnosticsNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerWillSaveTextDocumentNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::WillSaveTextDocumentParamsType
+                                     &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedWillSaveTextDocumentNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedWillSaveTextDocumentNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerLogMessageNotificationHandler(
+            [this, protocol](const QByteArray &method,
+                             const QLspSpecification::Notifications::LogMessageParamsType &params) {
+                static const QMetaMethod notificationSignal =
+                        QMetaMethod::fromSignal(&QLspNotifySignals::receivedLogMessageNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedLogMessageNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerShowMessageNotificationHandler(
             [this,
              protocol](const QByteArray &method,
-                       const QLspSpecification::Notifications::DidChangeWorkspaceFoldersParamsType
+                       const QLspSpecification::Notifications::ShowMessageParamsType &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedShowMessageNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedShowMessageNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
+    protocol->registerWorkDoneProgressCancelNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::WorkDoneProgressCancelParamsType
                                &params) {
                 static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedDidChangeWorkspaceFoldersNotification);
+                        &QLspNotifySignals::receivedWorkDoneProgressCancelNotification);
                 if (isSignalConnected(notificationSignal))
-                    emit receivedDidChangeWorkspaceFoldersNotification(params);
+                    emit receivedWorkDoneProgressCancelNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });
@@ -166,6 +225,19 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
+    protocol->registerDidChangeWorkspaceFoldersNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::DidChangeWorkspaceFoldersParamsType
+                               &params) {
+                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
+                        &QLspNotifySignals::receivedDidChangeWorkspaceFoldersNotification);
+                if (isSignalConnected(notificationSignal))
+                    emit receivedDidChangeWorkspaceFoldersNotification(params);
+                else
+                    protocol->handleUndispatchedNotification(method, params);
+            });
+
     protocol->registerCreateFilesNotificationHandler(
             [this,
              protocol](const QByteArray &method,
@@ -174,18 +246,6 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                         &QLspNotifySignals::receivedCreateFilesNotification);
                 if (isSignalConnected(notificationSignal))
                     emit receivedCreateFilesNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerRenameFilesNotificationHandler(
-            [this,
-             protocol](const QByteArray &method,
-                       const QLspSpecification::Notifications::RenameFilesParamsType &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedRenameFilesNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedRenameFilesNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });
@@ -202,74 +262,14 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                     protocol->handleUndispatchedNotification(method, params);
             });
 
-    protocol->registerDidOpenTextDocumentNotificationHandler(
-            [this, protocol](
-                    const QByteArray &method,
-                    const QLspSpecification::Notifications::DidOpenTextDocumentParamsType &params) {
+    protocol->registerRenameFilesNotificationHandler(
+            [this,
+             protocol](const QByteArray &method,
+                       const QLspSpecification::Notifications::RenameFilesParamsType &params) {
                 static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedDidOpenTextDocumentNotification);
+                        &QLspNotifySignals::receivedRenameFilesNotification);
                 if (isSignalConnected(notificationSignal))
-                    emit receivedDidOpenTextDocumentNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerDidChangeTextDocumentNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::DidChangeTextDocumentParamsType
-                                     &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedDidChangeTextDocumentNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedDidChangeTextDocumentNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerWillSaveTextDocumentNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::WillSaveTextDocumentParamsType
-                                     &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedWillSaveTextDocumentNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedWillSaveTextDocumentNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerDidSaveTextDocumentNotificationHandler(
-            [this, protocol](
-                    const QByteArray &method,
-                    const QLspSpecification::Notifications::DidSaveTextDocumentParamsType &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedDidSaveTextDocumentNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedDidSaveTextDocumentNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerDidCloseTextDocumentNotificationHandler(
-            [this, protocol](const QByteArray &method,
-                             const QLspSpecification::Notifications::DidCloseTextDocumentParamsType
-                                     &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedDidCloseTextDocumentNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedDidCloseTextDocumentNotification(params);
-                else
-                    protocol->handleUndispatchedNotification(method, params);
-            });
-
-    protocol->registerPublishDiagnosticsNotificationHandler(
-            [this, protocol](
-                    const QByteArray &method,
-                    const QLspSpecification::Notifications::PublishDiagnosticsParamsType &params) {
-                static const QMetaMethod notificationSignal = QMetaMethod::fromSignal(
-                        &QLspNotifySignals::receivedPublishDiagnosticsNotification);
-                if (isSignalConnected(notificationSignal))
-                    emit receivedPublishDiagnosticsNotification(params);
+                    emit receivedRenameFilesNotification(params);
                 else
                     protocol->handleUndispatchedNotification(method, params);
             });
