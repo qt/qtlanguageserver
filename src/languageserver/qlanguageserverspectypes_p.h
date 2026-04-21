@@ -663,7 +663,7 @@ class Q_LANGUAGESERVER_EXPORT WorkspaceFullDocumentDiagnosticReport
 {
 public:
     QByteArray uri = { };
-    std::variant<int, std::nullptr_t> version = { };
+    std::optional<int> version = { };
 
     template <typename W>
     void walk(W &w)
@@ -679,7 +679,7 @@ class Q_LANGUAGESERVER_EXPORT WorkspaceUnchangedDocumentDiagnosticReport
 {
 public:
     QByteArray uri = { };
-    std::variant<int, std::nullptr_t> version = { };
+    std::optional<int> version = { };
 
     template <typename W>
     void walk(W &w)
@@ -754,7 +754,7 @@ class Q_LANGUAGESERVER_EXPORT OptionalVersionedTextDocumentIdentifier
     : public TextDocumentIdentifier
 {
 public:
-    std::variant<int, std::nullptr_t> version = { };
+    std::optional<int> version = { };
 
     template <typename W>
     void walk(W &w)
@@ -1140,7 +1140,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT TextDocumentRegistrationOptions
 {
 public:
-    std::variant<DocumentSelector, std::nullptr_t> documentSelector = { };
+    std::optional<DocumentSelector> documentSelector = { };
 
     template <typename W>
     void walk(W &w)
@@ -3738,11 +3738,11 @@ public:
 class Q_LANGUAGESERVER_EXPORT _InitializeParams : public WorkDoneProgressParams
 {
 public:
-    std::variant<int, std::nullptr_t> processId = { };
+    std::optional<int> processId = { };
     std::optional<QJsonObject> clientInfo = { };
     std::optional<QByteArray> locale = { };
-    std::optional<std::variant<QByteArray, std::nullptr_t>> rootPath = { };
-    std::variant<QByteArray, std::nullptr_t> rootUri = { };
+    std::optional<QByteArray> rootPath = { };
+    std::optional<QByteArray> rootUri = { };
     ClientCapabilities capabilities = { };
     std::optional<QJsonValue> initializationOptions = { };
     std::optional<TraceValues> trace = { };
@@ -3765,7 +3765,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WorkspaceFoldersInitializeParams
 {
 public:
-    std::optional<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> workspaceFolders = { };
+    std::optional<QList<WorkspaceFolder>> workspaceFolders = { };
 
     template <typename W>
     void walk(W &w)

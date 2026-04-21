@@ -356,17 +356,34 @@ function typeToCppTypeImpl(
         throw new Error(
                 "and types are not supported in the current LSP specification, if you see this error it means the specification has changed and the code needs to be updated");
     case "or":
-        const orType = <metaModel.OrType>type;
+        let orTypes = (<metaModel.OrType>type).items;
+
+        // fold std::variant<T..., null> into std::optional<T...>
+        let isOptional = false;
+        const isNull = (t: metaModel.Type) =>
+                t.kind == "base" && (<metaModel.BaseType>t).name == "null";
+        if (orTypes.some(isNull)) {
+            isOptional = true;
+            orTypes = orTypes.filter(t => !isNull(t));
+        }
 
         // squash variant of object literals that only differ in their optional properties
-        const squashed = squashType(orType.items)
+        const squashed = squashType(orTypes)
         if (squashed)
-        return typeToCppTypeImpl(squashed, literalObjectName);
+        {
+            const result = typeToCppTypeImpl(squashed, literalObjectName);
+            return isOptional ? `std::optional<${result}>` : result;
+        }
 
-        return `std::variant<${
-                (<metaModel.OrType>type)
-                        .items.map(x => typeToCppType(x, literalObjectName))
-                        .join(", ")}>`;
+        // don't create variants if only one option is left.
+        if (orTypes.length == 1) {
+            const result = typeToCppType(orTypes[0], literalObjectName);
+            return isOptional ? `std::optional<${result}>` : result;
+        }
+
+        const result =
+                `std::variant<${orTypes.map(x => typeToCppType(x, literalObjectName)).join(", ")}>`;
+        return isOptional ? `std::optional<${result}>` : result;
     case "tuple":
         return `std::tuple<${
                 (<metaModel.TupleType>type)
