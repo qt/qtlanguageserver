@@ -135,6 +135,20 @@ void ProtocolGen::requestCallHierarchyIncomingCalls(
             params);
 }
 
+void ProtocolGen::registerCallHierarchyIncomingCallsRequestHandler(
+        const std::function<void(
+                const QByteArray &, const CallHierarchyIncomingCallsParams &,
+                LSPPartialResponse<std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>,
+                                   QList<CallHierarchyIncomingCall>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::CallHierarchyIncomingCallsParamsType,
+                    QLspSpecification::Responses::CallHierarchyIncomingCallsResponseType>(
+                    QByteArray(QLspSpecification::Requests::CallHierarchyIncomingCallsMethod),
+                    handler);
+}
+
 void ProtocolGen::requestCallHierarchyOutgoingCalls(
         const CallHierarchyOutgoingCallsParams &params,
         std::function<void(const std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t> &)>
@@ -155,9 +169,18 @@ void ProtocolGen::requestCallHierarchyOutgoingCalls(
             params);
 }
 
-void ProtocolGen::notifyCancel(const CancelParams &params)
+void ProtocolGen::registerCallHierarchyOutgoingCallsRequestHandler(
+        const std::function<void(
+                const QByteArray &, const CallHierarchyOutgoingCallsParams &,
+                LSPPartialResponse<std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>,
+                                   QList<CallHierarchyOutgoingCall>> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::CancelMethod, params);
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::CallHierarchyOutgoingCallsParamsType,
+                    QLspSpecification::Responses::CallHierarchyOutgoingCallsResponseType>(
+                    QByteArray(QLspSpecification::Requests::CallHierarchyOutgoingCallsMethod),
+                    handler);
 }
 
 void ProtocolGen::requestRegistration(const RegistrationParams &params,
@@ -177,6 +200,16 @@ void ProtocolGen::requestRegistration(const RegistrationParams &params,
             params);
 }
 
+void ProtocolGen::registerRegistrationRequestHandler(
+        const std::function<void(const QByteArray &, const RegistrationParams &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::RegistrationParamsType,
+                                     QLspSpecification::Responses::RegistrationResponseType>(
+                    QByteArray(QLspSpecification::Requests::RegistrationMethod), handler);
+}
+
 void ProtocolGen::requestUnregistration(const UnregistrationParams &params,
                                         std::function<void()> responseHandler,
                                         ResponseErrorHandler errorHandler)
@@ -192,6 +225,16 @@ void ProtocolGen::requestUnregistration(const UnregistrationParams &params,
                     decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerUnregistrationRequestHandler(
+        const std::function<void(const QByteArray &, const UnregistrationParams &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::UnregistrationParamsType,
+                                     QLspSpecification::Responses::UnregistrationResponseType>(
+                    QByteArray(QLspSpecification::Requests::UnregistrationMethod), handler);
 }
 
 void ProtocolGen::requestCodeActionResolve(const CodeAction &params,
@@ -211,6 +254,16 @@ void ProtocolGen::requestCodeActionResolve(const CodeAction &params,
             params);
 }
 
+void ProtocolGen::registerCodeActionResolveRequestHandler(
+        const std::function<void(const QByteArray &, const CodeAction &,
+                                 LSPResponse<CodeAction> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CodeActionResolveParamsType,
+                                     QLspSpecification::Responses::CodeActionResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::CodeActionResolveMethod), handler);
+}
+
 void ProtocolGen::requestCodeLensRefresh(const std::nullptr_t &params,
                                          std::function<void()> responseHandler,
                                          ResponseErrorHandler errorHandler)
@@ -226,6 +279,16 @@ void ProtocolGen::requestCodeLensRefresh(const std::nullptr_t &params,
                     decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerCodeLensRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CodeLensRefreshParamsType,
+                                     QLspSpecification::Responses::CodeLensRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::CodeLensRefreshMethod), handler);
 }
 
 void ProtocolGen::requestCodeLensResolve(const CodeLens &params,
@@ -245,6 +308,16 @@ void ProtocolGen::requestCodeLensResolve(const CodeLens &params,
             params);
 }
 
+void ProtocolGen::registerCodeLensResolveRequestHandler(
+        const std::function<void(const QByteArray &, const CodeLens &, LSPResponse<CodeLens> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CodeLensResolveParamsType,
+                                     QLspSpecification::Responses::CodeLensResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::CodeLensResolveMethod), handler);
+}
+
 void ProtocolGen::requestCompletionItemResolve(
         const CompletionItem &params, std::function<void(const CompletionItem &)> responseHandler,
         ResponseErrorHandler errorHandler)
@@ -260,6 +333,17 @@ void ProtocolGen::requestCompletionItemResolve(
                     decodeAndCall<CompletionItem>(response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerCompletionItemResolveRequestHandler(
+        const std::function<void(const QByteArray &, const CompletionItem &,
+                                 LSPResponse<CompletionItem> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::CompletionItemResolveParamsType,
+                    QLspSpecification::Responses::CompletionItemResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::CompletionItemResolveMethod), handler);
 }
 
 void ProtocolGen::requestDocumentLinkResolve(
@@ -279,9 +363,14 @@ void ProtocolGen::requestDocumentLinkResolve(
             params);
 }
 
-void ProtocolGen::notifyExit(const std::nullptr_t &params)
+void ProtocolGen::registerDocumentLinkResolveRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentLink &,
+                                 LSPResponse<DocumentLink> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::ExitMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentLinkResolveParamsType,
+                                     QLspSpecification::Responses::DocumentLinkResolveResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentLinkResolveMethod), handler);
 }
 
 void ProtocolGen::requestInitialize(const InitializeParams &params,
@@ -301,24 +390,14 @@ void ProtocolGen::requestInitialize(const InitializeParams &params,
             params);
 }
 
-void ProtocolGen::notifyInitialized(const InitializedParams &params)
+void ProtocolGen::registerInitializeRequestHandler(
+        const std::function<void(const QByteArray &, const InitializeParams &,
+                                 LSPResponse<InitializeResult> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::InitializedMethod, params);
-}
-
-void ProtocolGen::notifyLogTrace(const LogTraceParams &params)
-{
-    typedRpc()->sendNotification(Notifications::LogTraceMethod, params);
-}
-
-void ProtocolGen::notifyProgress(const ProgressParams &params)
-{
-    typedRpc()->sendNotification(Notifications::ProgressMethod, params);
-}
-
-void ProtocolGen::notifySetTrace(const SetTraceParams &params)
-{
-    typedRpc()->sendNotification(Notifications::SetTraceMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::InitializeParamsType,
+                                     QLspSpecification::Responses::InitializeResponseType>(
+                    QByteArray(QLspSpecification::Requests::InitializeMethod), handler);
 }
 
 void ProtocolGen::requestShutdown(const std::nullptr_t &params,
@@ -338,9 +417,14 @@ void ProtocolGen::requestShutdown(const std::nullptr_t &params,
             params);
 }
 
-void ProtocolGen::notifyTelemetryEvent(const QJsonObject &params)
+void ProtocolGen::registerShutdownRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::TelemetryEventMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ShutdownParamsType,
+                                     QLspSpecification::Responses::ShutdownResponseType>(
+                    QByteArray(QLspSpecification::Requests::ShutdownMethod), handler);
 }
 
 void ProtocolGen::requestCodeAction(
@@ -365,6 +449,19 @@ void ProtocolGen::requestCodeAction(
             params);
 }
 
+void ProtocolGen::registerCodeActionRequestHandler(
+        const std::function<
+                void(const QByteArray &, const CodeActionParams &,
+                     LSPPartialResponse<
+                             std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>,
+                             QList<std::variant<Command, CodeAction>>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CodeActionParamsType,
+                                     QLspSpecification::Responses::CodeActionResponseType>(
+                    QByteArray(QLspSpecification::Requests::CodeActionMethod), handler);
+}
+
 void ProtocolGen::requestCodeLens(
         const CodeLensParams &params,
         std::function<void(const std::variant<QList<CodeLens>, std::nullptr_t> &)> responseHandler,
@@ -384,6 +481,17 @@ void ProtocolGen::requestCodeLens(
             params);
 }
 
+void ProtocolGen::registerCodeLensRequestHandler(
+        const std::function<void(const QByteArray &, const CodeLensParams &,
+                                 LSPPartialResponse<std::variant<QList<CodeLens>, std::nullptr_t>,
+                                                    QList<CodeLens>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CodeLensParamsType,
+                                     QLspSpecification::Responses::CodeLensResponseType>(
+                    QByteArray(QLspSpecification::Requests::CodeLensMethod), handler);
+}
+
 void ProtocolGen::requestColorPresentation(
         const ColorPresentationParams &params,
         std::function<void(const QList<ColorPresentation> &)> responseHandler,
@@ -401,6 +509,17 @@ void ProtocolGen::requestColorPresentation(
                                                             errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerColorPresentationRequestHandler(
+        const std::function<void(const QByteArray &, const ColorPresentationParams &,
+                                 LSPPartialResponse<QList<ColorPresentation>,
+                                                    QList<ColorPresentation>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ColorPresentationParamsType,
+                                     QLspSpecification::Responses::ColorPresentationResponseType>(
+                    QByteArray(QLspSpecification::Requests::ColorPresentationMethod), handler);
 }
 
 void ProtocolGen::requestCompletion(
@@ -425,6 +544,19 @@ void ProtocolGen::requestCompletion(
             params);
 }
 
+void ProtocolGen::registerCompletionRequestHandler(
+        const std::function<
+                void(const QByteArray &, const CompletionParams &,
+                     LSPPartialResponse<
+                             std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
+                             std::variant<CompletionList, QList<CompletionItem>>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CompletionParamsType,
+                                     QLspSpecification::Responses::CompletionResponseType>(
+                    QByteArray(QLspSpecification::Requests::CompletionMethod), handler);
+}
+
 void ProtocolGen::requestDeclaration(
         const DeclarationParams &params,
         std::function<void(const std::variant<Location, QList<Location>, QList<LocationLink>,
@@ -445,6 +577,20 @@ void ProtocolGen::requestDeclaration(
                                                                 errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerDeclarationRequestHandler(
+        const std::function<
+                void(const QByteArray &, const DeclarationParams &,
+                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                     std::nullptr_t>,
+                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DeclarationParamsType,
+                                     QLspSpecification::Responses::DeclarationResponseType>(
+                    QByteArray(QLspSpecification::Requests::DeclarationMethod), handler);
 }
 
 void ProtocolGen::requestDefinition(
@@ -469,24 +615,18 @@ void ProtocolGen::requestDefinition(
             params);
 }
 
-void ProtocolGen::notifyDidChangeTextDocument(const DidChangeTextDocumentParams &params)
+void ProtocolGen::registerDefinitionRequestHandler(
+        const std::function<
+                void(const QByteArray &, const DefinitionParams &,
+                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                     std::nullptr_t>,
+                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                &handler)
 {
-    typedRpc()->sendNotification(Notifications::DidChangeTextDocumentMethod, params);
-}
-
-void ProtocolGen::notifyDidCloseTextDocument(const DidCloseTextDocumentParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DidCloseTextDocumentMethod, params);
-}
-
-void ProtocolGen::notifyDidOpenTextDocument(const DidOpenTextDocumentParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DidOpenTextDocumentMethod, params);
-}
-
-void ProtocolGen::notifyDidSaveTextDocument(const DidSaveTextDocumentParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DidSaveTextDocumentMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DefinitionParamsType,
+                                     QLspSpecification::Responses::DefinitionResponseType>(
+                    QByteArray(QLspSpecification::Requests::DefinitionMethod), handler);
 }
 
 void ProtocolGen::requestDocumentColor(
@@ -506,6 +646,17 @@ void ProtocolGen::requestDocumentColor(
                                                            errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerDocumentColorRequestHandler(
+        const std::function<void(
+                const QByteArray &, const DocumentColorParams &,
+                LSPPartialResponse<QList<ColorInformation>, QList<ColorInformation>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentColorParamsType,
+                                     QLspSpecification::Responses::DocumentColorResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentColorMethod), handler);
 }
 
 void ProtocolGen::requestDocumentHighlight(
@@ -528,6 +679,18 @@ void ProtocolGen::requestDocumentHighlight(
             params);
 }
 
+void ProtocolGen::registerDocumentHighlightRequestHandler(
+        const std::function<
+                void(const QByteArray &, const DocumentHighlightParams &,
+                     LSPPartialResponse<std::variant<QList<DocumentHighlight>, std::nullptr_t>,
+                                        QList<DocumentHighlight>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentHighlightParamsType,
+                                     QLspSpecification::Responses::DocumentHighlightResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentHighlightMethod), handler);
+}
+
 void ProtocolGen::requestDocumentLink(
         const DocumentLinkParams &params,
         std::function<void(const std::variant<QList<DocumentLink>, std::nullptr_t> &)>
@@ -546,6 +709,18 @@ void ProtocolGen::requestDocumentLink(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerDocumentLinkRequestHandler(
+        const std::function<
+                void(const QByteArray &, const DocumentLinkParams &,
+                     LSPPartialResponse<std::variant<QList<DocumentLink>, std::nullptr_t>,
+                                        QList<DocumentLink>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentLinkParamsType,
+                                     QLspSpecification::Responses::DocumentLinkResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentLinkMethod), handler);
 }
 
 void ProtocolGen::requestDocumentSymbol(
@@ -570,6 +745,20 @@ void ProtocolGen::requestDocumentSymbol(
             params);
 }
 
+void ProtocolGen::registerDocumentSymbolRequestHandler(
+        const std::function<void(
+                const QByteArray &, const DocumentSymbolParams &,
+                LSPPartialResponse<std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
+                                                std::nullptr_t>,
+                                   std::variant<QList<DocumentSymbol>, QList<SymbolInformation>>>
+                        &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentSymbolParamsType,
+                                     QLspSpecification::Responses::DocumentSymbolResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentSymbolMethod), handler);
+}
+
 void ProtocolGen::requestFoldingRange(
         const FoldingRangeParams &params,
         std::function<void(const std::variant<QList<FoldingRange>, std::nullptr_t> &)>
@@ -588,6 +777,18 @@ void ProtocolGen::requestFoldingRange(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerFoldingRangeRequestHandler(
+        const std::function<
+                void(const QByteArray &, const FoldingRangeParams &,
+                     LSPPartialResponse<std::variant<QList<FoldingRange>, std::nullptr_t>,
+                                        QList<FoldingRange>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::FoldingRangeParamsType,
+                                     QLspSpecification::Responses::FoldingRangeResponseType>(
+                    QByteArray(QLspSpecification::Requests::FoldingRangeMethod), handler);
 }
 
 void ProtocolGen::requestDocumentFormatting(
@@ -609,6 +810,17 @@ void ProtocolGen::requestDocumentFormatting(
             params);
 }
 
+void ProtocolGen::registerDocumentFormattingRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentFormattingParams &,
+                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DocumentFormattingParamsType,
+                                     QLspSpecification::Responses::DocumentFormattingResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentFormattingMethod), handler);
+}
+
 void ProtocolGen::requestHover(
         const HoverParams &params,
         std::function<void(const std::variant<Hover, std::nullptr_t> &)> responseHandler,
@@ -626,6 +838,16 @@ void ProtocolGen::requestHover(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerHoverRequestHandler(
+        const std::function<void(const QByteArray &, const HoverParams &,
+                                 LSPResponse<std::variant<Hover, std::nullptr_t>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::HoverParamsType,
+                                     QLspSpecification::Responses::HoverResponseType>(
+                    QByteArray(QLspSpecification::Requests::HoverMethod), handler);
 }
 
 void ProtocolGen::requestImplementation(
@@ -650,6 +872,20 @@ void ProtocolGen::requestImplementation(
             params);
 }
 
+void ProtocolGen::registerImplementationRequestHandler(
+        const std::function<
+                void(const QByteArray &, const ImplementationParams &,
+                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                     std::nullptr_t>,
+                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ImplementationParamsType,
+                                     QLspSpecification::Responses::ImplementationResponseType>(
+                    QByteArray(QLspSpecification::Requests::ImplementationMethod), handler);
+}
+
 void ProtocolGen::requestLinkedEditingRange(
         const LinkedEditingRangeParams &params,
         std::function<void(const std::variant<LinkedEditingRanges, std::nullptr_t> &)>
@@ -668,6 +904,17 @@ void ProtocolGen::requestLinkedEditingRange(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerLinkedEditingRangeRequestHandler(
+        const std::function<void(const QByteArray &, const LinkedEditingRangeParams &,
+                                 LSPResponse<std::variant<LinkedEditingRanges, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::LinkedEditingRangeParamsType,
+                                     QLspSpecification::Responses::LinkedEditingRangeResponseType>(
+                    QByteArray(QLspSpecification::Requests::LinkedEditingRangeMethod), handler);
 }
 
 void ProtocolGen::requestMoniker(
@@ -689,6 +936,17 @@ void ProtocolGen::requestMoniker(
             params);
 }
 
+void ProtocolGen::registerMonikerRequestHandler(
+        const std::function<void(const QByteArray &, const MonikerParams &,
+                                 LSPPartialResponse<std::variant<QList<Moniker>, std::nullptr_t>,
+                                                    QList<Moniker>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::MonikerParamsType,
+                                     QLspSpecification::Responses::MonikerResponseType>(
+                    QByteArray(QLspSpecification::Requests::MonikerMethod), handler);
+}
+
 void ProtocolGen::requestDocumentOnTypeFormatting(
         const DocumentOnTypeFormattingParams &params,
         std::function<void(const std::variant<QList<TextEdit>, std::nullptr_t> &)> responseHandler,
@@ -706,6 +964,19 @@ void ProtocolGen::requestDocumentOnTypeFormatting(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerDocumentOnTypeFormattingRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentOnTypeFormattingParams &,
+                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::DocumentOnTypeFormattingParamsType,
+                    QLspSpecification::Responses::DocumentOnTypeFormattingResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentOnTypeFormattingMethod),
+                    handler);
 }
 
 void ProtocolGen::requestCallHierarchyPrepare(
@@ -726,6 +997,18 @@ void ProtocolGen::requestCallHierarchyPrepare(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerCallHierarchyPrepareRequestHandler(
+        const std::function<void(
+                const QByteArray &, const CallHierarchyPrepareParams &,
+                LSPResponse<std::variant<QList<CallHierarchyItem>, std::nullptr_t>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::CallHierarchyPrepareParamsType,
+                    QLspSpecification::Responses::CallHierarchyPrepareResponseType>(
+                    QByteArray(QLspSpecification::Requests::CallHierarchyPrepareMethod), handler);
 }
 
 void ProtocolGen::requestPrepareRename(
@@ -750,9 +1033,16 @@ void ProtocolGen::requestPrepareRename(
             params);
 }
 
-void ProtocolGen::notifyPublishDiagnostics(const PublishDiagnosticsParams &params)
+void ProtocolGen::registerPrepareRenameRequestHandler(
+        const std::function<
+                void(const QByteArray &, const PrepareRenameParams &,
+                     LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
+                                              std::nullptr_t>> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::PublishDiagnosticsMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::PrepareRenameParamsType,
+                                     QLspSpecification::Responses::PrepareRenameResponseType>(
+                    QByteArray(QLspSpecification::Requests::PrepareRenameMethod), handler);
 }
 
 void ProtocolGen::requestDocumentRangeFormatting(
@@ -774,6 +1064,19 @@ void ProtocolGen::requestDocumentRangeFormatting(
             params);
 }
 
+void ProtocolGen::registerDocumentRangeFormattingRequestHandler(
+        const std::function<void(const QByteArray &, const DocumentRangeFormattingParams &,
+                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::DocumentRangeFormattingParamsType,
+                    QLspSpecification::Responses::DocumentRangeFormattingResponseType>(
+                    QByteArray(QLspSpecification::Requests::DocumentRangeFormattingMethod),
+                    handler);
+}
+
 void ProtocolGen::requestReference(
         const ReferenceParams &params,
         std::function<void(const std::variant<QList<Location>, std::nullptr_t> &)> responseHandler,
@@ -793,6 +1096,17 @@ void ProtocolGen::requestReference(
             params);
 }
 
+void ProtocolGen::registerReferenceRequestHandler(
+        const std::function<void(const QByteArray &, const ReferenceParams &,
+                                 LSPPartialResponse<std::variant<QList<Location>, std::nullptr_t>,
+                                                    QList<Location>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ReferenceParamsType,
+                                     QLspSpecification::Responses::ReferenceResponseType>(
+                    QByteArray(QLspSpecification::Requests::ReferenceMethod), handler);
+}
+
 void ProtocolGen::requestRename(
         const RenameParams &params,
         std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)> responseHandler,
@@ -810,6 +1124,17 @@ void ProtocolGen::requestRename(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerRenameRequestHandler(
+        const std::function<void(const QByteArray &, const RenameParams &,
+                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::RenameParamsType,
+                                     QLspSpecification::Responses::RenameResponseType>(
+                    QByteArray(QLspSpecification::Requests::RenameMethod), handler);
 }
 
 void ProtocolGen::requestSelectionRange(
@@ -832,6 +1157,18 @@ void ProtocolGen::requestSelectionRange(
             params);
 }
 
+void ProtocolGen::registerSelectionRangeRequestHandler(
+        const std::function<
+                void(const QByteArray &, const SelectionRangeParams &,
+                     LSPPartialResponse<std::variant<QList<SelectionRange>, std::nullptr_t>,
+                                        QList<SelectionRange>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::SelectionRangeParamsType,
+                                     QLspSpecification::Responses::SelectionRangeResponseType>(
+                    QByteArray(QLspSpecification::Requests::SelectionRangeMethod), handler);
+}
+
 void ProtocolGen::requestSemanticTokens(
         const SemanticTokensParams &params,
         std::function<void(const std::variant<SemanticTokens, std::nullptr_t> &)> responseHandler,
@@ -849,6 +1186,17 @@ void ProtocolGen::requestSemanticTokens(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerSemanticTokensRequestHandler(
+        const std::function<void(const QByteArray &, const SemanticTokensParams &,
+                                 LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
+                                                    SemanticTokensPartialResult> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensParamsType,
+                                     QLspSpecification::Responses::SemanticTokensResponseType>(
+                    QByteArray(QLspSpecification::Requests::SemanticTokensMethod), handler);
 }
 
 void ProtocolGen::requestSemanticTokensDelta(
@@ -873,6 +1221,19 @@ void ProtocolGen::requestSemanticTokensDelta(
             params);
 }
 
+void ProtocolGen::registerSemanticTokensDeltaRequestHandler(
+        const std::function<
+                void(const QByteArray &, const SemanticTokensDeltaParams &,
+                     LSPPartialResponse<
+                             std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
+                             SemanticTokensDeltaPartialResult> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensDeltaParamsType,
+                                     QLspSpecification::Responses::SemanticTokensDeltaResponseType>(
+                    QByteArray(QLspSpecification::Requests::SemanticTokensDeltaMethod), handler);
+}
+
 void ProtocolGen::requestSemanticTokensRange(
         const SemanticTokensRangeParams &params,
         std::function<void(const std::variant<SemanticTokens, std::nullptr_t> &)> responseHandler,
@@ -892,6 +1253,17 @@ void ProtocolGen::requestSemanticTokensRange(
             params);
 }
 
+void ProtocolGen::registerSemanticTokensRangeRequestHandler(
+        const std::function<void(const QByteArray &, const SemanticTokensRangeParams &,
+                                 LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
+                                                    SemanticTokensPartialResult> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensRangeParamsType,
+                                     QLspSpecification::Responses::SemanticTokensRangeResponseType>(
+                    QByteArray(QLspSpecification::Requests::SemanticTokensRangeMethod), handler);
+}
+
 void ProtocolGen::requestRequestingARefreshOfAllSemanticTokens(
         const std::nullptr_t &params, std::function<void()> responseHandler,
         ResponseErrorHandler errorHandler)
@@ -907,6 +1279,20 @@ void ProtocolGen::requestRequestingARefreshOfAllSemanticTokens(
                     decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerRequestingARefreshOfAllSemanticTokensRequestHandler(
+        const std::function<void(const QByteArray &, const std::nullptr_t &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::RequestingARefreshOfAllSemanticTokensParamsType,
+                    QLspSpecification::Responses::
+                            RequestingARefreshOfAllSemanticTokensResponseType>(
+                    QByteArray(QLspSpecification::Requests::
+                                       RequestingARefreshOfAllSemanticTokensMethod),
+                    handler);
 }
 
 void ProtocolGen::requestSignatureHelp(
@@ -926,6 +1312,17 @@ void ProtocolGen::requestSignatureHelp(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerSignatureHelpRequestHandler(
+        const std::function<void(const QByteArray &, const SignatureHelpParams &,
+                                 LSPResponse<std::variant<SignatureHelp, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::SignatureHelpParamsType,
+                                     QLspSpecification::Responses::SignatureHelpResponseType>(
+                    QByteArray(QLspSpecification::Requests::SignatureHelpMethod), handler);
 }
 
 void ProtocolGen::requestTypeDefinition(
@@ -950,9 +1347,18 @@ void ProtocolGen::requestTypeDefinition(
             params);
 }
 
-void ProtocolGen::notifyWillSaveTextDocument(const WillSaveTextDocumentParams &params)
+void ProtocolGen::registerTypeDefinitionRequestHandler(
+        const std::function<
+                void(const QByteArray &, const TypeDefinitionParams &,
+                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
+                                                     std::nullptr_t>,
+                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
+                &handler)
 {
-    typedRpc()->sendNotification(Notifications::WillSaveTextDocumentMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::TypeDefinitionParamsType,
+                                     QLspSpecification::Responses::TypeDefinitionResponseType>(
+                    QByteArray(QLspSpecification::Requests::TypeDefinitionMethod), handler);
 }
 
 void ProtocolGen::requestWillSaveTextDocument(
@@ -974,9 +1380,16 @@ void ProtocolGen::requestWillSaveTextDocument(
             params);
 }
 
-void ProtocolGen::notifyLogMessage(const LogMessageParams &params)
+void ProtocolGen::registerWillSaveTextDocumentRequestHandler(
+        const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &,
+                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
+                &handler)
 {
-    typedRpc()->sendNotification(Notifications::LogMessageMethod, params);
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WillSaveTextDocumentParamsType,
+                    QLspSpecification::Responses::WillSaveTextDocumentResponseType>(
+                    QByteArray(QLspSpecification::Requests::WillSaveTextDocumentMethod), handler);
 }
 
 void ProtocolGen::requestShowDocument(
@@ -997,9 +1410,14 @@ void ProtocolGen::requestShowDocument(
             params);
 }
 
-void ProtocolGen::notifyShowMessage(const ShowMessageParams &params)
+void ProtocolGen::registerShowDocumentRequestHandler(
+        const std::function<void(const QByteArray &, const ShowDocumentParams &,
+                                 LSPResponse<ShowDocumentResult> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::ShowMessageMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ShowDocumentParamsType,
+                                     QLspSpecification::Responses::ShowDocumentResponseType>(
+                    QByteArray(QLspSpecification::Requests::ShowDocumentMethod), handler);
 }
 
 void ProtocolGen::requestShowMessageRequest(
@@ -1022,9 +1440,15 @@ void ProtocolGen::requestShowMessageRequest(
             params);
 }
 
-void ProtocolGen::notifyWorkDoneProgressCancel(const WorkDoneProgressCancelParams &params)
+void ProtocolGen::registerShowMessageRequestRequestHandler(
+        const std::function<void(const QByteArray &, const ShowMessageRequestParams &,
+                                 LSPResponse<std::variant<MessageActionItem, std::nullptr_t>> &&)>
+                &handler)
 {
-    typedRpc()->sendNotification(Notifications::WorkDoneProgressCancelMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ShowMessageRequestParamsType,
+                                     QLspSpecification::Responses::ShowMessageRequestResponseType>(
+                    QByteArray(QLspSpecification::Requests::ShowMessageRequestMethod), handler);
 }
 
 void ProtocolGen::requestWorkDoneProgressCreate(const WorkDoneProgressCreateParams &params,
@@ -1042,6 +1466,17 @@ void ProtocolGen::requestWorkDoneProgressCreate(const WorkDoneProgressCreatePara
                     decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerWorkDoneProgressCreateRequestHandler(
+        const std::function<void(const QByteArray &, const WorkDoneProgressCreateParams &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::WorkDoneProgressCreateParamsType,
+                    QLspSpecification::Responses::WorkDoneProgressCreateResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkDoneProgressCreateMethod), handler);
 }
 
 void ProtocolGen::requestApplyWorkspaceEdit(
@@ -1063,6 +1498,16 @@ void ProtocolGen::requestApplyWorkspaceEdit(
             params);
 }
 
+void ProtocolGen::registerApplyWorkspaceEditRequestHandler(
+        const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
+                                 LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ApplyWorkspaceEditParamsType,
+                                     QLspSpecification::Responses::ApplyWorkspaceEditResponseType>(
+                    QByteArray(QLspSpecification::Requests::ApplyWorkspaceEditMethod), handler);
+}
+
 void ProtocolGen::requestConfiguration(
         const ConfigurationParams &params,
         std::function<void(const QList<QJsonValue> &)> responseHandler,
@@ -1081,34 +1526,14 @@ void ProtocolGen::requestConfiguration(
             params);
 }
 
-void ProtocolGen::notifyDidChangeConfiguration(const DidChangeConfigurationParams &params)
+void ProtocolGen::registerConfigurationRequestHandler(
+        const std::function<void(const QByteArray &, const ConfigurationParams &,
+                                 LSPResponse<QList<QJsonValue>> &&)> &handler)
 {
-    typedRpc()->sendNotification(Notifications::DidChangeConfigurationMethod, params);
-}
-
-void ProtocolGen::notifyDidChangeWatchedFiles(const DidChangeWatchedFilesParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DidChangeWatchedFilesMethod, params);
-}
-
-void ProtocolGen::notifyDidChangeWorkspaceFolders(const DidChangeWorkspaceFoldersParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DidChangeWorkspaceFoldersMethod, params);
-}
-
-void ProtocolGen::notifyCreateFiles(const CreateFilesParams &params)
-{
-    typedRpc()->sendNotification(Notifications::CreateFilesMethod, params);
-}
-
-void ProtocolGen::notifyDeleteFiles(const DeleteFilesParams &params)
-{
-    typedRpc()->sendNotification(Notifications::DeleteFilesMethod, params);
-}
-
-void ProtocolGen::notifyRenameFiles(const RenameFilesParams &params)
-{
-    typedRpc()->sendNotification(Notifications::RenameFilesMethod, params);
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ConfigurationParamsType,
+                                     QLspSpecification::Responses::ConfigurationResponseType>(
+                    QByteArray(QLspSpecification::Requests::ConfigurationMethod), handler);
 }
 
 void ProtocolGen::requestExecuteCommand(
@@ -1128,6 +1553,17 @@ void ProtocolGen::requestExecuteCommand(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerExecuteCommandRequestHandler(
+        const std::function<void(const QByteArray &, const ExecuteCommandParams &,
+                                 LSPResponse<std::variant<QJsonValue, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::ExecuteCommandParamsType,
+                                     QLspSpecification::Responses::ExecuteCommandResponseType>(
+                    QByteArray(QLspSpecification::Requests::ExecuteCommandMethod), handler);
 }
 
 void ProtocolGen::requestWorkspaceSymbol(
@@ -1150,6 +1586,18 @@ void ProtocolGen::requestWorkspaceSymbol(
             params);
 }
 
+void ProtocolGen::registerWorkspaceSymbolRequestHandler(
+        const std::function<
+                void(const QByteArray &, const WorkspaceSymbolParams &,
+                     LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
+                                        QList<SymbolInformation>> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::WorkspaceSymbolParamsType,
+                                     QLspSpecification::Responses::WorkspaceSymbolResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceSymbolMethod), handler);
+}
+
 void ProtocolGen::requestCreateFiles(
         const CreateFilesParams &params,
         std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)> responseHandler,
@@ -1167,6 +1615,17 @@ void ProtocolGen::requestCreateFiles(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerCreateFilesRequestHandler(
+        const std::function<void(const QByteArray &, const CreateFilesParams &,
+                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::CreateFilesParamsType,
+                                     QLspSpecification::Responses::CreateFilesResponseType>(
+                    QByteArray(QLspSpecification::Requests::CreateFilesMethod), handler);
 }
 
 void ProtocolGen::requestDeleteFiles(
@@ -1188,6 +1647,17 @@ void ProtocolGen::requestDeleteFiles(
             params);
 }
 
+void ProtocolGen::registerDeleteFilesRequestHandler(
+        const std::function<void(const QByteArray &, const DeleteFilesParams &,
+                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::DeleteFilesParamsType,
+                                     QLspSpecification::Responses::DeleteFilesResponseType>(
+                    QByteArray(QLspSpecification::Requests::DeleteFilesMethod), handler);
+}
+
 void ProtocolGen::requestRenameFiles(
         const RenameFilesParams &params,
         std::function<void(const std::variant<WorkspaceEdit, std::nullptr_t> &)> responseHandler,
@@ -1205,6 +1675,17 @@ void ProtocolGen::requestRenameFiles(
                             response.data, responseHandler, errorHandler);
             },
             params);
+}
+
+void ProtocolGen::registerRenameFilesRequestHandler(
+        const std::function<void(const QByteArray &, const RenameFilesParams &,
+                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
+                &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::RenameFilesParamsType,
+                                     QLspSpecification::Responses::RenameFilesResponseType>(
+                    QByteArray(QLspSpecification::Requests::RenameFilesMethod), handler);
 }
 
 void ProtocolGen::requestWorkspaceWorkspaceFolders(
@@ -1227,31 +1708,16 @@ void ProtocolGen::requestWorkspaceWorkspaceFolders(
             params);
 }
 
-void ProtocolGen::registerCallHierarchyIncomingCallsRequestHandler(
+void ProtocolGen::registerWorkspaceWorkspaceFoldersRequestHandler(
         const std::function<void(
-                const QByteArray &, const CallHierarchyIncomingCallsParams &,
-                LSPPartialResponse<std::variant<QList<CallHierarchyIncomingCall>, std::nullptr_t>,
-                                   QList<CallHierarchyIncomingCall>> &&)> &handler)
+                const QByteArray &, const std::nullptr_t &,
+                LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<
-                    QLspSpecification::Requests::CallHierarchyIncomingCallsParamsType,
-                    QLspSpecification::Responses::CallHierarchyIncomingCallsResponseType>(
-                    QByteArray(QLspSpecification::Requests::CallHierarchyIncomingCallsMethod),
-                    handler);
-}
-
-void ProtocolGen::registerCallHierarchyOutgoingCallsRequestHandler(
-        const std::function<void(
-                const QByteArray &, const CallHierarchyOutgoingCallsParams &,
-                LSPPartialResponse<std::variant<QList<CallHierarchyOutgoingCall>, std::nullptr_t>,
-                                   QList<CallHierarchyOutgoingCall>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::CallHierarchyOutgoingCallsParamsType,
-                    QLspSpecification::Responses::CallHierarchyOutgoingCallsResponseType>(
-                    QByteArray(QLspSpecification::Requests::CallHierarchyOutgoingCallsMethod),
+                    QLspSpecification::Requests::WorkspaceWorkspaceFoldersParamsType,
+                    QLspSpecification::Responses::WorkspaceWorkspaceFoldersResponseType>(
+                    QByteArray(QLspSpecification::Requests::WorkspaceWorkspaceFoldersMethod),
                     handler);
 }
 
@@ -1262,75 +1728,9 @@ void ProtocolGen::registerCancelNotificationHandler(
             QByteArray(QLspSpecification::Notifications::CancelMethod), handler);
 }
 
-void ProtocolGen::registerRegistrationRequestHandler(
-        const std::function<void(const QByteArray &, const RegistrationParams &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
+void ProtocolGen::notifyCancel(const CancelParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::RegistrationParamsType,
-                                     QLspSpecification::Responses::RegistrationResponseType>(
-                    QByteArray(QLspSpecification::Requests::RegistrationMethod), handler);
-}
-
-void ProtocolGen::registerUnregistrationRequestHandler(
-        const std::function<void(const QByteArray &, const UnregistrationParams &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::UnregistrationParamsType,
-                                     QLspSpecification::Responses::UnregistrationResponseType>(
-                    QByteArray(QLspSpecification::Requests::UnregistrationMethod), handler);
-}
-
-void ProtocolGen::registerCodeActionResolveRequestHandler(
-        const std::function<void(const QByteArray &, const CodeAction &,
-                                 LSPResponse<CodeAction> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeActionResolveParamsType,
-                                     QLspSpecification::Responses::CodeActionResolveResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeActionResolveMethod), handler);
-}
-
-void ProtocolGen::registerCodeLensRefreshRequestHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeLensRefreshParamsType,
-                                     QLspSpecification::Responses::CodeLensRefreshResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeLensRefreshMethod), handler);
-}
-
-void ProtocolGen::registerCodeLensResolveRequestHandler(
-        const std::function<void(const QByteArray &, const CodeLens &, LSPResponse<CodeLens> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeLensResolveParamsType,
-                                     QLspSpecification::Responses::CodeLensResolveResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeLensResolveMethod), handler);
-}
-
-void ProtocolGen::registerCompletionItemResolveRequestHandler(
-        const std::function<void(const QByteArray &, const CompletionItem &,
-                                 LSPResponse<CompletionItem> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::CompletionItemResolveParamsType,
-                    QLspSpecification::Responses::CompletionItemResolveResponseType>(
-                    QByteArray(QLspSpecification::Requests::CompletionItemResolveMethod), handler);
-}
-
-void ProtocolGen::registerDocumentLinkResolveRequestHandler(
-        const std::function<void(const QByteArray &, const DocumentLink &,
-                                 LSPResponse<DocumentLink> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentLinkResolveParamsType,
-                                     QLspSpecification::Responses::DocumentLinkResolveResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentLinkResolveMethod), handler);
+    typedRpc()->sendNotification(Notifications::CancelMethod, params);
 }
 
 void ProtocolGen::registerExitNotificationHandler(
@@ -1340,14 +1740,9 @@ void ProtocolGen::registerExitNotificationHandler(
             QByteArray(QLspSpecification::Notifications::ExitMethod), handler);
 }
 
-void ProtocolGen::registerInitializeRequestHandler(
-        const std::function<void(const QByteArray &, const InitializeParams &,
-                                 LSPResponse<InitializeResult> &&)> &handler)
+void ProtocolGen::notifyExit(const std::nullptr_t &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::InitializeParamsType,
-                                     QLspSpecification::Responses::InitializeResponseType>(
-                    QByteArray(QLspSpecification::Requests::InitializeMethod), handler);
+    typedRpc()->sendNotification(Notifications::ExitMethod, params);
 }
 
 void ProtocolGen::registerInitializedNotificationHandler(
@@ -1358,11 +1753,21 @@ void ProtocolGen::registerInitializedNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::InitializedMethod), handler);
 }
 
+void ProtocolGen::notifyInitialized(const InitializedParams &params)
+{
+    typedRpc()->sendNotification(Notifications::InitializedMethod, params);
+}
+
 void ProtocolGen::registerLogTraceNotificationHandler(
         const std::function<void(const QByteArray &, const LogTraceParams &)> &handler)
 {
     typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::LogTraceParamsType>(
             QByteArray(QLspSpecification::Notifications::LogTraceMethod), handler);
+}
+
+void ProtocolGen::notifyLogTrace(const LogTraceParams &params)
+{
+    typedRpc()->sendNotification(Notifications::LogTraceMethod, params);
 }
 
 void ProtocolGen::registerProgressNotificationHandler(
@@ -1372,6 +1777,11 @@ void ProtocolGen::registerProgressNotificationHandler(
             QByteArray(QLspSpecification::Notifications::ProgressMethod), handler);
 }
 
+void ProtocolGen::notifyProgress(const ProgressParams &params)
+{
+    typedRpc()->sendNotification(Notifications::ProgressMethod, params);
+}
+
 void ProtocolGen::registerSetTraceNotificationHandler(
         const std::function<void(const QByteArray &, const SetTraceParams &)> &handler)
 {
@@ -1379,14 +1789,9 @@ void ProtocolGen::registerSetTraceNotificationHandler(
             QByteArray(QLspSpecification::Notifications::SetTraceMethod), handler);
 }
 
-void ProtocolGen::registerShutdownRequestHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
+void ProtocolGen::notifySetTrace(const SetTraceParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ShutdownParamsType,
-                                     QLspSpecification::Responses::ShutdownResponseType>(
-                    QByteArray(QLspSpecification::Requests::ShutdownMethod), handler);
+    typedRpc()->sendNotification(Notifications::SetTraceMethod, params);
 }
 
 void ProtocolGen::registerTelemetryEventNotificationHandler(
@@ -1398,80 +1803,9 @@ void ProtocolGen::registerTelemetryEventNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::TelemetryEventMethod), handler);
 }
 
-void ProtocolGen::registerCodeActionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const CodeActionParams &,
-                     LSPPartialResponse<
-                             std::variant<QList<std::variant<Command, CodeAction>>, std::nullptr_t>,
-                             QList<std::variant<Command, CodeAction>>> &&)> &handler)
+void ProtocolGen::notifyTelemetryEvent(const QJsonObject &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeActionParamsType,
-                                     QLspSpecification::Responses::CodeActionResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeActionMethod), handler);
-}
-
-void ProtocolGen::registerCodeLensRequestHandler(
-        const std::function<void(const QByteArray &, const CodeLensParams &,
-                                 LSPPartialResponse<std::variant<QList<CodeLens>, std::nullptr_t>,
-                                                    QList<CodeLens>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CodeLensParamsType,
-                                     QLspSpecification::Responses::CodeLensResponseType>(
-                    QByteArray(QLspSpecification::Requests::CodeLensMethod), handler);
-}
-
-void ProtocolGen::registerColorPresentationRequestHandler(
-        const std::function<void(const QByteArray &, const ColorPresentationParams &,
-                                 LSPPartialResponse<QList<ColorPresentation>,
-                                                    QList<ColorPresentation>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ColorPresentationParamsType,
-                                     QLspSpecification::Responses::ColorPresentationResponseType>(
-                    QByteArray(QLspSpecification::Requests::ColorPresentationMethod), handler);
-}
-
-void ProtocolGen::registerCompletionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const CompletionParams &,
-                     LSPPartialResponse<
-                             std::variant<QList<CompletionItem>, CompletionList, std::nullptr_t>,
-                             std::variant<CompletionList, QList<CompletionItem>>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CompletionParamsType,
-                                     QLspSpecification::Responses::CompletionResponseType>(
-                    QByteArray(QLspSpecification::Requests::CompletionMethod), handler);
-}
-
-void ProtocolGen::registerDeclarationRequestHandler(
-        const std::function<
-                void(const QByteArray &, const DeclarationParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DeclarationParamsType,
-                                     QLspSpecification::Responses::DeclarationResponseType>(
-                    QByteArray(QLspSpecification::Requests::DeclarationMethod), handler);
-}
-
-void ProtocolGen::registerDefinitionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const DefinitionParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DefinitionParamsType,
-                                     QLspSpecification::Responses::DefinitionResponseType>(
-                    QByteArray(QLspSpecification::Requests::DefinitionMethod), handler);
+    typedRpc()->sendNotification(Notifications::TelemetryEventMethod, params);
 }
 
 void ProtocolGen::registerDidChangeTextDocumentNotificationHandler(
@@ -1484,6 +1818,11 @@ void ProtocolGen::registerDidChangeTextDocumentNotificationHandler(
                     handler);
 }
 
+void ProtocolGen::notifyDidChangeTextDocument(const DidChangeTextDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidChangeTextDocumentMethod, params);
+}
+
 void ProtocolGen::registerDidCloseTextDocumentNotificationHandler(
         const std::function<void(const QByteArray &, const DidCloseTextDocumentParams &)> &handler)
 {
@@ -1492,6 +1831,11 @@ void ProtocolGen::registerDidCloseTextDocumentNotificationHandler(
                     QLspSpecification::Notifications::DidCloseTextDocumentParamsType>(
                     QByteArray(QLspSpecification::Notifications::DidCloseTextDocumentMethod),
                     handler);
+}
+
+void ProtocolGen::notifyDidCloseTextDocument(const DidCloseTextDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidCloseTextDocumentMethod, params);
 }
 
 void ProtocolGen::registerDidOpenTextDocumentNotificationHandler(
@@ -1504,6 +1848,11 @@ void ProtocolGen::registerDidOpenTextDocumentNotificationHandler(
                     handler);
 }
 
+void ProtocolGen::notifyDidOpenTextDocument(const DidOpenTextDocumentParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidOpenTextDocumentMethod, params);
+}
+
 void ProtocolGen::registerDidSaveTextDocumentNotificationHandler(
         const std::function<void(const QByteArray &, const DidSaveTextDocumentParams &)> &handler)
 {
@@ -1514,159 +1863,9 @@ void ProtocolGen::registerDidSaveTextDocumentNotificationHandler(
                     handler);
 }
 
-void ProtocolGen::registerDocumentColorRequestHandler(
-        const std::function<void(
-                const QByteArray &, const DocumentColorParams &,
-                LSPPartialResponse<QList<ColorInformation>, QList<ColorInformation>> &&)> &handler)
+void ProtocolGen::notifyDidSaveTextDocument(const DidSaveTextDocumentParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentColorParamsType,
-                                     QLspSpecification::Responses::DocumentColorResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentColorMethod), handler);
-}
-
-void ProtocolGen::registerDocumentHighlightRequestHandler(
-        const std::function<
-                void(const QByteArray &, const DocumentHighlightParams &,
-                     LSPPartialResponse<std::variant<QList<DocumentHighlight>, std::nullptr_t>,
-                                        QList<DocumentHighlight>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentHighlightParamsType,
-                                     QLspSpecification::Responses::DocumentHighlightResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentHighlightMethod), handler);
-}
-
-void ProtocolGen::registerDocumentLinkRequestHandler(
-        const std::function<
-                void(const QByteArray &, const DocumentLinkParams &,
-                     LSPPartialResponse<std::variant<QList<DocumentLink>, std::nullptr_t>,
-                                        QList<DocumentLink>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentLinkParamsType,
-                                     QLspSpecification::Responses::DocumentLinkResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentLinkMethod), handler);
-}
-
-void ProtocolGen::registerDocumentSymbolRequestHandler(
-        const std::function<void(
-                const QByteArray &, const DocumentSymbolParams &,
-                LSPPartialResponse<std::variant<QList<DocumentSymbol>, QList<SymbolInformation>,
-                                                std::nullptr_t>,
-                                   std::variant<QList<DocumentSymbol>, QList<SymbolInformation>>>
-                        &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentSymbolParamsType,
-                                     QLspSpecification::Responses::DocumentSymbolResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentSymbolMethod), handler);
-}
-
-void ProtocolGen::registerFoldingRangeRequestHandler(
-        const std::function<
-                void(const QByteArray &, const FoldingRangeParams &,
-                     LSPPartialResponse<std::variant<QList<FoldingRange>, std::nullptr_t>,
-                                        QList<FoldingRange>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::FoldingRangeParamsType,
-                                     QLspSpecification::Responses::FoldingRangeResponseType>(
-                    QByteArray(QLspSpecification::Requests::FoldingRangeMethod), handler);
-}
-
-void ProtocolGen::registerDocumentFormattingRequestHandler(
-        const std::function<void(const QByteArray &, const DocumentFormattingParams &,
-                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DocumentFormattingParamsType,
-                                     QLspSpecification::Responses::DocumentFormattingResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentFormattingMethod), handler);
-}
-
-void ProtocolGen::registerHoverRequestHandler(
-        const std::function<void(const QByteArray &, const HoverParams &,
-                                 LSPResponse<std::variant<Hover, std::nullptr_t>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::HoverParamsType,
-                                     QLspSpecification::Responses::HoverResponseType>(
-                    QByteArray(QLspSpecification::Requests::HoverMethod), handler);
-}
-
-void ProtocolGen::registerImplementationRequestHandler(
-        const std::function<
-                void(const QByteArray &, const ImplementationParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ImplementationParamsType,
-                                     QLspSpecification::Responses::ImplementationResponseType>(
-                    QByteArray(QLspSpecification::Requests::ImplementationMethod), handler);
-}
-
-void ProtocolGen::registerLinkedEditingRangeRequestHandler(
-        const std::function<void(const QByteArray &, const LinkedEditingRangeParams &,
-                                 LSPResponse<std::variant<LinkedEditingRanges, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::LinkedEditingRangeParamsType,
-                                     QLspSpecification::Responses::LinkedEditingRangeResponseType>(
-                    QByteArray(QLspSpecification::Requests::LinkedEditingRangeMethod), handler);
-}
-
-void ProtocolGen::registerMonikerRequestHandler(
-        const std::function<void(const QByteArray &, const MonikerParams &,
-                                 LSPPartialResponse<std::variant<QList<Moniker>, std::nullptr_t>,
-                                                    QList<Moniker>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::MonikerParamsType,
-                                     QLspSpecification::Responses::MonikerResponseType>(
-                    QByteArray(QLspSpecification::Requests::MonikerMethod), handler);
-}
-
-void ProtocolGen::registerDocumentOnTypeFormattingRequestHandler(
-        const std::function<void(const QByteArray &, const DocumentOnTypeFormattingParams &,
-                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::DocumentOnTypeFormattingParamsType,
-                    QLspSpecification::Responses::DocumentOnTypeFormattingResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentOnTypeFormattingMethod),
-                    handler);
-}
-
-void ProtocolGen::registerCallHierarchyPrepareRequestHandler(
-        const std::function<void(
-                const QByteArray &, const CallHierarchyPrepareParams &,
-                LSPResponse<std::variant<QList<CallHierarchyItem>, std::nullptr_t>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::CallHierarchyPrepareParamsType,
-                    QLspSpecification::Responses::CallHierarchyPrepareResponseType>(
-                    QByteArray(QLspSpecification::Requests::CallHierarchyPrepareMethod), handler);
-}
-
-void ProtocolGen::registerPrepareRenameRequestHandler(
-        const std::function<
-                void(const QByteArray &, const PrepareRenameParams &,
-                     LSPResponse<std::variant<Range, RangePlaceHolder, DefaultBehaviorStruct,
-                                              std::nullptr_t>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::PrepareRenameParamsType,
-                                     QLspSpecification::Responses::PrepareRenameResponseType>(
-                    QByteArray(QLspSpecification::Requests::PrepareRenameMethod), handler);
+    typedRpc()->sendNotification(Notifications::DidSaveTextDocumentMethod, params);
 }
 
 void ProtocolGen::registerPublishDiagnosticsNotificationHandler(
@@ -1679,125 +1878,9 @@ void ProtocolGen::registerPublishDiagnosticsNotificationHandler(
                     handler);
 }
 
-void ProtocolGen::registerDocumentRangeFormattingRequestHandler(
-        const std::function<void(const QByteArray &, const DocumentRangeFormattingParams &,
-                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                &handler)
+void ProtocolGen::notifyPublishDiagnostics(const PublishDiagnosticsParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::DocumentRangeFormattingParamsType,
-                    QLspSpecification::Responses::DocumentRangeFormattingResponseType>(
-                    QByteArray(QLspSpecification::Requests::DocumentRangeFormattingMethod),
-                    handler);
-}
-
-void ProtocolGen::registerReferenceRequestHandler(
-        const std::function<void(const QByteArray &, const ReferenceParams &,
-                                 LSPPartialResponse<std::variant<QList<Location>, std::nullptr_t>,
-                                                    QList<Location>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ReferenceParamsType,
-                                     QLspSpecification::Responses::ReferenceResponseType>(
-                    QByteArray(QLspSpecification::Requests::ReferenceMethod), handler);
-}
-
-void ProtocolGen::registerRenameRequestHandler(
-        const std::function<void(const QByteArray &, const RenameParams &,
-                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::RenameParamsType,
-                                     QLspSpecification::Responses::RenameResponseType>(
-                    QByteArray(QLspSpecification::Requests::RenameMethod), handler);
-}
-
-void ProtocolGen::registerSelectionRangeRequestHandler(
-        const std::function<
-                void(const QByteArray &, const SelectionRangeParams &,
-                     LSPPartialResponse<std::variant<QList<SelectionRange>, std::nullptr_t>,
-                                        QList<SelectionRange>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::SelectionRangeParamsType,
-                                     QLspSpecification::Responses::SelectionRangeResponseType>(
-                    QByteArray(QLspSpecification::Requests::SelectionRangeMethod), handler);
-}
-
-void ProtocolGen::registerSemanticTokensRequestHandler(
-        const std::function<void(const QByteArray &, const SemanticTokensParams &,
-                                 LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
-                                                    SemanticTokensPartialResult> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensParamsType,
-                                     QLspSpecification::Responses::SemanticTokensResponseType>(
-                    QByteArray(QLspSpecification::Requests::SemanticTokensMethod), handler);
-}
-
-void ProtocolGen::registerSemanticTokensDeltaRequestHandler(
-        const std::function<
-                void(const QByteArray &, const SemanticTokensDeltaParams &,
-                     LSPPartialResponse<
-                             std::variant<SemanticTokens, SemanticTokensDelta, std::nullptr_t>,
-                             SemanticTokensDeltaPartialResult> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensDeltaParamsType,
-                                     QLspSpecification::Responses::SemanticTokensDeltaResponseType>(
-                    QByteArray(QLspSpecification::Requests::SemanticTokensDeltaMethod), handler);
-}
-
-void ProtocolGen::registerSemanticTokensRangeRequestHandler(
-        const std::function<void(const QByteArray &, const SemanticTokensRangeParams &,
-                                 LSPPartialResponse<std::variant<SemanticTokens, std::nullptr_t>,
-                                                    SemanticTokensPartialResult> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::SemanticTokensRangeParamsType,
-                                     QLspSpecification::Responses::SemanticTokensRangeResponseType>(
-                    QByteArray(QLspSpecification::Requests::SemanticTokensRangeMethod), handler);
-}
-
-void ProtocolGen::registerRequestingARefreshOfAllSemanticTokensRequestHandler(
-        const std::function<void(const QByteArray &, const std::nullptr_t &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::RequestingARefreshOfAllSemanticTokensParamsType,
-                    QLspSpecification::Responses::
-                            RequestingARefreshOfAllSemanticTokensResponseType>(
-                    QByteArray(QLspSpecification::Requests::
-                                       RequestingARefreshOfAllSemanticTokensMethod),
-                    handler);
-}
-
-void ProtocolGen::registerSignatureHelpRequestHandler(
-        const std::function<void(const QByteArray &, const SignatureHelpParams &,
-                                 LSPResponse<std::variant<SignatureHelp, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::SignatureHelpParamsType,
-                                     QLspSpecification::Responses::SignatureHelpResponseType>(
-                    QByteArray(QLspSpecification::Requests::SignatureHelpMethod), handler);
-}
-
-void ProtocolGen::registerTypeDefinitionRequestHandler(
-        const std::function<
-                void(const QByteArray &, const TypeDefinitionParams &,
-                     LSPPartialResponse<std::variant<Location, QList<Location>, QList<LocationLink>,
-                                                     std::nullptr_t>,
-                                        std::variant<QList<Location>, QList<LocationLink>>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::TypeDefinitionParamsType,
-                                     QLspSpecification::Responses::TypeDefinitionResponseType>(
-                    QByteArray(QLspSpecification::Requests::TypeDefinitionMethod), handler);
+    typedRpc()->sendNotification(Notifications::PublishDiagnosticsMethod, params);
 }
 
 void ProtocolGen::registerWillSaveTextDocumentNotificationHandler(
@@ -1810,16 +1893,9 @@ void ProtocolGen::registerWillSaveTextDocumentNotificationHandler(
                     handler);
 }
 
-void ProtocolGen::registerWillSaveTextDocumentRequestHandler(
-        const std::function<void(const QByteArray &, const WillSaveTextDocumentParams &,
-                                 LSPResponse<std::variant<QList<TextEdit>, std::nullptr_t>> &&)>
-                &handler)
+void ProtocolGen::notifyWillSaveTextDocument(const WillSaveTextDocumentParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::WillSaveTextDocumentParamsType,
-                    QLspSpecification::Responses::WillSaveTextDocumentResponseType>(
-                    QByteArray(QLspSpecification::Requests::WillSaveTextDocumentMethod), handler);
+    typedRpc()->sendNotification(Notifications::WillSaveTextDocumentMethod, params);
 }
 
 void ProtocolGen::registerLogMessageNotificationHandler(
@@ -1829,14 +1905,9 @@ void ProtocolGen::registerLogMessageNotificationHandler(
             QByteArray(QLspSpecification::Notifications::LogMessageMethod), handler);
 }
 
-void ProtocolGen::registerShowDocumentRequestHandler(
-        const std::function<void(const QByteArray &, const ShowDocumentParams &,
-                                 LSPResponse<ShowDocumentResult> &&)> &handler)
+void ProtocolGen::notifyLogMessage(const LogMessageParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ShowDocumentParamsType,
-                                     QLspSpecification::Responses::ShowDocumentResponseType>(
-                    QByteArray(QLspSpecification::Requests::ShowDocumentMethod), handler);
+    typedRpc()->sendNotification(Notifications::LogMessageMethod, params);
 }
 
 void ProtocolGen::registerShowMessageNotificationHandler(
@@ -1847,15 +1918,9 @@ void ProtocolGen::registerShowMessageNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::ShowMessageMethod), handler);
 }
 
-void ProtocolGen::registerShowMessageRequestRequestHandler(
-        const std::function<void(const QByteArray &, const ShowMessageRequestParams &,
-                                 LSPResponse<std::variant<MessageActionItem, std::nullptr_t>> &&)>
-                &handler)
+void ProtocolGen::notifyShowMessage(const ShowMessageParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ShowMessageRequestParamsType,
-                                     QLspSpecification::Responses::ShowMessageRequestResponseType>(
-                    QByteArray(QLspSpecification::Requests::ShowMessageRequestMethod), handler);
+    typedRpc()->sendNotification(Notifications::ShowMessageMethod, params);
 }
 
 void ProtocolGen::registerWorkDoneProgressCancelNotificationHandler(
@@ -1869,35 +1934,9 @@ void ProtocolGen::registerWorkDoneProgressCancelNotificationHandler(
                     handler);
 }
 
-void ProtocolGen::registerWorkDoneProgressCreateRequestHandler(
-        const std::function<void(const QByteArray &, const WorkDoneProgressCreateParams &,
-                                 LSPResponse<std::nullptr_t> &&)> &handler)
+void ProtocolGen::notifyWorkDoneProgressCancel(const WorkDoneProgressCancelParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::WorkDoneProgressCreateParamsType,
-                    QLspSpecification::Responses::WorkDoneProgressCreateResponseType>(
-                    QByteArray(QLspSpecification::Requests::WorkDoneProgressCreateMethod), handler);
-}
-
-void ProtocolGen::registerApplyWorkspaceEditRequestHandler(
-        const std::function<void(const QByteArray &, const ApplyWorkspaceEditParams &,
-                                 LSPResponse<ApplyWorkspaceEditResponse> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ApplyWorkspaceEditParamsType,
-                                     QLspSpecification::Responses::ApplyWorkspaceEditResponseType>(
-                    QByteArray(QLspSpecification::Requests::ApplyWorkspaceEditMethod), handler);
-}
-
-void ProtocolGen::registerConfigurationRequestHandler(
-        const std::function<void(const QByteArray &, const ConfigurationParams &,
-                                 LSPResponse<QList<QJsonValue>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ConfigurationParamsType,
-                                     QLspSpecification::Responses::ConfigurationResponseType>(
-                    QByteArray(QLspSpecification::Requests::ConfigurationMethod), handler);
+    typedRpc()->sendNotification(Notifications::WorkDoneProgressCancelMethod, params);
 }
 
 void ProtocolGen::registerDidChangeConfigurationNotificationHandler(
@@ -1911,6 +1950,11 @@ void ProtocolGen::registerDidChangeConfigurationNotificationHandler(
                     handler);
 }
 
+void ProtocolGen::notifyDidChangeConfiguration(const DidChangeConfigurationParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidChangeConfigurationMethod, params);
+}
+
 void ProtocolGen::registerDidChangeWatchedFilesNotificationHandler(
         const std::function<void(const QByteArray &, const DidChangeWatchedFilesParams &)> &handler)
 {
@@ -1919,6 +1963,11 @@ void ProtocolGen::registerDidChangeWatchedFilesNotificationHandler(
                     QLspSpecification::Notifications::DidChangeWatchedFilesParamsType>(
                     QByteArray(QLspSpecification::Notifications::DidChangeWatchedFilesMethod),
                     handler);
+}
+
+void ProtocolGen::notifyDidChangeWatchedFiles(const DidChangeWatchedFilesParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidChangeWatchedFilesMethod, params);
 }
 
 void ProtocolGen::registerDidChangeWorkspaceFoldersNotificationHandler(
@@ -1932,12 +1981,22 @@ void ProtocolGen::registerDidChangeWorkspaceFoldersNotificationHandler(
                     handler);
 }
 
+void ProtocolGen::notifyDidChangeWorkspaceFolders(const DidChangeWorkspaceFoldersParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DidChangeWorkspaceFoldersMethod, params);
+}
+
 void ProtocolGen::registerCreateFilesNotificationHandler(
         const std::function<void(const QByteArray &, const CreateFilesParams &)> &handler)
 {
     typedRpc()
             ->registerNotificationHandler<QLspSpecification::Notifications::CreateFilesParamsType>(
                     QByteArray(QLspSpecification::Notifications::CreateFilesMethod), handler);
+}
+
+void ProtocolGen::notifyCreateFiles(const CreateFilesParams &params)
+{
+    typedRpc()->sendNotification(Notifications::CreateFilesMethod, params);
 }
 
 void ProtocolGen::registerDeleteFilesNotificationHandler(
@@ -1948,6 +2007,11 @@ void ProtocolGen::registerDeleteFilesNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::DeleteFilesMethod), handler);
 }
 
+void ProtocolGen::notifyDeleteFiles(const DeleteFilesParams &params)
+{
+    typedRpc()->sendNotification(Notifications::DeleteFilesMethod, params);
+}
+
 void ProtocolGen::registerRenameFilesNotificationHandler(
         const std::function<void(const QByteArray &, const RenameFilesParams &)> &handler)
 {
@@ -1956,73 +2020,9 @@ void ProtocolGen::registerRenameFilesNotificationHandler(
                     QByteArray(QLspSpecification::Notifications::RenameFilesMethod), handler);
 }
 
-void ProtocolGen::registerExecuteCommandRequestHandler(
-        const std::function<void(const QByteArray &, const ExecuteCommandParams &,
-                                 LSPResponse<std::variant<QJsonValue, std::nullptr_t>> &&)>
-                &handler)
+void ProtocolGen::notifyRenameFiles(const RenameFilesParams &params)
 {
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::ExecuteCommandParamsType,
-                                     QLspSpecification::Responses::ExecuteCommandResponseType>(
-                    QByteArray(QLspSpecification::Requests::ExecuteCommandMethod), handler);
-}
-
-void ProtocolGen::registerWorkspaceSymbolRequestHandler(
-        const std::function<
-                void(const QByteArray &, const WorkspaceSymbolParams &,
-                     LSPPartialResponse<std::variant<QList<SymbolInformation>, std::nullptr_t>,
-                                        QList<SymbolInformation>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::WorkspaceSymbolParamsType,
-                                     QLspSpecification::Responses::WorkspaceSymbolResponseType>(
-                    QByteArray(QLspSpecification::Requests::WorkspaceSymbolMethod), handler);
-}
-
-void ProtocolGen::registerCreateFilesRequestHandler(
-        const std::function<void(const QByteArray &, const CreateFilesParams &,
-                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::CreateFilesParamsType,
-                                     QLspSpecification::Responses::CreateFilesResponseType>(
-                    QByteArray(QLspSpecification::Requests::CreateFilesMethod), handler);
-}
-
-void ProtocolGen::registerDeleteFilesRequestHandler(
-        const std::function<void(const QByteArray &, const DeleteFilesParams &,
-                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::DeleteFilesParamsType,
-                                     QLspSpecification::Responses::DeleteFilesResponseType>(
-                    QByteArray(QLspSpecification::Requests::DeleteFilesMethod), handler);
-}
-
-void ProtocolGen::registerRenameFilesRequestHandler(
-        const std::function<void(const QByteArray &, const RenameFilesParams &,
-                                 LSPResponse<std::variant<WorkspaceEdit, std::nullptr_t>> &&)>
-                &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<QLspSpecification::Requests::RenameFilesParamsType,
-                                     QLspSpecification::Responses::RenameFilesResponseType>(
-                    QByteArray(QLspSpecification::Requests::RenameFilesMethod), handler);
-}
-
-void ProtocolGen::registerWorkspaceWorkspaceFoldersRequestHandler(
-        const std::function<void(
-                const QByteArray &, const std::nullptr_t &,
-                LSPResponse<std::variant<QList<WorkspaceFolder>, std::nullptr_t>> &&)> &handler)
-{
-    typedRpc()
-            ->registerRequestHandler<
-                    QLspSpecification::Requests::WorkspaceWorkspaceFoldersParamsType,
-                    QLspSpecification::Responses::WorkspaceWorkspaceFoldersResponseType>(
-                    QByteArray(QLspSpecification::Requests::WorkspaceWorkspaceFoldersMethod),
-                    handler);
+    typedRpc()->sendNotification(Notifications::RenameFilesMethod, params);
 }
 
 } // namespace QLspSpecification

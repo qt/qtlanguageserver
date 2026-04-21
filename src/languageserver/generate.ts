@@ -1105,9 +1105,9 @@ function parseStructuredProtocol(structuredProto, structuredSequence)
 interface GeneratedProtocol {
     notifications: string[], requests: string[], responses: string[]
     clientCapabilities: string[], serverCapabilities: string[], registrations: string[],
-            registerDeclarations: string[], signalDeclarations: string[],
-            registerImplementations: string[], registerVars: string[], requestParams: string[],
+            signalDeclarations: string[], registerVars: string[], requestParams: string[],
             notificationParams: string[], sendDeclarations: string[], sendImplementations: string[],
+            notificationDeclarations: string[], notificationImplementations: string[],
             requestMethodMap: string[], notificationMethodMap: string[]
 }
 
@@ -1119,17 +1119,17 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
     let clientCapabilities: string[] = [];
     let serverCapabilities: string[] = [];
     let registrations: string[] = [];
-    let registerDeclarations: string[] = [];
     let signalDeclarations: string[] = [];
-    let registerImplementations: string[] = [];
     let registerVars: string[] = [];
     let implementations: string[] = [];
     let requestParams: string[] = [];
     let requestParamsKnown = {};
     let notificationParams: string[] = [];
     let notificationParamsKnown = {};
-    let sendDeclarations: string[] = [];
-    let sendImplementations: string[] = [];
+    let requestDeclarations: string[] = [];
+    let requestImplementations: string[] = [];
+    let notificationDeclarations: string[] = [];
+    let notificationImplementations: string[] = [];
     let requestMethodMap: string[] = [];
     let notificationMethodMap: string[] = [];
 
@@ -1141,10 +1141,6 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
                     `constexpr auto ${namify(cap.propertyPath)} = "${cap.propertyPath}";`);
             serverCapabilities.push(
                     `using ${namify(cap.propertyPath)}Type = ${effectiveType(cap.propertyType)};`);
-            registerDeclarations.push("");
-            registerDeclarations.push(`// ServerCapability::${namify(cap.propertyPath)}`)
-            sendDeclarations.push("");
-            sendDeclarations.push(`// ServerCapability::${namify(cap.propertyPath)}`)
         }
         if (dict["ClientCapability"]) {
             let cap = dict["ClientCapability"];
@@ -1152,12 +1148,6 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
                     `constexpr auto ${namify(cap.propertyPath)} = "${cap.propertyPath}";`);
             clientCapabilities.push(
                     `using ${namify(cap.propertyPath)}Type = ${effectiveType(cap.propertyType)};`);
-            if (!dict["ServerCapability"]) {
-                registerDeclarations.push("");
-                sendDeclarations.push("");
-            }
-            registerDeclarations.push(`// ClientCapability::${namify(cap.propertyPath)}`);
-            sendDeclarations.push(`// ClientCapability::${namify(cap.propertyPath)}`)
         }
         if (dict["Request"]) {
             let req: Request = dict["Request"];
@@ -1193,9 +1183,9 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
                         ((resultType == "std::nullptr_t")
                                  ? "std::function<void()>"
                                  : `std::function<void(const ${resultType} &)>`);
-                sendDeclarations.push(`void request${rName}(const ${paramsType}&, ${
+                requestDeclarations.push(`void request${rName}(const ${paramsType}&, ${
                         responseHandlerType} responseHandler, ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);`);
-                sendImplementations.push(`void ProtocolGen::request${rName}(const ${
+                requestImplementations.push(`void ProtocolGen::request${rName}(const ${
                         paramsType} &params, ${
                         responseHandlerType} responseHandler, ResponseErrorHandler errorHandler)
 {
@@ -1207,10 +1197,10 @@ function generateProtocol(extractedInfo, structuredSequence): GeneratedProtocol
             decodeAndCall<${resultType}>(response.data, responseHandler, errorHandler);
     }, params);
 }`);
-                registerDeclarations.push(`void register${
+                requestDeclarations.push(`void register${
                         rName}RequestHandler(const std::function<void(const QByteArray &, const ${
                         paramsType} &, ${responseType} &&)> &handler);`);
-                registerImplementations.push(`
+                requestImplementations.push(`
 void ProtocolGen::register${
                         rName}RequestHandler(const std::function<void(const QByteArray &, const ${
                         paramsType} &, ${responseType} &&)> &handler)
@@ -1252,10 +1242,10 @@ protocol->register${nName}NotificationHandler(
                 signalDeclarations.push(`    void received${
                         nName}Notification(const QLspSpecification::Notifications::${
                         nName}ParamsType &);`)
-                registerDeclarations.push(`void register${
+                notificationDeclarations.push(`void register${
                         nName}NotificationHandler(const std::function<void(const QByteArray &, const ${
                         paramsType} &)> &handler);`);
-                registerImplementations.push(`
+                notificationImplementations.push(`
 void ProtocolGen::register${
                         nName}NotificationHandler(const std::function<void(const QByteArray &, const ${
                         paramsType} &)> &handler)
@@ -1263,8 +1253,9 @@ void ProtocolGen::register${
     typedRpc()->registerNotificationHandler<QLspSpecification::Notifications::${nName}ParamsType>(
         QByteArray(QLspSpecification::Notifications::${nName}Method), handler);
 }`);
-                sendDeclarations.push(`    void notify${nName}(const ${paramsType}&params);`);
-                sendImplementations.push(
+                notificationDeclarations.push(
+                        `    void notify${nName}(const ${paramsType}&params);`);
+                notificationImplementations.push(
                         `void ProtocolGen::notify${nName}(const ${paramsType} &params)
 {
     typedRpc()->sendNotification(Notifications::${nName}Method, params);
@@ -1281,10 +1272,7 @@ void ProtocolGen::register${
                 }
             });
         }
-        if (dict["ServerCapability"] || dict["ClientCapability"]) {
-            sendDeclarations.push("");
-            registerDeclarations.push("");
-        }
+        if (dict["ServerCapability"] || dict["ClientCapability"]) { }
     }
 
     structuredSequence.sort((a: string, b: string) => {
@@ -1305,14 +1293,14 @@ void ProtocolGen::register${
         clientCapabilities : clientCapabilities,
         serverCapabilities : serverCapabilities,
         registrations : registrations,
-        registerDeclarations : registerDeclarations,
-        registerImplementations : registerImplementations,
         registerVars : registerVars,
         signalDeclarations : signalDeclarations,
         requestParams : requestParams,
         notificationParams : notificationParams,
-        sendDeclarations : sendDeclarations,
-        sendImplementations : sendImplementations,
+        sendDeclarations : requestDeclarations,
+        sendImplementations : requestImplementations,
+        notificationDeclarations : notificationDeclarations,
+        notificationImplementations : notificationImplementations,
         requestMethodMap : requestMethodMap,
         notificationMethodMap : notificationMethodMap
     };
@@ -1533,11 +1521,11 @@ protected:
 public:
     ~ProtocolGen();
 
-// # Send protocol
+// Requests
 ${proto.sendDeclarations.join("\n")}
 
-// # receive protocol
-${proto.registerDeclarations.join("\n")}
+// Notifications
+${proto.notificationDeclarations.join("\n")}
 
 private:
     Q_DISABLE_COPY(ProtocolGen)
@@ -1589,7 +1577,7 @@ ProtocolGen::~ProtocolGen()
 
 ${proto.sendImplementations.join("\n\n")}
 
-${proto.registerImplementations.join("\n\n")}
+${proto.notificationImplementations.join("\n\n")}
 
 } // namespace QLspSpecification
 
