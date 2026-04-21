@@ -2228,10 +2228,10 @@ public:
 class Q_LANGUAGESERVER_EXPORT Color
 {
 public:
-    int red = { };
-    int green = { };
-    int blue = { };
-    int alpha = { };
+    double red = { };
+    double green = { };
+    double blue = { };
+    double alpha = { };
 
     template <typename W>
     void walk(W &w)

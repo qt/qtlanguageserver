@@ -81,7 +81,7 @@ function stringLiteral(text: string)
 const builtinTypes: { [key: string]: string } = {
     "string" : "QByteArray",
     "number" : "int",
-    "decimal" : "int", // TODO: should be double!
+    "decimal" : "double",
     "integer" : "int", // technically is qint32
     // uinteger is technically a qint32 that is in [0, 2^31-1]. Note that it can't hold numbers up to 2^32-1 like a quint32.
     "uinteger" : "int",
