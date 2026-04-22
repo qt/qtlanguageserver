@@ -588,11 +588,10 @@ void tst_QLanguageServer::windowShowMessageRequest()
     params.actions = actions;
 
     test.protocol.requestShowMessageRequest(
-                params,
-                [&](const std::variant<QLspSpecification::MessageActionItem, std::nullptr_t> &r) {
-        QCOMPARE(r.index(), std::size_t(0));
-        QCOMPARE(std::get<QLspSpecification::MessageActionItem>(r).title, "aaa");
-    });
+            params, [&](const std::optional<QLspSpecification::MessageActionItem> &r) {
+                QVERIFY(r);
+                QCOMPARE(r->title, "aaa");
+            });
 
     QTRY_VERIFY(messageReceived);
 }

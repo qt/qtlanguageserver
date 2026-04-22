@@ -67,6 +67,21 @@ void Reader::handleBasic(int &el)
         warnMissing(u"int");
 }
 
+void Reader::handleBasic(unsigned int &el)
+{
+    if (currentValue().isDouble()) {
+        double currentInt = currentValue().toDouble(el);
+        if (currentInt < 0 || currentInt > std::numeric_limits<uint>::max()) {
+            warn(QStringLiteral("Value %1 does not fit the unsigned int range of [0, %2].")
+                         .arg(QString::number(currentInt),
+                              QString::number(std::numeric_limits<uint>::max())));
+        }
+        el = static_cast<unsigned int>(currentInt);
+    } else {
+        warnMissing(u"unsigned int");
+    }
+}
+
 void Reader::handleBasic(double &el)
 {
     if (currentValue().isDouble())
@@ -263,6 +278,12 @@ void JsonBuilder::handleConstString(QByteArrayView v)
 void JsonBuilder::handleBasic(const int &v)
 {
     m_values.append(QJsonValue(v));
+}
+
+void JsonBuilder::handleBasic(const unsigned int &v)
+{
+    // note: there is no unsigned representation in QJsonValue.
+    handleBasic(static_cast<double>(v));
 }
 
 void JsonBuilder::handleBasic(const double &v)

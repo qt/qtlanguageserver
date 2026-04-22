@@ -285,8 +285,8 @@ Q_ENUM_NS(WatchKind)
 class Q_LANGUAGESERVER_EXPORT Position
 {
 public:
-    int line = {};
-    int character = {};
+    unsigned int line = { };
+    unsigned int character = { };
 
     template <typename W>
     void walk(W &w)
@@ -696,7 +696,7 @@ class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEventVariant1
 {
 public:
     Range range = { };
-    std::optional<int> rangeLength = { };
+    std::optional<unsigned int> rangeLength = { };
     QByteArray text = { };
 
     template <typename W>
@@ -940,7 +940,7 @@ class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditResult
 public:
     bool applied = { };
     std::optional<QByteArray> failureReason = { };
-    std::optional<int> failedChange = { };
+    std::optional<unsigned int> failedChange = { };
 
     template <typename W>
     void walk(W &w)
@@ -1692,7 +1692,7 @@ class Q_LANGUAGESERVER_EXPORT FoldingRangeClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
-    std::optional<int> rangeLimit = { };
+    std::optional<unsigned int> rangeLimit = { };
     std::optional<bool> lineFoldingOnly = { };
     std::optional<QJsonObject> foldingRangeKind = { };
     std::optional<QJsonObject> foldingRange = { };
@@ -2698,7 +2698,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT ExecutionSummary
 {
 public:
-    int executionOrder = { };
+    unsigned int executionOrder = { };
     std::optional<bool> success = { };
 
     template <typename W>
@@ -2730,8 +2730,8 @@ public:
 class Q_LANGUAGESERVER_EXPORT NotebookCellArrayChange
 {
 public:
-    int start = { };
-    int deleteCount = { };
+    unsigned int start = { };
+    unsigned int deleteCount = { };
     std::optional<QList<NotebookCell>> cells = { };
 
     template <typename W>
@@ -3119,7 +3119,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT FormattingOptions
 {
 public:
-    int tabSize = { };
+    unsigned int tabSize = { };
     bool insertSpaces = { };
     std::optional<bool> trimTrailingWhitespace = { };
     std::optional<bool> insertFinalNewline = { };
@@ -3577,10 +3577,10 @@ public:
 class Q_LANGUAGESERVER_EXPORT FoldingRange
 {
 public:
-    int startLine = { };
-    std::optional<int> startCharacter = { };
-    int endLine = { };
-    std::optional<int> endCharacter = { };
+    unsigned int startLine = { };
+    std::optional<unsigned int> startCharacter = { };
+    unsigned int endLine = { };
+    std::optional<unsigned int> endCharacter = { };
     std::optional<FoldingRangeKind> kind = { };
     std::optional<QByteArray> collapsedText = { };
 
@@ -4557,7 +4557,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT ParameterInformation
 {
 public:
-    std::variant<QByteArray, std::tuple<int, int>> label = { };
+    std::variant<QByteArray, std::tuple<unsigned int, unsigned int>> label = { };
     std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
 
     template <typename W>
@@ -4601,7 +4601,7 @@ public:
     QByteArray title = {};
     std::optional<bool> cancellable = { };
     std::optional<QByteArray> message = { };
-    std::optional<int> percentage = { };
+    std::optional<unsigned int> percentage = { };
 
     template <typename W>
     void walk(W &w)
@@ -4620,7 +4620,7 @@ public:
     static constexpr QByteArrayView kind = "report";
     std::optional<bool> cancellable = { };
     std::optional<QByteArray> message = { };
-    std::optional<int> percentage = { };
+    std::optional<unsigned int> percentage = { };
 
     template <typename W>
     void walk(W &w)
@@ -4807,7 +4807,7 @@ class Q_LANGUAGESERVER_EXPORT SemanticTokens
 {
 public:
     std::optional<QByteArray> resultId = { };
-    QList<int> data = { };
+    QList<unsigned int> data = { };
 
     template <typename W>
     void walk(W &w)
@@ -4820,9 +4820,9 @@ public:
 class Q_LANGUAGESERVER_EXPORT SemanticTokensEdit
 {
 public:
-    int start = { };
-    int deleteCount = { };
-    std::optional<QList<int>> data = { };
+    unsigned int start = { };
+    unsigned int deleteCount = { };
+    std::optional<QList<unsigned int>> data = { };
 
     template <typename W>
     void walk(W &w)
@@ -4894,7 +4894,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT SemanticTokensPartialResult
 {
 public:
-    QList<int> data = { };
+    QList<unsigned int> data = { };
 
     template <typename W>
     void walk(W &w)
@@ -4998,7 +4998,7 @@ public:
     QByteArray label = { };
     std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
     std::optional<QList<ParameterInformation>> parameters = { };
-    std::optional<int> activeParameter = { };
+    std::optional<unsigned int> activeParameter = { };
 
     template <typename W>
     void walk(W &w)
@@ -5014,8 +5014,8 @@ class Q_LANGUAGESERVER_EXPORT SignatureHelp
 {
 public:
     QList<SignatureInformation> signatures = { };
-    std::optional<int> activeSignature = { };
-    std::optional<int> activeParameter = { };
+    std::optional<unsigned int> activeSignature = { };
+    std::optional<unsigned int> activeParameter = { };
 
     template <typename W>
     void walk(W &w)

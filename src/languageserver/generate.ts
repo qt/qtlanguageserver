@@ -83,8 +83,7 @@ const builtinTypes: { [key: string]: string } = {
     "number" : "int",
     "decimal" : "double",
     "integer" : "int", // technically is qint32
-    // uinteger is technically a qint32 that is in [0, 2^31-1]. Note that it can't hold numbers up to 2^32-1 like a quint32.
-    "uinteger" : "int",
+    "uinteger" : "unsigned int", // Note that it can't hold numbers up to 2^32-1, just up to 2ˆ31-1.
     "boolean" : "bool",
     "any" : "QJsonValue",
     "unknown" : "QJsonValue",

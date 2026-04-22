@@ -371,6 +371,7 @@ public:
     void handleBasic(QByteArray &);
     void handleConstString(QByteArrayView);
     void handleBasic(int &);
+    void handleBasic(unsigned &);
     void handleBasic(double &);
     void handleNullType();
     void handleJson(QJsonValue &v);
@@ -436,8 +437,9 @@ template<typename W, typename T>
 inline void doWalk(W &w, T &el)
 {
     using BaseT = std::decay_t<T>;
-    if constexpr (std::is_same_v<BaseT, int> || std::is_same_v<BaseT, double>
-                  || std::is_same_v<BaseT, bool> || std::is_same_v<BaseT, QByteArray>) {
+    if constexpr (std::is_same_v<BaseT, int> || std::is_same_v<BaseT, unsigned int>
+                  || std::is_same_v<BaseT, double> || std::is_same_v<BaseT, bool>
+                  || std::is_same_v<BaseT, QByteArray>) {
         w.handleBasic(el);
     } else if constexpr (std::is_same_v<BaseT, QByteArrayView>) {
         w.handleConstString(el);
@@ -605,6 +607,7 @@ public:
     void handleConstString(QByteArrayView v);
     void handleBasic(const QByteArray &v);
     void handleBasic(const int &v);
+    void handleBasic(const unsigned int &v);
     void handleBasic(const double &v);
     void handleNullType();
     void handleJson(QJsonValue &v);

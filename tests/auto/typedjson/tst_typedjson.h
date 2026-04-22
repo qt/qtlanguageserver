@@ -17,8 +17,8 @@ namespace TestSpec {
 class Position
 {
 public:
-    int line = {};
-    int character = {};
+    unsigned int line = { };
+    unsigned int character = { };
 
     template<typename W>
     void walk(W &w)
@@ -367,6 +367,35 @@ private slots:
         QList<int> result;
         QTypedJson::doWalk(r, result);
         QCOMPARE(r.errorMessages(), { "Error: expected an array at ."_L1 });
+    }
+
+    void unsignedAndSigned()
+    {
+        std::variant<unsigned int, int> variant = -3;
+
+        QTypedJson::JsonBuilder b;
+        QTypedJson::doWalk(b, variant);
+        const QJsonValue json = b.popLastValue();
+        QCOMPARE(json, QJsonValue(-3));
+
+        variant = 42u;
+        QCOMPARE(variant.index(), 0);
+        QTypedJson::Reader r(json);
+        QTypedJson::doWalk(r, variant);
+        QCOMPARE(variant.index(), 1);
+        QCOMPARE(std::get<1>(variant), -3);
+    }
+
+    void badUnsigned()
+    {
+        for (double d : { std::numeric_limits<uint>::max() + 2.0, -1.0 }) {
+            QTypedJson::Reader r(toJsonValue(d));
+            unsigned result = 0;
+            QTypedJson::doWalk(r, result);
+            QCOMPARE(r.errorMessages(),
+                     { "Value %1 does not fit the unsigned int range of [0, 4294967295]."_L1.arg(
+                             QString::number(d)) });
+        }
     }
 };
 
