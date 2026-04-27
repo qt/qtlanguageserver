@@ -22,7 +22,7 @@ Reader::Reader(const QJsonValue &v)
 
 Reader::~Reader()
 {
-    for (const QString &msg : m_p->errorMessages)
+    for (const QString &msg : std::as_const(m_p->errorMessages))
         qCWarning(jsonRpcLog) << msg;
     delete m_p;
 }

@@ -28,9 +28,8 @@ void TypedResponse::addOnCloseAction(const OnCloseAction &act)
 void TypedResponse::doOnCloseActions()
 {
     m_typedRpc->doOnCloseAction(m_status, m_id);
-    for (const auto &a : m_onCloseActions) {
+    for (const auto &a : std::as_const(m_onCloseActions))
         a(m_status, m_id, *m_typedRpc);
-    }
     m_onCloseActions.clear();
 }
 
