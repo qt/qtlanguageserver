@@ -67,8 +67,7 @@ void QLanguageServerJsonRpcTransport::hasHeader(const QByteArray &fieldName,
             if (auto handler = diagnosticHandler()) {
                 handler(Warning,
                         QString::fromLatin1("Invalid %1: %2")
-                                .arg(QString::fromUtf8(fieldName))
-                                .arg(QString::fromUtf8(fieldValue)));
+                                .arg(QString::fromUtf8(fieldName), QString::fromUtf8(fieldValue)));
             }
         }
     } else if (auto handler = diagnosticHandler()) {
