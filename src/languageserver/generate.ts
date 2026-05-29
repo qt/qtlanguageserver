@@ -1561,7 +1561,8 @@ ts.sys.writeFile("qlspnotifysignals_p.h", license + `
 //  -------------
 //
 // This file is not part of the Qt API.  It exists purely as an
-
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
 //
 // We mean it.
 //
