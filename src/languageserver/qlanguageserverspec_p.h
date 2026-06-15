@@ -28,19 +28,21 @@ namespace Requests {
 // C++ types for the LSP method "callHierarchy/incomingCalls"
 constexpr auto CallHierarchyIncomingCallsMethod = QLatin1String("callHierarchy/incomingCalls");
 using CallHierarchyIncomingCallsParamsType = CallHierarchyIncomingCallsParams;
-using CallHierarchyIncomingCallsResultType = std::optional<QList<CallHierarchyIncomingCall>>;
+using CallHierarchyIncomingCallsResultType =
+        std::variant<std::nullptr_t, QList<CallHierarchyIncomingCall>>;
 using CallHierarchyIncomingCallsPartialResultType = QList<CallHierarchyIncomingCall>;
 using CallHierarchyIncomingCallsResponseType =
-        LSPPartialResponse<std::optional<QList<CallHierarchyIncomingCall>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<CallHierarchyIncomingCall>>,
                            QList<CallHierarchyIncomingCall>>;
 
 // C++ types for the LSP method "callHierarchy/outgoingCalls"
 constexpr auto CallHierarchyOutgoingCallsMethod = QLatin1String("callHierarchy/outgoingCalls");
 using CallHierarchyOutgoingCallsParamsType = CallHierarchyOutgoingCallsParams;
-using CallHierarchyOutgoingCallsResultType = std::optional<QList<CallHierarchyOutgoingCall>>;
+using CallHierarchyOutgoingCallsResultType =
+        std::variant<std::nullptr_t, QList<CallHierarchyOutgoingCall>>;
 using CallHierarchyOutgoingCallsPartialResultType = QList<CallHierarchyOutgoingCall>;
 using CallHierarchyOutgoingCallsResponseType =
-        LSPPartialResponse<std::optional<QList<CallHierarchyOutgoingCall>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<CallHierarchyOutgoingCall>>,
                            QList<CallHierarchyOutgoingCall>>;
 
 // C++ types for the LSP method "client/registerCapability"
@@ -100,18 +102,19 @@ using ShutdownResponseType = LSPResponse<std::nullptr_t>;
 // C++ types for the LSP method "textDocument/codeAction"
 constexpr auto CodeActionMethod = QLatin1String("textDocument/codeAction");
 using CodeActionParamsType = CodeActionParams;
-using CodeActionResultType = std::optional<QList<std::variant<Command, CodeAction>>>;
+using CodeActionResultType = std::variant<std::nullptr_t, QList<std::variant<Command, CodeAction>>>;
 using CodeActionPartialResultType = QList<std::variant<Command, CodeAction>>;
 using CodeActionResponseType =
-        LSPPartialResponse<std::optional<QList<std::variant<Command, CodeAction>>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<std::variant<Command, CodeAction>>>,
                            QList<std::variant<Command, CodeAction>>>;
 
 // C++ types for the LSP method "textDocument/codeLens"
 constexpr auto CodeLensMethod = QLatin1String("textDocument/codeLens");
 using CodeLensParamsType = CodeLensParams;
-using CodeLensResultType = std::optional<QList<CodeLens>>;
+using CodeLensResultType = std::variant<std::nullptr_t, QList<CodeLens>>;
 using CodeLensPartialResultType = QList<CodeLens>;
-using CodeLensResponseType = LSPPartialResponse<std::optional<QList<CodeLens>>, QList<CodeLens>>;
+using CodeLensResponseType =
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<CodeLens>>, QList<CodeLens>>;
 
 // C++ types for the LSP method "textDocument/colorPresentation"
 constexpr auto ColorPresentationMethod = QLatin1String("textDocument/colorPresentation");
@@ -124,28 +127,28 @@ using ColorPresentationResponseType =
 // C++ types for the LSP method "textDocument/completion"
 constexpr auto CompletionMethod = QLatin1String("textDocument/completion");
 using CompletionParamsType = CompletionParams;
-using CompletionResultType = std::optional<std::variant<QList<CompletionItem>, CompletionList>>;
+using CompletionResultType = std::variant<std::nullptr_t, QList<CompletionItem>, CompletionList>;
 using CompletionPartialResultType = QList<CompletionItem>;
 using CompletionResponseType =
-        LSPPartialResponse<std::optional<std::variant<QList<CompletionItem>, CompletionList>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<CompletionItem>, CompletionList>,
                            QList<CompletionItem>>;
 
 // C++ types for the LSP method "textDocument/declaration"
 constexpr auto DeclarationMethod = QLatin1String("textDocument/declaration");
 using DeclarationParamsType = DeclarationParams;
-using DeclarationResultType = std::optional<std::variant<Declaration, QList<DeclarationLink>>>;
+using DeclarationResultType = std::variant<std::nullptr_t, Declaration, QList<DeclarationLink>>;
 using DeclarationPartialResultType = std::variant<QList<Location>, QList<DeclarationLink>>;
 using DeclarationResponseType =
-        LSPPartialResponse<std::optional<std::variant<Declaration, QList<DeclarationLink>>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, Declaration, QList<DeclarationLink>>,
                            std::variant<QList<Location>, QList<DeclarationLink>>>;
 
 // C++ types for the LSP method "textDocument/definition"
 constexpr auto DefinitionMethod = QLatin1String("textDocument/definition");
 using DefinitionParamsType = DefinitionParams;
-using DefinitionResultType = std::optional<std::variant<Definition, QList<DefinitionLink>>>;
+using DefinitionResultType = std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>;
 using DefinitionPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using DefinitionResponseType =
-        LSPPartialResponse<std::optional<std::variant<Definition, QList<DefinitionLink>>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>,
                            std::variant<QList<Location>, QList<DefinitionLink>>>;
 
 // C++ types for the LSP method "textDocument/diagnostic"
@@ -167,217 +170,231 @@ using DocumentColorResponseType =
 // C++ types for the LSP method "textDocument/documentHighlight"
 constexpr auto DocumentHighlightMethod = QLatin1String("textDocument/documentHighlight");
 using DocumentHighlightParamsType = DocumentHighlightParams;
-using DocumentHighlightResultType = std::optional<QList<DocumentHighlight>>;
+using DocumentHighlightResultType = std::variant<std::nullptr_t, QList<DocumentHighlight>>;
 using DocumentHighlightPartialResultType = QList<DocumentHighlight>;
 using DocumentHighlightResponseType =
-        LSPPartialResponse<std::optional<QList<DocumentHighlight>>, QList<DocumentHighlight>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<DocumentHighlight>>,
+                           QList<DocumentHighlight>>;
 
 // C++ types for the LSP method "textDocument/documentLink"
 constexpr auto DocumentLinkMethod = QLatin1String("textDocument/documentLink");
 using DocumentLinkParamsType = DocumentLinkParams;
-using DocumentLinkResultType = std::optional<QList<DocumentLink>>;
+using DocumentLinkResultType = std::variant<std::nullptr_t, QList<DocumentLink>>;
 using DocumentLinkPartialResultType = QList<DocumentLink>;
 using DocumentLinkResponseType =
-        LSPPartialResponse<std::optional<QList<DocumentLink>>, QList<DocumentLink>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<DocumentLink>>, QList<DocumentLink>>;
 
 // C++ types for the LSP method "textDocument/documentSymbol"
 constexpr auto DocumentSymbolMethod = QLatin1String("textDocument/documentSymbol");
 using DocumentSymbolParamsType = DocumentSymbolParams;
 using DocumentSymbolResultType =
-        std::optional<std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>>;
+        std::variant<std::nullptr_t, QList<SymbolInformation>, QList<DocumentSymbol>>;
 using DocumentSymbolPartialResultType =
         std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>;
 using DocumentSymbolResponseType = LSPPartialResponse<
-        std::optional<std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>>,
+        std::variant<std::nullptr_t, QList<SymbolInformation>, QList<DocumentSymbol>>,
         std::variant<QList<SymbolInformation>, QList<DocumentSymbol>>>;
 
 // C++ types for the LSP method "textDocument/foldingRange"
 constexpr auto FoldingRangeMethod = QLatin1String("textDocument/foldingRange");
 using FoldingRangeParamsType = FoldingRangeParams;
-using FoldingRangeResultType = std::optional<QList<FoldingRange>>;
+using FoldingRangeResultType = std::variant<std::nullptr_t, QList<FoldingRange>>;
 using FoldingRangePartialResultType = QList<FoldingRange>;
 using FoldingRangeResponseType =
-        LSPPartialResponse<std::optional<QList<FoldingRange>>, QList<FoldingRange>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<FoldingRange>>, QList<FoldingRange>>;
 
 // C++ types for the LSP method "textDocument/formatting"
 constexpr auto DocumentFormattingMethod = QLatin1String("textDocument/formatting");
 using DocumentFormattingParamsType = DocumentFormattingParams;
-using DocumentFormattingResultType = std::optional<QList<TextEdit>>;
-using DocumentFormattingResponseType = LSPResponse<std::optional<QList<TextEdit>>>;
+using DocumentFormattingResultType = std::variant<std::nullptr_t, QList<TextEdit>>;
+using DocumentFormattingResponseType = LSPResponse<std::variant<std::nullptr_t, QList<TextEdit>>>;
 
 // C++ types for the LSP method "textDocument/hover"
 constexpr auto HoverMethod = QLatin1String("textDocument/hover");
 using HoverParamsType = HoverParams;
-using HoverResultType = std::optional<Hover>;
-using HoverResponseType = LSPResponse<std::optional<Hover>>;
+using HoverResultType = std::variant<std::nullptr_t, Hover>;
+using HoverResponseType = LSPResponse<std::variant<std::nullptr_t, Hover>>;
 
 // C++ types for the LSP method "textDocument/implementation"
 constexpr auto ImplementationMethod = QLatin1String("textDocument/implementation");
 using ImplementationParamsType = ImplementationParams;
-using ImplementationResultType = std::optional<std::variant<Definition, QList<DefinitionLink>>>;
+using ImplementationResultType = std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>;
 using ImplementationPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using ImplementationResponseType =
-        LSPPartialResponse<std::optional<std::variant<Definition, QList<DefinitionLink>>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>,
                            std::variant<QList<Location>, QList<DefinitionLink>>>;
 
 // C++ types for the LSP method "textDocument/inlayHint"
 constexpr auto InlayHintMethod = QLatin1String("textDocument/inlayHint");
 using InlayHintParamsType = InlayHintParams;
-using InlayHintResultType = std::optional<QList<InlayHint>>;
+using InlayHintResultType = std::variant<std::nullptr_t, QList<InlayHint>>;
 using InlayHintPartialResultType = QList<InlayHint>;
-using InlayHintResponseType = LSPPartialResponse<std::optional<QList<InlayHint>>, QList<InlayHint>>;
+using InlayHintResponseType =
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<InlayHint>>, QList<InlayHint>>;
 
 // C++ types for the LSP method "textDocument/inlineCompletion"
 constexpr auto InlineCompletionMethod = QLatin1String("textDocument/inlineCompletion");
 using InlineCompletionParamsType = InlineCompletionParams;
 using InlineCompletionResultType =
-        std::optional<std::variant<InlineCompletionList, QList<InlineCompletionItem>>>;
+        std::variant<std::nullptr_t, InlineCompletionList, QList<InlineCompletionItem>>;
 using InlineCompletionPartialResultType = QList<InlineCompletionItem>;
 using InlineCompletionResponseType = LSPPartialResponse<
-        std::optional<std::variant<InlineCompletionList, QList<InlineCompletionItem>>>,
+        std::variant<std::nullptr_t, InlineCompletionList, QList<InlineCompletionItem>>,
         QList<InlineCompletionItem>>;
 
 // C++ types for the LSP method "textDocument/inlineValue"
 constexpr auto InlineValueMethod = QLatin1String("textDocument/inlineValue");
 using InlineValueParamsType = InlineValueParams;
-using InlineValueResultType = std::optional<QList<InlineValue>>;
+using InlineValueResultType = std::variant<std::nullptr_t, QList<InlineValue>>;
 using InlineValuePartialResultType = QList<InlineValue>;
 using InlineValueResponseType =
-        LSPPartialResponse<std::optional<QList<InlineValue>>, QList<InlineValue>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<InlineValue>>, QList<InlineValue>>;
 
 // C++ types for the LSP method "textDocument/linkedEditingRange"
 constexpr auto LinkedEditingRangeMethod = QLatin1String("textDocument/linkedEditingRange");
 using LinkedEditingRangeParamsType = LinkedEditingRangeParams;
-using LinkedEditingRangeResultType = std::optional<LinkedEditingRanges>;
-using LinkedEditingRangeResponseType = LSPResponse<std::optional<LinkedEditingRanges>>;
+using LinkedEditingRangeResultType = std::variant<std::nullptr_t, LinkedEditingRanges>;
+using LinkedEditingRangeResponseType =
+        LSPResponse<std::variant<std::nullptr_t, LinkedEditingRanges>>;
 
 // C++ types for the LSP method "textDocument/moniker"
 constexpr auto MonikerMethod = QLatin1String("textDocument/moniker");
 using MonikerParamsType = MonikerParams;
-using MonikerResultType = std::optional<QList<Moniker>>;
+using MonikerResultType = std::variant<std::nullptr_t, QList<Moniker>>;
 using MonikerPartialResultType = QList<Moniker>;
-using MonikerResponseType = LSPPartialResponse<std::optional<QList<Moniker>>, QList<Moniker>>;
+using MonikerResponseType =
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<Moniker>>, QList<Moniker>>;
 
 // C++ types for the LSP method "textDocument/onTypeFormatting"
 constexpr auto DocumentOnTypeFormattingMethod = QLatin1String("textDocument/onTypeFormatting");
 using DocumentOnTypeFormattingParamsType = DocumentOnTypeFormattingParams;
-using DocumentOnTypeFormattingResultType = std::optional<QList<TextEdit>>;
-using DocumentOnTypeFormattingResponseType = LSPResponse<std::optional<QList<TextEdit>>>;
+using DocumentOnTypeFormattingResultType = std::variant<std::nullptr_t, QList<TextEdit>>;
+using DocumentOnTypeFormattingResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<TextEdit>>>;
 
 // C++ types for the LSP method "textDocument/prepareCallHierarchy"
 constexpr auto CallHierarchyPrepareMethod = QLatin1String("textDocument/prepareCallHierarchy");
 using CallHierarchyPrepareParamsType = CallHierarchyPrepareParams;
-using CallHierarchyPrepareResultType = std::optional<QList<CallHierarchyItem>>;
-using CallHierarchyPrepareResponseType = LSPResponse<std::optional<QList<CallHierarchyItem>>>;
+using CallHierarchyPrepareResultType = std::variant<std::nullptr_t, QList<CallHierarchyItem>>;
+using CallHierarchyPrepareResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<CallHierarchyItem>>>;
 
 // C++ types for the LSP method "textDocument/prepareRename"
 constexpr auto PrepareRenameMethod = QLatin1String("textDocument/prepareRename");
 using PrepareRenameParamsType = PrepareRenameParams;
-using PrepareRenameResultType = std::optional<PrepareRenameResult>;
-using PrepareRenameResponseType = LSPResponse<std::optional<PrepareRenameResult>>;
+using PrepareRenameResultType = std::variant<std::nullptr_t, PrepareRenameResult>;
+using PrepareRenameResponseType = LSPResponse<std::variant<std::nullptr_t, PrepareRenameResult>>;
 
 // C++ types for the LSP method "textDocument/prepareTypeHierarchy"
 constexpr auto TypeHierarchyPrepareMethod = QLatin1String("textDocument/prepareTypeHierarchy");
 using TypeHierarchyPrepareParamsType = TypeHierarchyPrepareParams;
-using TypeHierarchyPrepareResultType = std::optional<QList<TypeHierarchyItem>>;
-using TypeHierarchyPrepareResponseType = LSPResponse<std::optional<QList<TypeHierarchyItem>>>;
+using TypeHierarchyPrepareResultType = std::variant<std::nullptr_t, QList<TypeHierarchyItem>>;
+using TypeHierarchyPrepareResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<TypeHierarchyItem>>>;
 
 // C++ types for the LSP method "textDocument/rangeFormatting"
 constexpr auto DocumentRangeFormattingMethod = QLatin1String("textDocument/rangeFormatting");
 using DocumentRangeFormattingParamsType = DocumentRangeFormattingParams;
-using DocumentRangeFormattingResultType = std::optional<QList<TextEdit>>;
-using DocumentRangeFormattingResponseType = LSPResponse<std::optional<QList<TextEdit>>>;
+using DocumentRangeFormattingResultType = std::variant<std::nullptr_t, QList<TextEdit>>;
+using DocumentRangeFormattingResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<TextEdit>>>;
 
 // C++ types for the LSP method "textDocument/rangesFormatting"
 constexpr auto DocumentRangesFormattingMethod = QLatin1String("textDocument/rangesFormatting");
 using DocumentRangesFormattingParamsType = DocumentRangesFormattingParams;
-using DocumentRangesFormattingResultType = std::optional<QList<TextEdit>>;
-using DocumentRangesFormattingResponseType = LSPResponse<std::optional<QList<TextEdit>>>;
+using DocumentRangesFormattingResultType = std::variant<std::nullptr_t, QList<TextEdit>>;
+using DocumentRangesFormattingResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<TextEdit>>>;
 
 // C++ types for the LSP method "textDocument/references"
 constexpr auto ReferenceMethod = QLatin1String("textDocument/references");
 using ReferenceParamsType = ReferenceParams;
-using ReferenceResultType = std::optional<QList<Location>>;
+using ReferenceResultType = std::variant<std::nullptr_t, QList<Location>>;
 using ReferencePartialResultType = QList<Location>;
-using ReferenceResponseType = LSPPartialResponse<std::optional<QList<Location>>, QList<Location>>;
+using ReferenceResponseType =
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<Location>>, QList<Location>>;
 
 // C++ types for the LSP method "textDocument/rename"
 constexpr auto RenameMethod = QLatin1String("textDocument/rename");
 using RenameParamsType = RenameParams;
-using RenameResultType = std::optional<WorkspaceEdit>;
-using RenameResponseType = LSPResponse<std::optional<WorkspaceEdit>>;
+using RenameResultType = std::variant<std::nullptr_t, WorkspaceEdit>;
+using RenameResponseType = LSPResponse<std::variant<std::nullptr_t, WorkspaceEdit>>;
 
 // C++ types for the LSP method "textDocument/selectionRange"
 constexpr auto SelectionRangeMethod = QLatin1String("textDocument/selectionRange");
 using SelectionRangeParamsType = SelectionRangeParams;
-using SelectionRangeResultType = std::optional<QList<SelectionRange>>;
+using SelectionRangeResultType = std::variant<std::nullptr_t, QList<SelectionRange>>;
 using SelectionRangePartialResultType = QList<SelectionRange>;
 using SelectionRangeResponseType =
-        LSPPartialResponse<std::optional<QList<SelectionRange>>, QList<SelectionRange>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<SelectionRange>>,
+                           QList<SelectionRange>>;
 
 // C++ types for the LSP method "textDocument/semanticTokens/full"
 constexpr auto SemanticTokensMethod = QLatin1String("textDocument/semanticTokens/full");
 using SemanticTokensParamsType = SemanticTokensParams;
-using SemanticTokensResultType = std::optional<SemanticTokens>;
+using SemanticTokensResultType = std::variant<std::nullptr_t, SemanticTokens>;
 using SemanticTokensPartialResultType = SemanticTokensPartialResult;
-using SemanticTokensResponseType =
-        LSPPartialResponse<std::optional<SemanticTokens>, SemanticTokensPartialResult>;
+using SemanticTokensResponseType = LSPPartialResponse<std::variant<std::nullptr_t, SemanticTokens>,
+                                                      SemanticTokensPartialResult>;
 
 // C++ types for the LSP method "textDocument/semanticTokens/full/delta"
 constexpr auto SemanticTokensDeltaMethod = QLatin1String("textDocument/semanticTokens/full/delta");
 using SemanticTokensDeltaParamsType = SemanticTokensDeltaParams;
 using SemanticTokensDeltaResultType =
-        std::optional<std::variant<SemanticTokens, SemanticTokensDelta>>;
+        std::variant<std::nullptr_t, SemanticTokens, SemanticTokensDelta>;
 using SemanticTokensDeltaPartialResultType =
         std::variant<SemanticTokensPartialResult, SemanticTokensDeltaPartialResult>;
 using SemanticTokensDeltaResponseType = LSPPartialResponse<
-        std::optional<std::variant<SemanticTokens, SemanticTokensDelta>>,
+        std::variant<std::nullptr_t, SemanticTokens, SemanticTokensDelta>,
         std::variant<SemanticTokensPartialResult, SemanticTokensDeltaPartialResult>>;
 
 // C++ types for the LSP method "textDocument/semanticTokens/range"
 constexpr auto SemanticTokensRangeMethod = QLatin1String("textDocument/semanticTokens/range");
 using SemanticTokensRangeParamsType = SemanticTokensRangeParams;
-using SemanticTokensRangeResultType = std::optional<SemanticTokens>;
+using SemanticTokensRangeResultType = std::variant<std::nullptr_t, SemanticTokens>;
 using SemanticTokensRangePartialResultType = SemanticTokensPartialResult;
 using SemanticTokensRangeResponseType =
-        LSPPartialResponse<std::optional<SemanticTokens>, SemanticTokensPartialResult>;
+        LSPPartialResponse<std::variant<std::nullptr_t, SemanticTokens>,
+                           SemanticTokensPartialResult>;
 
 // C++ types for the LSP method "textDocument/signatureHelp"
 constexpr auto SignatureHelpMethod = QLatin1String("textDocument/signatureHelp");
 using SignatureHelpParamsType = SignatureHelpParams;
-using SignatureHelpResultType = std::optional<SignatureHelp>;
-using SignatureHelpResponseType = LSPResponse<std::optional<SignatureHelp>>;
+using SignatureHelpResultType = std::variant<std::nullptr_t, SignatureHelp>;
+using SignatureHelpResponseType = LSPResponse<std::variant<std::nullptr_t, SignatureHelp>>;
 
 // C++ types for the LSP method "textDocument/typeDefinition"
 constexpr auto TypeDefinitionMethod = QLatin1String("textDocument/typeDefinition");
 using TypeDefinitionParamsType = TypeDefinitionParams;
-using TypeDefinitionResultType = std::optional<std::variant<Definition, QList<DefinitionLink>>>;
+using TypeDefinitionResultType = std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>;
 using TypeDefinitionPartialResultType = std::variant<QList<Location>, QList<DefinitionLink>>;
 using TypeDefinitionResponseType =
-        LSPPartialResponse<std::optional<std::variant<Definition, QList<DefinitionLink>>>,
+        LSPPartialResponse<std::variant<std::nullptr_t, Definition, QList<DefinitionLink>>,
                            std::variant<QList<Location>, QList<DefinitionLink>>>;
 
 // C++ types for the LSP method "textDocument/willSaveWaitUntil"
 constexpr auto WillSaveTextDocumentMethod = QLatin1String("textDocument/willSaveWaitUntil");
 using WillSaveTextDocumentParamsType = WillSaveTextDocumentParams;
-using WillSaveTextDocumentResultType = std::optional<QList<TextEdit>>;
-using WillSaveTextDocumentResponseType = LSPResponse<std::optional<QList<TextEdit>>>;
+using WillSaveTextDocumentResultType = std::variant<std::nullptr_t, QList<TextEdit>>;
+using WillSaveTextDocumentResponseType = LSPResponse<std::variant<std::nullptr_t, QList<TextEdit>>>;
 
 // C++ types for the LSP method "typeHierarchy/subtypes"
 constexpr auto TypeHierarchySubtypesMethod = QLatin1String("typeHierarchy/subtypes");
 using TypeHierarchySubtypesParamsType = TypeHierarchySubtypesParams;
-using TypeHierarchySubtypesResultType = std::optional<QList<TypeHierarchyItem>>;
+using TypeHierarchySubtypesResultType = std::variant<std::nullptr_t, QList<TypeHierarchyItem>>;
 using TypeHierarchySubtypesPartialResultType = QList<TypeHierarchyItem>;
 using TypeHierarchySubtypesResponseType =
-        LSPPartialResponse<std::optional<QList<TypeHierarchyItem>>, QList<TypeHierarchyItem>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<TypeHierarchyItem>>,
+                           QList<TypeHierarchyItem>>;
 
 // C++ types for the LSP method "typeHierarchy/supertypes"
 constexpr auto TypeHierarchySupertypesMethod = QLatin1String("typeHierarchy/supertypes");
 using TypeHierarchySupertypesParamsType = TypeHierarchySupertypesParams;
-using TypeHierarchySupertypesResultType = std::optional<QList<TypeHierarchyItem>>;
+using TypeHierarchySupertypesResultType = std::variant<std::nullptr_t, QList<TypeHierarchyItem>>;
 using TypeHierarchySupertypesPartialResultType = QList<TypeHierarchyItem>;
 using TypeHierarchySupertypesResponseType =
-        LSPPartialResponse<std::optional<QList<TypeHierarchyItem>>, QList<TypeHierarchyItem>>;
+        LSPPartialResponse<std::variant<std::nullptr_t, QList<TypeHierarchyItem>>,
+                           QList<TypeHierarchyItem>>;
 
 // C++ types for the LSP method "window/showDocument"
 constexpr auto ShowDocumentMethod = QLatin1String("window/showDocument");
@@ -388,8 +405,8 @@ using ShowDocumentResponseType = LSPResponse<ShowDocumentResult>;
 // C++ types for the LSP method "window/showMessageRequest"
 constexpr auto ShowMessageRequestMethod = QLatin1String("window/showMessageRequest");
 using ShowMessageRequestParamsType = ShowMessageRequestParams;
-using ShowMessageRequestResultType = std::optional<MessageActionItem>;
-using ShowMessageRequestResponseType = LSPResponse<std::optional<MessageActionItem>>;
+using ShowMessageRequestResultType = std::variant<std::nullptr_t, MessageActionItem>;
+using ShowMessageRequestResponseType = LSPResponse<std::variant<std::nullptr_t, MessageActionItem>>;
 
 // C++ types for the LSP method "window/workDoneProgress/create"
 constexpr auto WorkDoneProgressCreateMethod = QLatin1String("window/workDoneProgress/create");
@@ -432,8 +449,8 @@ using WorkspaceDiagnosticRefreshResponseType = LSPResponse<std::nullptr_t>;
 // C++ types for the LSP method "workspace/executeCommand"
 constexpr auto ExecuteCommandMethod = QLatin1String("workspace/executeCommand");
 using ExecuteCommandParamsType = ExecuteCommandParams;
-using ExecuteCommandResultType = std::optional<QJsonValue>;
-using ExecuteCommandResponseType = LSPResponse<std::optional<QJsonValue>>;
+using ExecuteCommandResultType = std::variant<std::nullptr_t, QJsonValue>;
+using ExecuteCommandResponseType = LSPResponse<std::variant<std::nullptr_t, QJsonValue>>;
 
 // C++ types for the LSP method "workspace/foldingRange/refresh"
 constexpr auto WorkspaceFoldingRangeRefreshMethod = QLatin1String("workspace/foldingRange/refresh");
@@ -464,36 +481,37 @@ using WorkspaceSemanticTokensRefreshResponseType = LSPResponse<std::nullptr_t>;
 constexpr auto WorkspaceSymbolMethod = QLatin1String("workspace/symbol");
 using WorkspaceSymbolParamsType = WorkspaceSymbolParams;
 using WorkspaceSymbolResultType =
-        std::optional<std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>;
+        std::variant<std::nullptr_t, QList<SymbolInformation>, QList<WorkspaceSymbol>>;
 using WorkspaceSymbolPartialResultType =
         std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>;
 using WorkspaceSymbolResponseType = LSPPartialResponse<
-        std::optional<std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>,
+        std::variant<std::nullptr_t, QList<SymbolInformation>, QList<WorkspaceSymbol>>,
         std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>;
 
 // C++ types for the LSP method "workspace/willCreateFiles"
 constexpr auto CreateFilesMethod = QLatin1String("workspace/willCreateFiles");
 using CreateFilesParamsType = CreateFilesParams;
-using CreateFilesResultType = std::optional<WorkspaceEdit>;
-using CreateFilesResponseType = LSPResponse<std::optional<WorkspaceEdit>>;
+using CreateFilesResultType = std::variant<std::nullptr_t, WorkspaceEdit>;
+using CreateFilesResponseType = LSPResponse<std::variant<std::nullptr_t, WorkspaceEdit>>;
 
 // C++ types for the LSP method "workspace/willDeleteFiles"
 constexpr auto DeleteFilesMethod = QLatin1String("workspace/willDeleteFiles");
 using DeleteFilesParamsType = DeleteFilesParams;
-using DeleteFilesResultType = std::optional<WorkspaceEdit>;
-using DeleteFilesResponseType = LSPResponse<std::optional<WorkspaceEdit>>;
+using DeleteFilesResultType = std::variant<std::nullptr_t, WorkspaceEdit>;
+using DeleteFilesResponseType = LSPResponse<std::variant<std::nullptr_t, WorkspaceEdit>>;
 
 // C++ types for the LSP method "workspace/willRenameFiles"
 constexpr auto RenameFilesMethod = QLatin1String("workspace/willRenameFiles");
 using RenameFilesParamsType = RenameFilesParams;
-using RenameFilesResultType = std::optional<WorkspaceEdit>;
-using RenameFilesResponseType = LSPResponse<std::optional<WorkspaceEdit>>;
+using RenameFilesResultType = std::variant<std::nullptr_t, WorkspaceEdit>;
+using RenameFilesResponseType = LSPResponse<std::variant<std::nullptr_t, WorkspaceEdit>>;
 
 // C++ types for the LSP method "workspace/workspaceFolders"
 constexpr auto WorkspaceWorkspaceFoldersMethod = QLatin1String("workspace/workspaceFolders");
 using WorkspaceWorkspaceFoldersParamsType = std::nullptr_t;
-using WorkspaceWorkspaceFoldersResultType = std::optional<QList<WorkspaceFolder>>;
-using WorkspaceWorkspaceFoldersResponseType = LSPResponse<std::optional<QList<WorkspaceFolder>>>;
+using WorkspaceWorkspaceFoldersResultType = std::variant<std::nullptr_t, QList<WorkspaceFolder>>;
+using WorkspaceWorkspaceFoldersResponseType =
+        LSPResponse<std::variant<std::nullptr_t, QList<WorkspaceFolder>>>;
 
 // C++ types for the LSP method "workspaceSymbol/resolve"
 constexpr auto WorkspaceSymbolResolveMethod = QLatin1String("workspaceSymbol/resolve");

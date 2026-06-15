@@ -357,32 +357,30 @@ function typeToCppTypeImpl(
     case "or":
         let orTypes = (<metaModel.OrType>type).items;
 
-        // fold std::variant<T..., null> into std::optional<T...>
-        let isOptional = false;
-        const isNull = (t: metaModel.Type) =>
-                t.kind == "base" && (<metaModel.BaseType>t).name == "null";
-        if (orTypes.some(isNull)) {
-            isOptional = true;
-            orTypes = orTypes.filter(t => !isNull(t));
-        }
+        // if there is a "null" type it should be the first entry of the variant
+        orTypes = orTypes.sort((a, b) => {
+            const aIsNull = a.kind === "base" && a.name === "null" ? 0 : 1;
+            const bIsNull = b.kind === "base" && b.name === "null" ? 0 : 1;
+            return aIsNull - bIsNull;
+        });
 
         // squash variant of object literals that only differ in their optional properties
         const squashed = squashType(orTypes)
         if (squashed)
         {
             const result = typeToCppTypeImpl(squashed, literalObjectName);
-            return isOptional ? `std::optional<${result}>` : result;
+            return result;
         }
 
         // don't create variants if only one option is left.
         if (orTypes.length == 1) {
             const result = typeToCppType(orTypes[0], literalObjectName);
-            return isOptional ? `std::optional<${result}>` : result;
+            return result;
         }
 
         const result =
                 `std::variant<${orTypes.map(x => typeToCppType(x, literalObjectName)).join(", ")}>`;
-        return isOptional ? `std::optional<${result}>` : result;
+        return result;
     case "tuple":
         return `std::tuple<${
                 (<metaModel.TupleType>type)
