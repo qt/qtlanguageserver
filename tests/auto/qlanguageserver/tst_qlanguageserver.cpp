@@ -588,7 +588,9 @@ void tst_QLanguageServer::windowShowMessageRequest()
     params.actions = actions;
 
     test.protocol.requestShowMessageRequest(
-            params, [&](const std::optional<QLspSpecification::MessageActionItem> &r) {
+            params,
+            [&](const std::variant<std::nullptr_t, QLspSpecification::MessageActionItem> &_r) {
+                auto r = std::get_if<QLspSpecification::MessageActionItem>(&_r);
                 QVERIFY(r);
                 QCOMPARE(r->title, "aaa");
             });
