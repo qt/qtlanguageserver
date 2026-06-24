@@ -50,6 +50,11 @@ void QLanguageServerJsonRpcTransport::sendMessage(const QJsonDocument &packet)
     }
 }
 
+void QLanguageServerJsonRpcTransport::setMaxContentLength(qint64 maxSize)
+{
+    m_messageStreamParser.setMaxContentLength(maxSize);
+}
+
 void QLanguageServerJsonRpcTransport::receiveData(const QByteArray &data)
 {
     m_messageStreamParser.receiveData(data);

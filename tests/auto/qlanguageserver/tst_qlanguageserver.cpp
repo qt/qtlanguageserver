@@ -165,6 +165,9 @@ private slots:
     void clientRegisterCapability();
     void setRequestHandler();
 
+    void rejectOutOfBoundMessages_data();
+    void rejectOutOfBoundMessages();
+
 private:
     void logOrShowMessage(const QString &method);
 };
@@ -752,6 +755,63 @@ void tst_QLanguageServer::setRequestHandler()
     requestReferences();
     QVERIFY(response.errorCode.isUndefined());
     QCOMPARE(response.data, QTypedJson::toJsonValue(locations));
+}
+
+void tst_QLanguageServer::rejectOutOfBoundMessages_data()
+{
+    QTest::addColumn<QByteArray>("content");
+    QTest::addColumn<std::optional<int>>("maxContentLength");
+    QTest::addColumn<QString>("expectedWarningMessage");
+
+    const auto quint64_max = std::numeric_limits<quint64>::max();
+    QTest::newRow("Exceeding INT_MAX Limit")
+            << QString("Content-Length: %1\r\n\r\n{...}").arg(quint64_max).toUtf8()
+            << std::optional<int>()
+            << u"Invalid Content-Length: %1"_s.arg(quint64_max);
+    QTest::newRow("Valid message within limit")
+            << QByteArray("Content-Length: 500\r\n\r\n{...}")
+            << std::optional<int>(1000) << QString();
+    QTest::newRow("Invalid Message Exceeding Configured Limit")
+            << QByteArray("Content-Length: 200\r\n\r\n")
+            << std::optional<int>(100)
+            << u"Content-Length 200 exceeds maximum allowed size 100"_s;
+    QTest::newRow("Configuring Negative Limit Clamped to Zero")
+            << QByteArray("Content-Length: 10\r\n\r\n") << std::optional<int>(-100)
+            << u"Content-Length 10 exceeds maximum allowed size 0"_s;;
+    QTest::newRow("Negative Content-Length")
+            << QByteArray("Content-Length: -100\r\n\r\n")
+            << std::optional<int>()
+            << u"Negative Content-Length: -100"_s;
+    QTest::newRow("Zero Content-Length")
+            << QByteArray("Content-Length: 0\r\n\r\n")
+            << std::optional<int>() << QString();
+}
+
+void tst_QLanguageServer::rejectOutOfBoundMessages()
+{
+    QFETCH(QByteArray, content);
+    QFETCH(std::optional<int>, maxContentLength);
+    QFETCH(QString, expectedWarningMessage);
+
+    Q_UNUSED(maxContentLength);
+    QLanguageServerJsonRpcTransport transport;
+    if (maxContentLength.has_value())
+        transport.setMaxContentLength(*maxContentLength);
+
+    int warnings = 0;
+    QSet<QString> warningMessages;
+    transport.setDiagnosticHandler(
+            [&](QJsonRpcTransport::DiagnosticLevel level, const QString &msg) {
+                if (level == QJsonRpcTransport::Warning)
+                    ++warnings;
+                warningMessages.insert(msg);
+            });
+    transport.receiveData(content);
+    if (expectedWarningMessage.isEmpty()) {
+        QCOMPARE(warnings, 0);
+        return;
+    }
+    QVERIFY(warningMessages.contains(expectedWarningMessage));
 }
 
 QTEST_MAIN(tst_QLanguageServer)

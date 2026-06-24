@@ -28,6 +28,7 @@ public:
     QLanguageServerJsonRpcTransport() noexcept;
     void sendMessage(const QJsonDocument &packet) override;
     void receiveData(const QByteArray &data) override;
+    void setMaxContentLength(qint64 maxSize);
 
 private:
     void hasHeader(const QByteArray &field, const QByteArray &value);

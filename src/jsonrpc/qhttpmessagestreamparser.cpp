@@ -303,12 +303,27 @@ void QHttpMessageStreamParser::callHasHeader()
     if (s_contentLengthFieldName.compare(field, Qt::CaseInsensitive) == 0) {
         bool ok = false;
         const int size = value.toInt(&ok);
+        QString errorMsg;
+
         if (ok) {
-            m_contentSize = size;
+            if (size > m_maxContentLength) {
+                // Value exceeds the maximum allowed size
+                errorMsg = u"Content-Length %1 exceeds maximum allowed size %2"_s.arg(
+                        QString::fromUtf8(value), QString::number(m_maxContentLength));
+            } else if (size < 0) {
+                // Negative value is not allowed
+                errorMsg = u"Negative Content-Length: %1"_s.arg(QString::fromUtf8(value));
+            } else {
+                m_contentSize = size;
+            }
         } else {
-            errorMessage(
-                    QtWarningMsg,
-                    u"Invalid %1: %2"_s.arg(QString::fromUtf8(field), QString::fromUtf8(value)));
+            // Invalid Content-Length value, not in integer range
+            errorMsg = u"Invalid Content-Length: %1"_s.arg(QString::fromUtf8(value));
+        }
+
+        if (!errorMsg.isEmpty()) {
+            errorMessage(QtWarningMsg, errorMsg);
+            m_contentSize = -1;
         }
     }
     if (m_headerHandler)
@@ -337,6 +352,21 @@ void QHttpMessageStreamParser::errorMessage(QtMsgType error, QString msg)
 {
     if (m_errorHandler)
         m_errorHandler(error, msg);
+}
+
+/*!
+    * \internal
+    * \brief Sets the maximum allowed Content-Length.
+    *
+    * Messages with Content-Length exceeding this value will be rejected with an error
+    * \param maxSize Maximum allowed size in bytes.
+    */
+void QHttpMessageStreamParser::setMaxContentLength(int maxSize)
+{
+    if (maxSize < 0)
+        errorMessage(QtWarningMsg, u"Negative maximum content length, clamping to zero"_s);
+
+    m_maxContentLength = std::clamp(maxSize, 0, std::numeric_limits<int>::max());
 }
 
 QT_END_NAMESPACE

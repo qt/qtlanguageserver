@@ -53,6 +53,8 @@ public:
 
     State state() const { return m_state; }
 
+    void setMaxContentLength(int maxSize);
+
 private:
     void callHasHeader();
     void callHasBody();
@@ -62,10 +64,12 @@ private:
     std::function<void(const QByteArray &body)> m_bodyHandler;
     std::function<void(QtMsgType error, QString msg)> m_errorHandler;
 
-    State m_state = State::PreHeader;
     QByteArray m_currentHeaderField;
     QByteArray m_currentHeaderValue;
     QByteArray m_currentPacket;
+
+    int m_maxContentLength = std::numeric_limits<int>::max();
+    State m_state = State::PreHeader;
     int m_contentSize = -1;
     int m_currentPacketSize = 0;
     Mode m_mode;
