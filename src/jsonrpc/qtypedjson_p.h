@@ -29,7 +29,6 @@
 #include <QtCore/qjsonobject.h>
 #include <QtJsonRpc/qtjsonrpcglobal.h>
 
-#include <functional>
 #include <memory>
 #include <typeinfo>
 #include <optional>

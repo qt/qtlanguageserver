@@ -10,8 +10,6 @@
 #include <QLibraryInfo>
 #include <QByteArray>
 
-#include <memory>
-
 namespace TestSpec {
 
 class Position

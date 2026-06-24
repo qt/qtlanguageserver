@@ -6,8 +6,6 @@
 
 #include <QtCore/QtGlobal>
 
-#include <iostream>
-
 QT_BEGIN_NAMESPACE
 
 using namespace Qt::StringLiterals;
