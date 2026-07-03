@@ -58,8 +58,7 @@ void QHttpMessageStreamParser::receiveData(QByteArrayView data)
             case lf:
                 errorMessage(QtWarningMsg,
                              QStringLiteral("Unexpected newline without preceding carriage "
-                                            "return at start of headers")
-                                     .arg(QString::fromUtf8(m_currentHeaderField)));
+                                            "return at start of headers"));
                 m_state = State::AfterCrLf;
                 ++dataPos;
                 continue;
@@ -69,9 +68,7 @@ void QHttpMessageStreamParser::receiveData(QByteArrayView data)
                 continue;
             case tab:
             case space:
-                errorMessage(QtWarningMsg,
-                             u"Unexpected space at start of headers, skipping"_s.arg(
-                                     QString::fromUtf8(m_currentHeaderField)));
+                errorMessage(QtWarningMsg, u"Unexpected space at start of headers, skipping"_s);
                 while (dataPos < data.size()) {
                     char c = data.at(++dataPos);
                     if (c != space && c != tab) {
