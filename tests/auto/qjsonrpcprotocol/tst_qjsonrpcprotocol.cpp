@@ -98,6 +98,9 @@ private slots:
     void testHttpMessagesSplits_data();
     void testHttpMessagesSplits();
 
+    void testHttpMessagesBrokenInputs_data();
+    void testHttpMessagesBrokenInputs();
+
     void badResponses();
 
 private:
@@ -607,6 +610,65 @@ void tst_QJsonRpcProtocol::testHttpMessagesSplits()
     QCOMPARE(nMessages, 2);
     QCOMPARE(lastMessage, payloads.last());
     QVERIFY(parser.receiveEof());
+}
+
+void tst_QJsonRpcProtocol::testHttpMessagesBrokenInputs_data()
+{
+    QTest::addColumn<QByteArray>("input");
+    QTest::addColumn<bool>("shouldWarn");
+    // valid content-length header and valid JSON body
+    QTest::newRow("valid content-length header and valid JSON body")
+            << QByteArray("Content-Length: 15\r\n\r\n{\"some\":\"json\"}") << false;
+    // correct content-length header but invalid JSON body
+    QTest::newRow("correct content-length header but invalid JSON body")
+            << QByteArray("Content-Length: 11\r\n\r\n{\"foo\":bar}") << true;
+    // content-length header is less than the actual body length
+    // warning 1: broken json, warning 2: partial message at the end
+    QTest::newRow("content-length header is less than the actual body length")
+            << QByteArray("Content-Length: 3\r\n\r\n{\"foo\":bar}") << true;
+    // misc invalid content-length headers
+    QTest::newRow("invalid content-length non-numeric")
+            << QByteArray("Content-Length: abc\r\n\r\n{\"some\":\"json\"}") << true;
+    QTest::newRow("invalid content-length negative")
+            << QByteArray("Content-Length: -10\r\n\r\n{\"some\":\"json\"}") << true;
+    QTest::newRow("missing content-length header")
+            << QByteArray("Foo: bar\r\n\r\n{\"some\":\"json\"}") << true;
+    // fuzz test input from libFuzzer, shouldn't crash
+    /*
+    O-�-- :		n
+    Content-Length: 60
+
+    {"jsonrpc":  2.0", "method": "foo", ��"params
+    */
+    QByteArray fromFuzzer;
+    fromFuzzer.append("O-�-- :\t\tn\r\nContent-Length: 60\r\n\r\n{\"jsonrpc\":  2.0\", \"method\": "
+                      "\"foo\", ��\"params");
+    QTest::newRow("libFuzzer") << fromFuzzer << true;
+}
+
+void tst_QJsonRpcProtocol::testHttpMessagesBrokenInputs()
+{
+    QFETCH(QByteArray, input);
+    QFETCH(bool, shouldWarn);
+
+    int warnings = 0;
+    const auto headerHandler = [](const QByteArray &, const QByteArray &) { };
+    const auto diagnosticHandler = [&](QtMsgType error, QString msg) {
+        ++warnings;
+        QDebug(error) << "Message:" << msg;
+    };
+    const auto bodyHandler = [&](const QByteArray &body) {
+        QJsonParseError error = { 0, QJsonParseError::NoError };
+        const QJsonDocument doc = QJsonDocument::fromJson(body, &error);
+        if (error.error != QJsonParseError::NoError) {
+            diagnosticHandler(QtDebugMsg,
+                              QString("Errors in JSON parsing: %1").arg(QString::fromUtf8(body)));
+        }
+    };
+    QHttpMessageStreamParser parser(headerHandler, bodyHandler, diagnosticHandler);
+
+    parser.receiveData(input);
+    QCOMPARE(warnings > 0, shouldWarn);
 }
 
 void SumHandler::handleRequest(const QJsonRpcProtocol::Request &request,

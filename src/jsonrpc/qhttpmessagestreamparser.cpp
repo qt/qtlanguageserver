@@ -72,8 +72,8 @@ void QHttpMessageStreamParser::receiveData(QByteArray data)
                 errorMessage(QtWarningMsg,
                              u"Unexpected space at start of headers, skipping"_s.arg(
                                      QString::fromUtf8(m_currentHeaderField)));
-                while (dataPos < data.size()) {
-                    char c = data.at(++dataPos);
+                while (++dataPos < data.size()) {
+                    char c = data.at(dataPos);
                     if (c != space && c != tab) {
                         advance();
                         m_state = State::InHeaderField;
