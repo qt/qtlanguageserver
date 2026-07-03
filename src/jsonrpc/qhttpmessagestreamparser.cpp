@@ -37,7 +37,7 @@ bool QHttpMessageStreamParser::receiveEof()
     return true;
 }
 
-void QHttpMessageStreamParser::receiveData(QByteArray data)
+void QHttpMessageStreamParser::receiveData(QByteArrayView data)
 {
     const char lf = '\n';
     const char cr = '\r';

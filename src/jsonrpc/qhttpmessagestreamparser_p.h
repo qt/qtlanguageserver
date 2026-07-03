@@ -48,7 +48,7 @@ public:
             std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
             std::function<void(const QByteArray &body)> bodyHandler,
             std::function<void(QtMsgType error, QString msg)> errorHandler, Mode mode = BUFFERED);
-    void receiveData(QByteArray data);
+    void receiveData(QByteArrayView data);
     bool receiveEof();
 
     State state() const { return m_state; }
