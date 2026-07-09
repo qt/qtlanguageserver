@@ -47,7 +47,7 @@ public:
     QHttpMessageStreamParser(
             std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
             std::function<void(const QByteArray &body)> bodyHandler,
-            std::function<void(QtMsgType error, QString msg)> errorHandler, Mode mode = BUFFERED);
+            std::function<void(QtMsgType, const QString &)> errorHandler, Mode mode = BUFFERED);
     void receiveData(QByteArrayView data);
     bool receiveEof();
 
@@ -58,11 +58,11 @@ public:
 private:
     void callHasHeader();
     void callHasBody();
-    void errorMessage(QtMsgType error, QString msg);
+    void errorMessage(QtMsgType error, const QString &msg);
 
     std::function<void(const QByteArray &, const QByteArray &)> m_headerHandler;
     std::function<void(const QByteArray &body)> m_bodyHandler;
-    std::function<void(QtMsgType error, QString msg)> m_errorHandler;
+    std::function<void(QtMsgType error, const QString &msg)> m_errorHandler;
 
     QByteArray m_currentHeaderField;
     QByteArray m_currentHeaderValue;

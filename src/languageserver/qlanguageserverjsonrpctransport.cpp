@@ -22,7 +22,7 @@ QLanguageServerJsonRpcTransport::QLanguageServerJsonRpcTransport() noexcept
     : m_messageStreamParser(
             [this](const QByteArray &field, const QByteArray &value) { hasHeader(field, value); },
             [this](const QByteArray &body) { hasBody(body); },
-            [this](QtMsgType error, QString msg) {
+            [this](QtMsgType error, const QString &msg) {
                 if (auto handler = diagnosticHandler()) {
                     if (error == QtWarningMsg || error == QtInfoMsg || error == QtDebugMsg)
                         handler(Warning, msg);

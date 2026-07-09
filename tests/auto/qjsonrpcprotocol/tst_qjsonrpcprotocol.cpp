@@ -653,7 +653,7 @@ void tst_QJsonRpcProtocol::testHttpMessagesBrokenInputs()
 
     int warnings = 0;
     const auto headerHandler = [](const QByteArray &, const QByteArray &) { };
-    const auto diagnosticHandler = [&](QtMsgType error, QString msg) {
+    const auto diagnosticHandler = [&](QtMsgType error, const QString &msg) {
         ++warnings;
         QDebug(error) << "Message:" << msg;
     };

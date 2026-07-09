@@ -20,7 +20,7 @@ using namespace Qt::StringLiterals;
 QHttpMessageStreamParser::QHttpMessageStreamParser(
         std::function<void(const QByteArray &, const QByteArray &)> headerHandler,
         std::function<void(const QByteArray &body)> bodyHandler,
-        std::function<void(QtMsgType error, QString msg)> errorHandler, Mode mode)
+        std::function<void(QtMsgType error, const QString &msg)> errorHandler, Mode mode)
     : m_headerHandler(std::move(headerHandler)),
       m_bodyHandler(std::move(bodyHandler)),
       m_errorHandler(std::move(errorHandler)),
@@ -348,7 +348,7 @@ void QHttpMessageStreamParser::callHasBody()
         m_bodyHandler(body);
 }
 
-void QHttpMessageStreamParser::errorMessage(QtMsgType error, QString msg)
+void QHttpMessageStreamParser::errorMessage(QtMsgType error, const QString &msg)
 {
     if (m_errorHandler)
         m_errorHandler(error, msg);
