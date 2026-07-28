@@ -390,11 +390,12 @@ private slots:
     {
         for (double d : { std::numeric_limits<uint>::max() + 2.0, -1.0 }) {
             QTypedJson::Reader r(toJsonValue(d));
-            unsigned result = 0;
+            unsigned result = 123456;
             QTypedJson::doWalk(r, result);
             QCOMPARE(r.errorMessages(),
                      { "Value %1 does not fit the unsigned int range of [0, 4294967295]."_L1.arg(
                              QString::number(d)) });
+            QCOMPARE(result, 123456); // should not contain garbage
         }
     }
 };

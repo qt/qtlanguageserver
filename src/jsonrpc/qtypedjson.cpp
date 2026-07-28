@@ -75,6 +75,7 @@ void Reader::handleBasic(unsigned int &el)
             warn(QStringLiteral("Value %1 does not fit the unsigned int range of [0, %2].")
                          .arg(QString::number(currentInt),
                               QString::number(std::numeric_limits<uint>::max())));
+            return;
         }
         el = static_cast<unsigned int>(currentInt);
     } else {
