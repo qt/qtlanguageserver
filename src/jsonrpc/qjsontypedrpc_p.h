@@ -343,7 +343,7 @@ void TypedResponse::sendNotification(const QByteArray &method, const Params &...
 {
     m_typedRpc->sendNotification(method, params...);
 }
-} // namespace QTypedJson
+} // namespace QJsonRpc
 QT_END_NAMESPACE
 
 #endif // QJSONTYPEDRPC_P_H
