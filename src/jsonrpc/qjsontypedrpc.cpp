@@ -15,7 +15,7 @@ void TypedResponse::addOnCloseAction(const OnCloseAction &act)
         break;
     case Status::Invalid:
         qCWarning(QTypedJson::jsonRpcLog)
-                << "addOnCloseAction called on moved QJsonTypedResponse" << idToString(m_id);
+                << "addOnCloseAction called on moved QJsonTypedResponse" << m_id.toString();
         Q_ASSERT(false);
         Q_FALLTHROUGH();
     case Status::SentSuccess:

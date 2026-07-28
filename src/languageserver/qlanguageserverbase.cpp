@@ -27,9 +27,7 @@ void ProtocolBase::registerMethods(QJsonRpc::TypedRpc *typedRpc)
             QByteArray(),
             [this, typedRpc](const QJsonRpcProtocol::Request &req,
                              const QJsonRpcProtocol::ResponseHandler &handler) {
-                QJsonRpc::IdType id =
-                        ((req.id.isDouble()) ? QJsonRpc::IdType(req.id.toInt())
-                                             : QJsonRpc::IdType(req.id.toString().toUtf8()));
+                QJsonRpc::IdType id(req.id);
                 QByteArray method = req.method.toUtf8();
                 QJsonRpc::TypedResponse response(id, typedRpc, handler);
                 handleUndispatchedRequest(id, method, req.params, std::move(response));

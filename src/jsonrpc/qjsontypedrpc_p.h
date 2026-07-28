@@ -28,21 +28,45 @@ QT_BEGIN_NAMESPACE
 namespace QJsonRpc {
 class TypedRpc;
 
-using IdType = std::variant<int, QByteArray>;
-
-template<typename... T>
-QString idToString(const std::variant<T...> &v)
+class IdType
 {
-    struct ToStr
+    std::variant<std::nullptr_t, int, QByteArray> parse(const QJsonValue &value)
     {
-        QString operator()(const QByteArray &v) { return QString::fromUtf8(v); }
+        if (value.isString()) {
+            return value.toString().toUtf8();
+        } else if (value.isDouble()) {
+            return value.toInt(0);
+        } else {
+            return { };
+        }
+    }
 
-        QString operator()(int v) { return QString::number(v); }
+public:
+    IdType() = default;
+    explicit IdType(const QJsonValue &value) : data(parse(value)) { }
 
-        QString operator()(std::nullptr_t) { return QStringLiteral("null"); }
-    } toStr;
-    return std::visit(toStr, v);
-}
+    template <typename W>
+    void walk(W &&w)
+    {
+        w.handleVariant(data);
+    }
+
+    QString toString() const
+    {
+        struct ToStr
+        {
+            QString operator()(const QByteArray &v) { return QString::fromUtf8(v); }
+
+            QString operator()(int v) { return QString::number(v); }
+
+            QString operator()(std::nullptr_t) { return QStringLiteral("null"); }
+        } toStr;
+        return std::visit(toStr, data);
+    }
+
+private:
+    std::variant<std::nullptr_t, int, QByteArray> data;
+};
 
 // concurrent usage by multiple threads not supported, the user should take care
 class Q_JSONRPC_EXPORT TypedResponse
@@ -92,15 +116,6 @@ public:
     void sendNotification(const QByteArray &method, const Params &...params);
 
     IdType id() const { return m_id; }
-    QString idStr()
-    {
-        if (const int *iPtr = std::get_if<int>(&m_id))
-            return QString::number(*iPtr);
-        else if (const QByteArray *bPtr = std::get_if<QByteArray>(&m_id))
-            return QString::fromUtf8(*bPtr);
-        else
-            return QString();
-    }
     using OnCloseAction = std::function<void(Status, const IdType &, TypedRpc &)>;
     void addOnCloseAction(const OnCloseAction &act);
 
@@ -232,9 +247,7 @@ public:
                     method,
                     [handler, method, this](const QJsonRpcProtocol::Request &req,
                                             const QJsonRpcProtocol::ResponseHandler &rH) {
-                        std::variant<int, QByteArray> id = req.id.toInt(0);
-                        if (req.id.isString())
-                            id = req.id.toString().toUtf8();
+                        IdType id(req.id);
                         TypedResponse typedResponse(id, this, rH);
                         Req tReq;
                         {
@@ -243,7 +256,7 @@ public:
                             if (!r.errorMessages().isEmpty()) {
                                 qCWarning(QTypedJson::jsonRpcLog)
                                         << "Warnings decoding parameters for Request" << method
-                                        << idToString(id) << "from" << req.params << ":\n    "
+                                        << id.toString() << "from" << req.params << ":\n    "
                                         << r.errorMessages().join(u"\n    ");
                                 r.clearErrorMessages();
                             }
@@ -318,7 +331,7 @@ void TypedResponse::sendSuccessfullResponse(const T &result)
         doOnCloseActions();
     } else {
         qCWarning(QTypedJson::jsonRpcLog)
-                << "Ignoring response in already answered request" << idStr();
+                << "Ignoring response in already answered request" << id().toString();
     }
 }
 
@@ -334,7 +347,7 @@ void TypedResponse::sendErrorResponse(int code, const QByteArray &message, const
     } else {
         qCWarning(QTypedJson::jsonRpcLog)
                 << "Ignoring error response" << code << QString::fromUtf8(message)
-                << "in already answered request" << idStr();
+                << "in already answered request" << id().toString();
     }
 }
 
