@@ -132,6 +132,19 @@ public:
         field(w, "textDocument", textDocument);
     }
 };
+
+class DidChangeLikeParams
+{
+public:
+    QList<std::variant<TextDocumentEdit, Position>> contentChanges = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "contentChanges", contentChanges);
+    }
+};
+
 class WorkspaceEdit
 {
 public:
@@ -312,6 +325,28 @@ private slots:
         QTypedJson::Reader r2(jsonDocument.object());
         QTypedJson::doWalk(r2, hasListOfTextDocuments);
         QCOMPARE(toJsonValue(hasListOfVariant), toJsonValue(hasListOfTextDocuments));
+    }
+
+    void qtbug148485()
+    {
+        constexpr int failingElementCount = 14;
+
+        QJsonArray contentChanges;
+        for (int i = 0; i < failingElementCount; ++i)
+            contentChanges.append(QJsonObject{ { "unexpected", true } });
+
+        QJsonObject payload{ { "contentChanges", contentChanges } };
+        TestSpec::DidChangeLikeParams params;
+        QTypedJson::Reader r(payload);
+        QTypedJson::doWalk(r, params);
+
+        const qsizetype errorCount = r.errorMessages().size();
+        r.clearErrorMessages();
+        QVERIFY2(errorCount < failingElementCount * 6,
+                 qPrintable(QStringLiteral("Expected roughly linear error growth, got %1 errors "
+                                           "for %2 elements")
+                                    .arg(errorCount)
+                                    .arg(failingElementCount)));
     }
 
     void testMap()

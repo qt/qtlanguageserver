@@ -328,6 +328,7 @@ public:
                 return;
             QScopedValueRollback guard(*m_p);
             QScopedValueRollback guardParseStatus(m_p->parseStatus, ParseStatus::Normal);
+            const int errorMessageCount = m_p->errorMessages.size();
             doWalk(*this, x);
             if (m_p->parseStatus == ParseStatus::Normal) {
                 matched = true;
@@ -337,7 +338,7 @@ public:
             }
             err.append(QStringLiteral(u"Type %1 failed with errors:")
                                .arg(QLatin1String(typeid(decltype(x)).name())));
-            err += m_p->errorMessages;
+            err += m_p->errorMessages.mid(errorMessageCount); // don't add unrelated errors here
         };
         std::tuple<T...> options{ };
         std::apply([&tryRead](auto &...x) { (..., tryRead(x)); }, options);
