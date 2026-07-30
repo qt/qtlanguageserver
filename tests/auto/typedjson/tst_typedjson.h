@@ -4,6 +4,7 @@
 #define TST_TYPEDJSON_H
 
 #include <QtJsonRpc/private/qtypedjson_p.h>
+#include <QtJsonRpc/private/qjsontypedrpc_p.h>
 #include <QtTest/QtTest>
 #include <QCborValue>
 #include <QDebug>
@@ -417,6 +418,47 @@ private slots:
         QTypedJson::doWalk(r, variant);
         QCOMPARE(variant.index(), 1);
         QCOMPARE(std::get<1>(variant), -3);
+    }
+
+private:
+    struct StructContainingMembersWithCustomDoWalk
+    {
+        template <typename W>
+        void walk(W &w)
+        {
+            field(w, "number", number);
+            field(w, "string", string);
+        }
+        QJsonRpc::IdType number{ 42 };
+        QJsonRpc::IdType string{ "Hello World" };
+    };
+private slots:
+    void customDoWalk()
+    {
+        StructContainingMembersWithCustomDoWalk testMe;
+
+        QTypedJson::JsonBuilder builder;
+        doWalk(builder, testMe.number);
+        QVERIFY(builder.popLastValue().isDouble());
+        QVERIFY(builder.popLastValue().isUndefined()); // should not contain left-overs
+
+        QTypedJson::Reader reader(toJsonValue(testMe));
+        QTypedJson::Reader numberReader(toJsonValue(testMe.number));
+        QTypedJson::Reader stringReader(toJsonValue(testMe.string));
+
+        QJsonRpc::IdType result;
+        QTypedJson::doWalk(numberReader, result);
+        QCOMPARE(result.toString(), "42"_L1);
+        QTypedJson::doWalk(stringReader, result);
+        QCOMPARE(result.toString(), "Hello World"_L1);
+
+        testMe.string = QJsonRpc::IdType{ "asdf" };
+        testMe.number = QJsonRpc::IdType{ 123456 };
+        QTypedJson::doWalk(reader, testMe);
+
+        QTypedJson::doWalk(stringReader, result);
+        QCOMPARE(testMe.number.toString(), "42"_L1);
+        QCOMPARE(testMe.string.toString(), "Hello World"_L1);
     }
 
     void badUnsigned()
