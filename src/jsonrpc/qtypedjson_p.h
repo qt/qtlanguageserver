@@ -27,6 +27,7 @@
 #include <QtCore/qjsonvalue.h>
 #include <QtCore/qjsonarray.h>
 #include <QtCore/qjsonobject.h>
+#include <QtCore/qscopedvaluerollback.h>
 #include <QtJsonRpc/qtjsonrpcglobal.h>
 
 #include <memory>
@@ -320,30 +321,28 @@ public:
     template<typename... T>
     void handleVariant(std::variant<T...> &el)
     {
-        std::tuple<T...> options;
-        int status = 0;
-        ReaderPrivate origStatus = *m_p;
+        bool matched = false;
         QStringList err;
-        auto tryRead = [this, &origStatus, &status, &el, &err](auto &x) {
-            if (status == 2)
+        auto tryRead = [this, &matched, &el, &err](auto &x) {
+            if (matched)
                 return;
-            if (status == 1)
-                *this->m_p = origStatus;
-            else
-                status = 1;
+            QScopedValueRollback guard(*m_p);
+            QScopedValueRollback guardParseStatus(m_p->parseStatus, ParseStatus::Normal);
             doWalk(*this, x);
             if (m_p->parseStatus == ParseStatus::Normal) {
-                status = 2;
+                matched = true;
                 el = x;
+                guard.commit();
                 return;
             }
             err.append(QStringLiteral(u"Type %1 failed with errors:")
                                .arg(QLatin1String(typeid(decltype(x)).name())));
             err += m_p->errorMessages;
         };
+        std::tuple<T...> options{ };
         std::apply([&tryRead](auto &...x) { (..., tryRead(x)); }, options);
-        if (status == 1) {
-            m_p->errorMessages.clear();
+
+        if (!matched) {
             m_p->errorMessages.append(QStringLiteral(u"All options of variant failed:"));
             m_p->errorMessages += err;
         }
