@@ -46,7 +46,7 @@ public:
     explicit IdType(const QJsonValue &value) : data(parse(value)) { }
 
     template <typename W>
-    void walk(W &&w)
+    void customWalk(W &w)
     {
         w.handleVariant(data);
     }

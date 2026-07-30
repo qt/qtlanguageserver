@@ -413,6 +413,16 @@ struct HasWalk<T, void_t<decltype(T {}.walk(std::declval<Reader>))>> : std::true
 {
 };
 
+template <typename T, typename = void>
+struct HasCustomWalk : std::false_type
+{
+};
+
+template <typename T>
+struct HasCustomWalk<T, void_t<decltype(T{ }.customWalk(std::declval<Reader>))>> : std::true_type
+{
+};
+
 template<typename W, typename C, typename T>
 void field(W &w, const C &fieldName, T &el)
 {
@@ -437,7 +447,9 @@ template<typename W, typename T>
 inline void doWalk(W &w, T &el)
 {
     using BaseT = std::decay_t<T>;
-    if constexpr (std::is_same_v<BaseT, int> || std::is_same_v<BaseT, unsigned int>
+    if constexpr (HasCustomWalk<BaseT>::value) {
+        return el.customWalk(w);
+    } else if constexpr (std::is_same_v<BaseT, int> || std::is_same_v<BaseT, unsigned int>
                   || std::is_same_v<BaseT, double> || std::is_same_v<BaseT, bool>
                   || std::is_same_v<BaseT, QByteArray>) {
         w.handleBasic(el);
