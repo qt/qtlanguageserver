@@ -218,6 +218,19 @@ void tst_QJsonRpcProtocol::specRequests_data()
                                {"jsonrpc": "2.0", "error": {"code": -32601,
                                                   "message": "Method not found"}, "id": "5"},
                                {"jsonrpc": "2.0", "result": ["hello", 5], "id": "9"} ])");
+
+    QTest::newRow("rpc call Batch double free")
+            << QByteArray(R"([ {"jsonrpc": "2.0", "method": "update", "id": "10"} ])")
+            << QByteArray(R"([ {"jsonrpc": "2.0", "error": {"code": -32601,
+                                                            "message": "Method not found"},
+                                                  "id": "10"} ])");
+    QTest::newRow("rpc call Batch use-after-free")
+            << QByteArray(R"([ {"jsonrpc": "2.0", "method": "update", "id": "11"},
+                               {"jsonrpc": "2.0", "method": "get_data", "id": "12"} ])")
+            << QByteArray(R"([ {"jsonrpc": "2.0", "error": {"code": -32601,
+                                                            "message": "Method not found"},
+                                                  "id": "11"},
+                               {"jsonrpc": "2.0", "result": ["hello", 5], "id": "12"} ])");
 }
 
 static bool operator<(const QJsonValue &a, const QJsonValue &b)
