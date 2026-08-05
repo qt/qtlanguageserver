@@ -313,20 +313,6 @@ void RequestBatchHandler::processMessages(QJsonRpcProtocolPrivate *protocol,
         const QJsonValue id = request.id;
         handler->handleRequest(request, [this, id](const QJsonRpcProtocol::Response &response) {
             m_finished.append(createResponse(id, response));
-            bool found = false;
-            for (QJsonValueConstRef entry : std::as_const(m_finished)) {
-                if (entry.toObject().value(u"id") == id) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                m_finished.append(createResponse(
-                        id,
-                        { id, QJsonValue::Undefined,
-                          QJsonValue(static_cast<int>(QJsonRpcProtocol::ErrorCode::InternalError)),
-                          u"Message handler did not produce a result."_s }));
-            }
 
             // messages in the batch has finished, so it's safe to delete on the last completion.
             if (--m_pending == 0 && m_dispatchDone)
