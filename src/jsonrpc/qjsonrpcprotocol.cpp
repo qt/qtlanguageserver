@@ -100,6 +100,7 @@ private:
     QJsonArray m_finished;
     QJsonRpcTransport *m_transport = nullptr;
     uint m_pending = 0;
+    bool m_dispatchDone = false;
 };
 
 QJsonRpcProtocol::QJsonRpcProtocol() : d(std::make_unique<QJsonRpcProtocolPrivate>()) { }
@@ -327,10 +328,12 @@ void RequestBatchHandler::processMessages(QJsonRpcProtocolPrivate *protocol,
                           u"Message handler did not produce a result."_s }));
             }
 
-            if (--m_pending == 0)
+            // messages in the batch has finished, so it's safe to delete on the last completion.
+            if (--m_pending == 0 && m_dispatchDone)
                 delete this;
         });
     }
+    m_dispatchDone = true;
     if (m_pending == 0)
         delete this;
 }
