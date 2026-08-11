@@ -440,6 +440,27 @@ private slots:
             QCOMPARE(result, 123456); // should not contain garbage
         }
     }
+
+    void hasWalk()
+    {
+        struct WalkMe
+        {
+            void walk(QTypedJson::Reader &r)
+            {
+                field(r, "number"_L1, number);
+                field(r, "text"_L1, text);
+            }
+            void walk(QTypedJson::JsonBuilder &b)
+            {
+                field(b, "number"_L1, number);
+                field(b, "text"_L1, text);
+            }
+            int number;
+            QByteArray text;
+        };
+
+        QVERIFY(HasWalk<WalkMe>::value);
+    }
 };
 
 } // namespace QTypedJson
