@@ -370,8 +370,8 @@ struct HasWalk : std::false_type
 {
 };
 
-template<typename T>
-struct HasWalk<T, void_t<decltype(T {}.walk(std::declval<Reader>))>> : std::true_type
+template <typename T>
+struct HasWalk<T, void_t<decltype(T{ }.walk(std::declval<Reader &>()))>> : std::true_type
 {
 };
 
