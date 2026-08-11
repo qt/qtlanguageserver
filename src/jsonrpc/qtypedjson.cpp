@@ -113,6 +113,11 @@ bool Reader::startField(const char *fieldName)
     return startField(f);
 }
 
+bool Reader::startField(const QByteArray &fieldName)
+{
+    return startField(fieldName.data());
+}
+
 void Reader::endField(const QString &fieldName)
 {
     Q_ASSERT(m_p->valuesStack.last().fieldPath == fieldName);
@@ -123,6 +128,11 @@ void Reader::endField(const char *fieldName)
 {
     QString f = QString::fromUtf8(fieldName);
     endField(f);
+}
+
+void Reader::endField(const QByteArray &fieldName)
+{
+    endField(fieldName.data());
 }
 
 bool Reader::startObjectF(const char *type, ObjectOptions options, quintptr)
@@ -308,6 +318,10 @@ bool JsonBuilder::startField(const QString &)
     m_fieldLevel.append(m_values.size());
     return true;
 }
+bool JsonBuilder::startField(const QByteArray &)
+{
+    return startField(nullptr);
+}
 
 bool JsonBuilder::startField(const char *)
 {
@@ -333,6 +347,11 @@ void JsonBuilder::endField(const QString &v)
 void JsonBuilder::endField(const char *v)
 {
     endField(QString::fromUtf8(v));
+}
+
+void JsonBuilder::endField(const QByteArray &v)
+{
+    endField(v.data());
 }
 
 bool JsonBuilder::startObjectF(const char *, ObjectOptions, quintptr)

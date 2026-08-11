@@ -388,6 +388,44 @@ private slots:
         runTest(c);
     }
 
+    void testStringMap()
+    {
+        const QMap<QString, bool> a{ { "a"_L1, true }, { "b"_L1, false }, { "c"_L1, true } };
+        const QMap<QString, QMap<QString, std::variant<QByteArray, int>>> b{
+            { "firstMap"_L1, { { "nestedKey"_L1, "nestedValue" }, { "nestedKey2"_L1, 42 } } },
+            { "secondMap"_L1,
+              { { "nestedKeyFromSecondMap"_L1, "nestedValueFromSecondMap" },
+                { "nestedKey2FromSecondMap"_L1, 12345 } } },
+        };
+        const QMap<QString, QList<QMap<QString, QList<int>>>> c{
+            {
+                    "firstMap"_L1,
+                    { { { "nestedMap"_L1, { 1 } } }, { }, { } },
+            },
+            {
+                    "secondMap"_L1,
+                    {
+                            { { "nestedMap"_L1, { 1, 2, 3 } } },
+                            { },
+                            { { "nestedMap2"_L1, { 3, 4, 5 } } },
+                    },
+            },
+        };
+
+        const auto runTest = [](auto &&arg) {
+            const QJsonValue json = toJsonValue(arg);
+            std::decay_t<decltype(arg)> populatedFromJson;
+            QTypedJson::Reader r(json);
+            QTypedJson::doWalk(r, populatedFromJson);
+
+            QCOMPARE(arg, populatedFromJson);
+            QCOMPARE(json, toJsonValue(populatedFromJson));
+        };
+        runTest(a);
+        runTest(b);
+        runTest(c);
+    }
+
     void testBadArray()
     {
         const QMap<QByteArray, int> unexpected{

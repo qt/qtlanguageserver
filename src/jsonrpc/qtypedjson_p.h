@@ -28,6 +28,7 @@
 #include <QtCore/qjsonarray.h>
 #include <QtCore/qjsonobject.h>
 #include <QtCore/qscopedvaluerollback.h>
+#include <QtCore/qstring.h>
 #include <QtJsonRpc/qtjsonrpcglobal.h>
 
 #include <memory>
@@ -135,7 +136,7 @@ struct IsQMap : std::false_type
 
 template <typename T>
 struct IsQMap<T, void_t<typename T::key_type, typename T::mapped_type>>
-    : std::is_same<QMap<QByteArray, typename T::mapped_type>, T>
+    : std::is_same<QMap<typename T::key_type, typename T::mapped_type>, T>
 {
 };
 
@@ -282,8 +283,12 @@ public:
             warn(QStringLiteral(u"Error: expected an object at %1.").arg(currentPath()));
             return false;
         }
-        for (auto [key, _] : currentValue().toObject().asKeyValueRange())
-            el[key.toString().toUtf8()];
+        for (auto [key, _] : currentValue().toObject().asKeyValueRange()) {
+            if constexpr (std::is_same_v<typename T::key_type, QString>)
+                el[key.toString()];
+            else
+                el[key.toString().toUtf8()];
+        }
 
         const char *type = typeName<T>();
         return this->startObjectF(type, { }, { });
@@ -378,8 +383,10 @@ public:
     void handleJson(QJsonArray &v);
     bool startField(const QString &fieldName);
     bool startField(const char *fieldName);
+    bool startField(const QByteArray &fieldName);
     void endField(const QString &fieldName);
     void endField(const char *fieldName);
+    void endField(const QByteArray &fieldName);
     bool startElement(qint32 index);
     void endElement(qint32 index);
     bool startTuple(qint32 size);
@@ -478,10 +485,10 @@ inline void doWalk(W &w, T &el)
         if (!w.startMap(el))
             return;
         for (auto [key, subEl] : el.asKeyValueRange()) {
-            if (!w.startField(key.data()))
+            if (!w.startField(key))
                 break;
             doWalk(w, subEl);
-            w.endField(key.data());
+            w.endField(key);
         }
         w.endMap(el);
     } else if constexpr (IsList<BaseT>::value) {
@@ -626,8 +633,10 @@ public:
     void handleJson(QJsonArray &v);
     bool startField(const QString &fieldName);
     bool startField(const char *fieldName);
+    bool startField(const QByteArray &fieldName);
     void endField(const QString &);
     void endField(const char *);
+    void endField(const QByteArray &);
     bool startElement(qint32 index);
     void endElement(qint32);
     bool startTuple(qint32 size);
