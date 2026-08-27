@@ -20,3 +20,4 @@ src/languageserver/package-lock.json
 src/languageserver/protocolRaw.json
 src/languageserver/specification.ts
 src/languageserver/protocol.json
+src/languageserver/3rdparty/metaModel.js
