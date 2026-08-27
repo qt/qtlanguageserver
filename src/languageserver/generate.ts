@@ -779,14 +779,6 @@ QT_BEGIN_NAMESPACE
 namespace QLspSpecification {
 Q_NAMESPACE_EXPORT(Q_LANGUAGESERVER_EXPORT)
 
-enum class TraceValue
-{
-    Off,
-    Messages,
-    Verbose
-};
-Q_ENUM_NS(TraceValue)
-
 enum class ErrorCodes {
     // Defined by JSON RPC
     ParseError = -32700,
@@ -819,17 +811,6 @@ ${result.typeDeclarations}
 } // namespace QLspSpecification
 
 namespace QTypedJson {
-
-template<>
-inline QString enumToString<QLspSpecification::TraceValue>(QLspSpecification::TraceValue value)
-{
-    switch (value) {
-    case QLspSpecification::TraceValue::Off: return QLatin1String("off");
-    case QLspSpecification::TraceValue::Messages: return QLatin1String("messages");
-    case QLspSpecification::TraceValue::Verbose: return QLatin1String("verbose");
-    }
-    return QString();
-}
 
 template<>
 inline QString enumToString<QLspSpecification::ErrorCodes>(QLspSpecification::ErrorCodes value)

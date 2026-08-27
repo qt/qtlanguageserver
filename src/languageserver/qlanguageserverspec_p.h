@@ -155,9 +155,9 @@ using DefinitionResponseType =
 constexpr auto DocumentDiagnosticMethod = QLatin1String("textDocument/diagnostic");
 using DocumentDiagnosticParamsType = DocumentDiagnosticParams;
 using DocumentDiagnosticResultType = DocumentDiagnosticReport;
-using DocumentDiagnosticPartialResultType = DocumentDiagnosticReportPartialResult;
+using DocumentDiagnosticPartialResultType = DocumentDiagnosticReportProgress;
 using DocumentDiagnosticResponseType =
-        LSPPartialResponse<DocumentDiagnosticReport, DocumentDiagnosticReportPartialResult>;
+        LSPPartialResponse<DocumentDiagnosticReport, DocumentDiagnosticReportProgress>;
 
 // C++ types for the LSP method "textDocument/documentColor"
 constexpr auto DocumentColorMethod = QLatin1String("textDocument/documentColor");
@@ -488,6 +488,19 @@ using WorkspaceSymbolResponseType = LSPPartialResponse<
         std::variant<std::nullptr_t, QList<SymbolInformation>, QList<WorkspaceSymbol>>,
         std::variant<QList<SymbolInformation>, QList<WorkspaceSymbol>>>;
 
+// C++ types for the LSP method "workspace/textDocumentContent"
+constexpr auto TextDocumentContentMethod = QLatin1String("workspace/textDocumentContent");
+using TextDocumentContentParamsType = TextDocumentContentParams;
+using TextDocumentContentResultType = TextDocumentContentResult;
+using TextDocumentContentResponseType = LSPResponse<TextDocumentContentResult>;
+
+// C++ types for the LSP method "workspace/textDocumentContent/refresh"
+constexpr auto TextDocumentContentRefreshMethod =
+        QLatin1String("workspace/textDocumentContent/refresh");
+using TextDocumentContentRefreshParamsType = TextDocumentContentRefreshParams;
+using TextDocumentContentRefreshResultType = std::nullptr_t;
+using TextDocumentContentRefreshResponseType = LSPResponse<std::nullptr_t>;
+
 // C++ types for the LSP method "workspace/willCreateFiles"
 constexpr auto CreateFilesMethod = QLatin1String("workspace/willCreateFiles");
 using CreateFilesParamsType = CreateFilesParams;
@@ -650,7 +663,8 @@ using RequestParams = std::variant<
         LinkedEditingRangeParams, MonikerParams, PrepareRenameParams, ReferenceParams,
         RegistrationParams, RenameFilesParams, RenameParams, SelectionRangeParams,
         SemanticTokensDeltaParams, SemanticTokensParams, SemanticTokensRangeParams,
-        ShowDocumentParams, ShowMessageRequestParams, SignatureHelpParams, TypeDefinitionParams,
+        ShowDocumentParams, ShowMessageRequestParams, SignatureHelpParams,
+        TextDocumentContentParams, TextDocumentContentRefreshParams, TypeDefinitionParams,
         TypeHierarchyPrepareParams, TypeHierarchySubtypesParams, TypeHierarchySupertypesParams,
         UnregistrationParams, WillSaveTextDocumentParams, WorkDoneProgressCreateParams,
         WorkspaceDiagnosticParams, WorkspaceSymbol, WorkspaceSymbolParams, std::nullptr_t,

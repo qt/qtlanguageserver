@@ -36,9 +36,6 @@ QT_BEGIN_NAMESPACE
 namespace QLspSpecification {
 Q_NAMESPACE_EXPORT(Q_LANGUAGESERVER_EXPORT)
 
-enum class TraceValue { Off, Messages, Verbose };
-Q_ENUM_NS(TraceValue)
-
 enum class ErrorCodes {
     // Defined by JSON RPC
     ParseError = -32700,
@@ -67,18 +64,26 @@ enum class ErrorCodes {
 };
 Q_ENUM_NS(ErrorCodes)
 
+enum class ApplyKind { Replace = 1, Merge = 2 };
+Q_ENUM_NS(ApplyKind)
+
 enum class CodeActionKind {
     Empty,
     QuickFix,
     Refactor,
     RefactorExtract,
     RefactorInline,
+    RefactorMove,
     RefactorRewrite,
     Source,
     SourceOrganizeImports,
-    SourceFixAll
+    SourceFixAll,
+    Notebook
 };
 Q_ENUM_NS(CodeActionKind)
+
+enum class CodeActionTag { LLMGenerated = 1 };
+Q_ENUM_NS(CodeActionTag)
 
 enum class CodeActionTriggerKind { Invoked = 1, Automatic = 2 };
 Q_ENUM_NS(CodeActionTriggerKind)
@@ -149,7 +154,7 @@ Q_ENUM_NS(FoldingRangeKind)
 enum class InlayHintKind { Type = 1, Parameter = 2 };
 Q_ENUM_NS(InlayHintKind)
 
-enum class InlineCompletionTriggerKind { Invoked = 0, Automatic = 1 };
+enum class InlineCompletionTriggerKind { Invoked = 1, Automatic = 2 };
 Q_ENUM_NS(InlineCompletionTriggerKind)
 
 enum class InsertTextFormat { PlainText = 1, Snippet = 2 };
@@ -165,6 +170,72 @@ enum class LSPErrorCodes {
     RequestCancelled = -32800
 };
 Q_ENUM_NS(LSPErrorCodes)
+
+enum class LanguageKind {
+    ABAP,
+    WindowsBat,
+    BibTeX,
+    Clojure,
+    Coffeescript,
+    C,
+    CPP,
+    CSharp,
+    CSS,
+    D,
+    Delphi,
+    Diff,
+    Dart,
+    Dockerfile,
+    Elixir,
+    Erlang,
+    FSharp,
+    GitCommit,
+    GitRebase,
+    Go,
+    Groovy,
+    Handlebars,
+    Haskell,
+    HTML,
+    Ini,
+    Java,
+    JavaScript,
+    JavaScriptReact,
+    JSON,
+    LaTeX,
+    Less,
+    Lua,
+    Makefile,
+    Markdown,
+    ObjectiveC,
+    ObjectiveCPP,
+    Pascal,
+    Perl,
+    Perl6,
+    PHP,
+    Plaintext,
+    Powershell,
+    Pug,
+    Python,
+    R,
+    Razor,
+    Ruby,
+    Rust,
+    SCSS,
+    SASS,
+    Scala,
+    ShaderLab,
+    ShellScript,
+    SQL,
+    Swift,
+    TypeScript,
+    TypeScriptReact,
+    TeX,
+    VisualBasic,
+    XML,
+    XSL,
+    YAML
+};
+Q_ENUM_NS(LanguageKind)
 
 enum class MarkupKind { PlainText, Markdown };
 Q_ENUM_NS(MarkupKind)
@@ -224,7 +295,8 @@ enum class SemanticTokenTypes {
     Number,
     Regexp,
     Operator,
-    Decorator
+    Decorator,
+    Label
 };
 Q_ENUM_NS(SemanticTokenTypes)
 
@@ -273,8 +345,8 @@ Q_ENUM_NS(TextDocumentSyncKind)
 enum class TokenFormat { Relative };
 Q_ENUM_NS(TokenFormat)
 
-enum class TraceValues { Off, Messages, Verbose };
-Q_ENUM_NS(TraceValues)
+enum class TraceValue { Off, Messages, Verbose };
+Q_ENUM_NS(TraceValue)
 
 enum class UniquenessLevel { Document, Project, Group, Scheme, Global };
 Q_ENUM_NS(UniquenessLevel)
@@ -299,8 +371,8 @@ public:
 class Q_LANGUAGESERVER_EXPORT Range
 {
 public:
-    Position start = {};
-    Position end = {};
+    Position start = { };
+    Position end = { };
 
     template <typename W>
     void walk(W &w)
@@ -330,7 +402,7 @@ public:
     SelectionRange(SelectionRange &&) noexcept = default;
     SelectionRange &operator=(SelectionRange &&) noexcept = default;
 
-    Range range = {};
+    Range range = { };
     std::unique_ptr<SelectionRange> parent;
 
     template <typename W>
@@ -344,8 +416,8 @@ public:
 class Q_LANGUAGESERVER_EXPORT RangePlaceHolder
 {
 public:
-    Range range = {};
-    QByteArray placeholder = {};
+    Range range = { };
+    QByteArray placeholder = { };
 
     template <typename W>
     void walk(W &w)
@@ -358,7 +430,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT DefaultBehaviorStruct
 {
 public:
-    bool defaultBehavior = {};
+    bool defaultBehavior = { };
 
     template <typename W>
     void walk(W &w)
@@ -370,7 +442,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT TextEdit
 {
 public:
-    Range range = {};
+    Range range = { };
     QByteArray newText = { };
 
     template <typename W>
@@ -381,349 +453,6 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT Location
-{
-public:
-    QByteArray uri = { };
-    Range range = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-        field(w, "range", range);
-    }
-};
-
-using Definition = std::variant<Location, QList<Location>>;
-class Q_LANGUAGESERVER_EXPORT LocationLink
-{
-public:
-    std::optional<Range> originSelectionRange = { };
-    QByteArray targetUri = { };
-    Range targetRange = { };
-    Range targetSelectionRange = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "originSelectionRange", originSelectionRange);
-        field(w, "targetUri", targetUri);
-        field(w, "targetRange", targetRange);
-        field(w, "targetSelectionRange", targetSelectionRange);
-    }
-};
-
-using DefinitionLink = LocationLink;
-using Declaration = std::variant<Location, QList<Location>>;
-using DeclarationLink = LocationLink;
-class Q_LANGUAGESERVER_EXPORT InlineValueText
-{
-public:
-    Range range = { };
-    QByteArray text = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "text", text);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT InlineValueVariableLookup
-{
-public:
-    Range range = { };
-    std::optional<QByteArray> variableName = { };
-    bool caseSensitiveLookup = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "variableName", variableName);
-        field(w, "caseSensitiveLookup", caseSensitiveLookup);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT InlineValueEvaluatableExpression
-{
-public:
-    Range range = { };
-    std::optional<QByteArray> expression = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "expression", expression);
-    }
-};
-
-using InlineValue =
-        std::variant<InlineValueText, InlineValueVariableLookup, InlineValueEvaluatableExpression>;
-class Q_LANGUAGESERVER_EXPORT CodeDescription
-{
-public:
-    QByteArray href = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "href", href);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT DiagnosticRelatedInformation
-{
-public:
-    Location location = { };
-    QByteArray message = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "location", location);
-        field(w, "message", message);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT Diagnostic
-{
-public:
-    Range range = { };
-    std::optional<DiagnosticSeverity> severity = { };
-    std::optional<std::variant<int, QByteArray>> code = { };
-    std::optional<CodeDescription> codeDescription = { };
-    std::optional<QByteArray> source = { };
-    QByteArray message = { };
-    std::optional<QList<DiagnosticTag>> tags = { };
-    std::optional<QList<DiagnosticRelatedInformation>> relatedInformation = { };
-    std::optional<QJsonValue> data = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "severity", severity);
-        field(w, "code", code);
-        field(w, "codeDescription", codeDescription);
-        field(w, "source", source);
-        field(w, "message", message);
-        field(w, "tags", tags);
-        field(w, "relatedInformation", relatedInformation);
-        field(w, "data", data);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT FullDocumentDiagnosticReport
-{
-public:
-    static constexpr QByteArrayView kind = "full";
-    std::optional<QByteArray> resultId = { };
-    QList<Diagnostic> items = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "resultId", resultId);
-        field(w, "items", items);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT UnchangedDocumentDiagnosticReport
-{
-public:
-    static constexpr QByteArrayView kind = "unchanged";
-    QByteArray resultId = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "resultId", resultId);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RelatedFullDocumentDiagnosticReport
-    : public FullDocumentDiagnosticReport
-{
-public:
-    std::optional<
-            QMap<QByteArray,
-                 std::variant<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>>>
-            relatedDocuments = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        FullDocumentDiagnosticReport::walk(w);
-        field(w, "relatedDocuments", relatedDocuments);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RelatedUnchangedDocumentDiagnosticReport
-    : public UnchangedDocumentDiagnosticReport
-{
-public:
-    std::optional<
-            QMap<QByteArray,
-                 std::variant<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>>>
-            relatedDocuments = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        UnchangedDocumentDiagnosticReport::walk(w);
-        field(w, "relatedDocuments", relatedDocuments);
-    }
-};
-
-using DocumentDiagnosticReport =
-        std::variant<RelatedFullDocumentDiagnosticReport, RelatedUnchangedDocumentDiagnosticReport>;
-class Q_LANGUAGESERVER_EXPORT PrepareRenameResultVariant1
-{
-public:
-    Range range = { };
-    QByteArray placeholder = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "placeholder", placeholder);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT PrepareRenameResultVariant2
-{
-public:
-    bool defaultBehavior = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "defaultBehavior", defaultBehavior);
-    }
-};
-
-using PrepareRenameResult =
-        std::variant<Range, PrepareRenameResultVariant1, PrepareRenameResultVariant2>;
-class Q_LANGUAGESERVER_EXPORT TextDocumentFilter
-{
-public:
-    std::optional<QByteArray> language = { };
-    std::optional<QByteArray> scheme = { };
-    std::optional<QByteArray> pattern = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "language", language);
-        field(w, "scheme", scheme);
-        field(w, "pattern", pattern);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilter
-{
-public:
-    std::optional<QByteArray> notebookType = { };
-    std::optional<QByteArray> scheme = { };
-    std::optional<QByteArray> pattern = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "notebookType", notebookType);
-        field(w, "scheme", scheme);
-        field(w, "pattern", pattern);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT NotebookCellTextDocumentFilter
-{
-public:
-    std::variant<QByteArray, NotebookDocumentFilter> notebook = { };
-    std::optional<QByteArray> language = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "notebook", notebook);
-        field(w, "language", language);
-    }
-};
-
-using ProgressToken = std::variant<int, QByteArray>;
-class Q_LANGUAGESERVER_EXPORT WorkspaceFullDocumentDiagnosticReport
-    : public FullDocumentDiagnosticReport
-{
-public:
-    QByteArray uri = { };
-    std::variant<std::nullptr_t, int> version = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        FullDocumentDiagnosticReport::walk(w);
-        field(w, "uri", uri);
-        field(w, "version", version);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT WorkspaceUnchangedDocumentDiagnosticReport
-    : public UnchangedDocumentDiagnosticReport
-{
-public:
-    QByteArray uri = { };
-    std::variant<std::nullptr_t, int> version = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        UnchangedDocumentDiagnosticReport::walk(w);
-        field(w, "uri", uri);
-        field(w, "version", version);
-    }
-};
-
-using WorkspaceDocumentDiagnosticReport = std::variant<WorkspaceFullDocumentDiagnosticReport,
-                                                       WorkspaceUnchangedDocumentDiagnosticReport>;
-class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEventVariant1
-{
-public:
-    Range range = { };
-    std::optional<unsigned int> rangeLength = { };
-    QByteArray text = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "range", range);
-        field(w, "rangeLength", rangeLength);
-        field(w, "text", text);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeEventVariant2
-{
-public:
-    QByteArray text = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "text", text);
-    }
-};
-
-using TextDocumentContentChangeEvent = std::variant<TextDocumentContentChangeEventVariant1,
-                                                    TextDocumentContentChangeEventVariant2>;
-using DocumentFilter = std::variant<TextDocumentFilter, NotebookCellTextDocumentFilter>;
-using DocumentSelector = QList<DocumentFilter>;
 using ChangeAnnotationIdentifier = QByteArray;
 class Q_LANGUAGESERVER_EXPORT AnnotatedTextEdit : public TextEdit
 {
@@ -764,11 +493,41 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT StringValue
+{
+public:
+    static constexpr QByteArrayView kind = "snippet";
+    QByteArray value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "value", value);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT SnippetTextEdit
+{
+public:
+    Range range = { };
+    StringValue snippet = { };
+    std::optional<ChangeAnnotationIdentifier> annotationId = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "snippet", snippet);
+        field(w, "annotationId", annotationId);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT TextDocumentEdit
 {
 public:
     OptionalVersionedTextDocumentIdentifier textDocument = { };
-    QList<std::variant<TextEdit, AnnotatedTextEdit>> edits = { };
+    QList<std::variant<TextEdit, AnnotatedTextEdit, SnippetTextEdit>> edits = { };
 
     template <typename W>
     void walk(W &w)
@@ -921,17 +680,31 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT WorkspaceEditMetadata
+{
+public:
+    std::optional<bool> isRefactoring = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "isRefactoring", isRefactoring);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT ApplyWorkspaceEditParams
 {
 public:
     std::optional<QByteArray> label = { };
     WorkspaceEdit edit = { };
+    std::optional<WorkspaceEditMetadata> metadata = { };
 
     template <typename W>
     void walk(W &w)
     {
         field(w, "label", label);
         field(w, "edit", edit);
+        field(w, "metadata", metadata);
     }
 };
 
@@ -1021,6 +794,7 @@ public:
     }
 };
 
+using ProgressToken = std::variant<int, QByteArray>;
 class Q_LANGUAGESERVER_EXPORT WorkDoneProgressParams
 {
 public:
@@ -1137,6 +911,153 @@ public:
     }
 };
 
+using Pattern = QByteArray;
+class Q_LANGUAGESERVER_EXPORT WorkspaceFolder
+{
+public:
+    QByteArray uri = { };
+    QByteArray name = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "name", name);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RelativePattern
+{
+public:
+    std::variant<WorkspaceFolder, QByteArray> baseUri = { };
+    Pattern pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "baseUri", baseUri);
+        field(w, "pattern", pattern);
+    }
+};
+
+using GlobPattern = std::variant<Pattern, RelativePattern>;
+class Q_LANGUAGESERVER_EXPORT TextDocumentFilterLanguage
+{
+public:
+    QByteArray language = { };
+    std::optional<QByteArray> scheme = { };
+    std::optional<GlobPattern> pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "language", language);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentFilterScheme
+{
+public:
+    std::optional<QByteArray> language = { };
+    QByteArray scheme = { };
+    std::optional<GlobPattern> pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "language", language);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentFilterPattern
+{
+public:
+    std::optional<QByteArray> language = { };
+    std::optional<QByteArray> scheme = { };
+    GlobPattern pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "language", language);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+using TextDocumentFilter = std::variant<TextDocumentFilterLanguage, TextDocumentFilterScheme,
+                                        TextDocumentFilterPattern>;
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilterNotebookType
+{
+public:
+    QByteArray notebookType = { };
+    std::optional<QByteArray> scheme = { };
+    std::optional<GlobPattern> pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebookType", notebookType);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilterScheme
+{
+public:
+    std::optional<QByteArray> notebookType = { };
+    QByteArray scheme = { };
+    std::optional<GlobPattern> pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebookType", notebookType);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilterPattern
+{
+public:
+    std::optional<QByteArray> notebookType = { };
+    std::optional<QByteArray> scheme = { };
+    GlobPattern pattern = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebookType", notebookType);
+        field(w, "scheme", scheme);
+        field(w, "pattern", pattern);
+    }
+};
+
+using NotebookDocumentFilter =
+        std::variant<NotebookDocumentFilterNotebookType, NotebookDocumentFilterScheme,
+                     NotebookDocumentFilterPattern>;
+class Q_LANGUAGESERVER_EXPORT NotebookCellTextDocumentFilter
+{
+public:
+    std::variant<QByteArray, NotebookDocumentFilter> notebook = { };
+    std::optional<QByteArray> language = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebook", notebook);
+        field(w, "language", language);
+    }
+};
+
+using DocumentFilter = std::variant<TextDocumentFilter, NotebookCellTextDocumentFilter>;
+using DocumentSelector = QList<DocumentFilter>;
 class Q_LANGUAGESERVER_EXPORT TextDocumentRegistrationOptions
 {
 public:
@@ -1188,6 +1109,18 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ChangeAnnotationsSupportOptions
+{
+public:
+    std::optional<bool> groupsOnLabel = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "groupsOnLabel", groupsOnLabel);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT WorkspaceEditClientCapabilities
 {
 public:
@@ -1195,7 +1128,9 @@ public:
     std::optional<QList<ResourceOperationKind>> resourceOperations = { };
     std::optional<FailureHandlingKind> failureHandling = { };
     std::optional<bool> normalizesLineEndings = { };
-    std::optional<QJsonObject> changeAnnotationSupport = { };
+    std::optional<ChangeAnnotationsSupportOptions> changeAnnotationSupport = { };
+    std::optional<bool> metadataSupport = { };
+    std::optional<bool> snippetEditSupport = { };
 
     template <typename W>
     void walk(W &w)
@@ -1205,6 +1140,8 @@ public:
         field(w, "failureHandling", failureHandling);
         field(w, "normalizesLineEndings", normalizesLineEndings);
         field(w, "changeAnnotationSupport", changeAnnotationSupport);
+        field(w, "metadataSupport", metadataSupport);
+        field(w, "snippetEditSupport", snippetEditSupport);
     }
 };
 
@@ -1234,13 +1171,49 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientSymbolKindOptions
+{
+public:
+    std::optional<QList<SymbolKind>> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientSymbolTagOptions
+{
+public:
+    QList<SymbolTag> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientSymbolResolveOptions
+{
+public:
+    QList<QByteArray> properties = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "properties", properties);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT WorkspaceSymbolClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
-    std::optional<QJsonObject> symbolKind = { };
-    std::optional<QJsonObject> tagSupport = { };
-    std::optional<QJsonObject> resolveSupport = { };
+    std::optional<ClientSymbolKindOptions> symbolKind = { };
+    std::optional<ClientSymbolTagOptions> tagSupport = { };
+    std::optional<ClientSymbolResolveOptions> resolveSupport = { };
 
     template <typename W>
     void walk(W &w)
@@ -1291,7 +1264,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT FileOperationClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
     std::optional<bool> didCreate = { };
     std::optional<bool> willCreate = { };
     std::optional<bool> didRename = { };
@@ -1360,6 +1333,18 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentClientCapabilities
+{
+public:
+    std::optional<bool> dynamicRegistration = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "dynamicRegistration", dynamicRegistration);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT WorkspaceClientCapabilities
 {
 public:
@@ -1378,6 +1363,7 @@ public:
     std::optional<InlayHintWorkspaceClientCapabilities> inlayHint = { };
     std::optional<DiagnosticWorkspaceClientCapabilities> diagnostics = { };
     std::optional<FoldingRangeWorkspaceClientCapabilities> foldingRange = { };
+    std::optional<TextDocumentContentClientCapabilities> textDocumentContent = { };
 
     template <typename W>
     void walk(W &w)
@@ -1397,6 +1383,7 @@ public:
         field(w, "inlayHint", inlayHint);
         field(w, "diagnostics", diagnostics);
         field(w, "foldingRange", foldingRange);
+        field(w, "textDocumentContent", textDocumentContent);
     }
 };
 
@@ -1418,15 +1405,119 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT TextDocumentFilterClientCapabilities
+{
+public:
+    std::optional<bool> relativePatternSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "relativePatternSupport", relativePatternSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionItemTagOptions
+{
+public:
+    QList<CompletionItemTag> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCompletionItemResolveOptions
+{
+public:
+    QList<QByteArray> properties = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "properties", properties);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCompletionItemInsertTextModeOptions
+{
+public:
+    QList<InsertTextMode> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCompletionItemOptions
+{
+public:
+    std::optional<bool> snippetSupport = { };
+    std::optional<bool> commitCharactersSupport = { };
+    std::optional<QList<MarkupKind>> documentationFormat = { };
+    std::optional<bool> deprecatedSupport = { };
+    std::optional<bool> preselectSupport = { };
+    std::optional<CompletionItemTagOptions> tagSupport = { };
+    std::optional<bool> insertReplaceSupport = { };
+    std::optional<ClientCompletionItemResolveOptions> resolveSupport = { };
+    std::optional<ClientCompletionItemInsertTextModeOptions> insertTextModeSupport = { };
+    std::optional<bool> labelDetailsSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "snippetSupport", snippetSupport);
+        field(w, "commitCharactersSupport", commitCharactersSupport);
+        field(w, "documentationFormat", documentationFormat);
+        field(w, "deprecatedSupport", deprecatedSupport);
+        field(w, "preselectSupport", preselectSupport);
+        field(w, "tagSupport", tagSupport);
+        field(w, "insertReplaceSupport", insertReplaceSupport);
+        field(w, "resolveSupport", resolveSupport);
+        field(w, "insertTextModeSupport", insertTextModeSupport);
+        field(w, "labelDetailsSupport", labelDetailsSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCompletionItemOptionsKind
+{
+public:
+    std::optional<QList<CompletionItemKind>> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionListCapabilities
+{
+public:
+    std::optional<QList<QByteArray>> itemDefaults = { };
+    std::optional<bool> applyKindSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "itemDefaults", itemDefaults);
+        field(w, "applyKindSupport", applyKindSupport);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT CompletionClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> completionItem = {};
-    std::optional<QJsonObject> completionItemKind = {};
+    std::optional<bool> dynamicRegistration = { };
+    std::optional<ClientCompletionItemOptions> completionItem = { };
+    std::optional<ClientCompletionItemOptionsKind> completionItemKind = { };
     std::optional<InsertTextMode> insertTextMode = { };
-    std::optional<bool> contextSupport = {};
-    std::optional<QJsonObject> completionList = { };
+    std::optional<bool> contextSupport = { };
+    std::optional<CompletionListCapabilities> completionList = { };
 
     template <typename W>
     void walk(W &w)
@@ -1454,11 +1545,41 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientSignatureParameterInformationOptions
+{
+public:
+    std::optional<bool> labelOffsetSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "labelOffsetSupport", labelOffsetSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientSignatureInformationOptions
+{
+public:
+    std::optional<QList<MarkupKind>> documentationFormat = { };
+    std::optional<ClientSignatureParameterInformationOptions> parameterInformation = { };
+    std::optional<bool> activeParameterSupport = { };
+    std::optional<bool> noActiveParameterSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "documentationFormat", documentationFormat);
+        field(w, "parameterInformation", parameterInformation);
+        field(w, "activeParameterSupport", activeParameterSupport);
+        field(w, "noActiveParameterSupport", noActiveParameterSupport);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT SignatureHelpClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
-    std::optional<QJsonObject> signatureInformation = { };
+    std::optional<bool> dynamicRegistration = { };
+    std::optional<ClientSignatureInformationOptions> signatureInformation = { };
     std::optional<bool> contextSupport = { };
 
     template <typename W>
@@ -1554,9 +1675,9 @@ class Q_LANGUAGESERVER_EXPORT DocumentSymbolClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
-    std::optional<QJsonObject> symbolKind = { };
+    std::optional<ClientSymbolKindOptions> symbolKind = { };
     std::optional<bool> hierarchicalDocumentSymbolSupport = { };
-    std::optional<QJsonObject> tagSupport = { };
+    std::optional<ClientSymbolTagOptions> tagSupport = { };
     std::optional<bool> labelSupport = { };
 
     template <typename W>
@@ -1570,16 +1691,66 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientCodeActionKindOptions
+{
+public:
+    QList<CodeActionKind> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCodeActionLiteralOptions
+{
+public:
+    ClientCodeActionKindOptions codeActionKind = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "codeActionKind", codeActionKind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCodeActionResolveOptions
+{
+public:
+    QList<QByteArray> properties = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "properties", properties);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionTagOptions
+{
+public:
+    QList<CodeActionTag> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT CodeActionClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
-    std::optional<QJsonObject> codeActionLiteralSupport = { };
+    std::optional<ClientCodeActionLiteralOptions> codeActionLiteralSupport = { };
     std::optional<bool> isPreferredSupport = { };
     std::optional<bool> disabledSupport = { };
     std::optional<bool> dataSupport = { };
-    std::optional<QJsonObject> resolveSupport = { };
+    std::optional<ClientCodeActionResolveOptions> resolveSupport = { };
     std::optional<bool> honorsChangeAnnotations = { };
+    std::optional<bool> documentationSupport = { };
+    std::optional<CodeActionTagOptions> tagSupport = { };
 
     template <typename W>
     void walk(W &w)
@@ -1591,6 +1762,20 @@ public:
         field(w, "dataSupport", dataSupport);
         field(w, "resolveSupport", resolveSupport);
         field(w, "honorsChangeAnnotations", honorsChangeAnnotations);
+        field(w, "documentationSupport", documentationSupport);
+        field(w, "tagSupport", tagSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientCodeLensResolveOptions
+{
+public:
+    QList<QByteArray> properties = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "properties", properties);
     }
 };
 
@@ -1598,18 +1783,20 @@ class Q_LANGUAGESERVER_EXPORT CodeLensClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
+    std::optional<ClientCodeLensResolveOptions> resolveSupport = { };
 
     template <typename W>
     void walk(W &w)
     {
         field(w, "dynamicRegistration", dynamicRegistration);
+        field(w, "resolveSupport", resolveSupport);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT DocumentLinkClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
     std::optional<bool> tooltipSupport = { };
 
     template <typename W>
@@ -1623,7 +1810,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT DocumentColorClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
 
     template <typename W>
     void walk(W &w)
@@ -1673,7 +1860,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT RenameClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
     std::optional<bool> prepareSupport = { };
     std::optional<PrepareSupportDefaultBehavior> prepareSupportDefaultBehavior = { };
     std::optional<bool> honorsChangeAnnotations = { };
@@ -1688,14 +1875,38 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientFoldingRangeKindOptions
+{
+public:
+    std::optional<QList<FoldingRangeKind>> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientFoldingRangeOptions
+{
+public:
+    std::optional<bool> collapsedText = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "collapsedText", collapsedText);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT FoldingRangeClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
     std::optional<unsigned int> rangeLimit = { };
     std::optional<bool> lineFoldingOnly = { };
-    std::optional<QJsonObject> foldingRangeKind = { };
-    std::optional<QJsonObject> foldingRange = { };
+    std::optional<ClientFoldingRangeKindOptions> foldingRangeKind = { };
+    std::optional<ClientFoldingRangeOptions> foldingRange = { };
 
     template <typename W>
     void walk(W &w)
@@ -1711,7 +1922,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT SelectionRangeClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
+    std::optional<bool> dynamicRegistration = { };
 
     template <typename W>
     void walk(W &w)
@@ -1720,12 +1931,23 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsClientCapabilities
+class Q_LANGUAGESERVER_EXPORT ClientDiagnosticsTagOptions
+{
+public:
+    QList<DiagnosticTag> valueSet = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "valueSet", valueSet);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DiagnosticsCapabilities
 {
 public:
     std::optional<bool> relatedInformation = { };
-    std::optional<QJsonObject> tagSupport = { };
-    std::optional<bool> versionSupport = { };
+    std::optional<ClientDiagnosticsTagOptions> tagSupport = { };
     std::optional<bool> codeDescriptionSupport = { };
     std::optional<bool> dataSupport = { };
 
@@ -1734,17 +1956,55 @@ public:
     {
         field(w, "relatedInformation", relatedInformation);
         field(w, "tagSupport", tagSupport);
-        field(w, "versionSupport", versionSupport);
         field(w, "codeDescriptionSupport", codeDescriptionSupport);
         field(w, "dataSupport", dataSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT PublishDiagnosticsClientCapabilities : public DiagnosticsCapabilities
+{
+public:
+    std::optional<bool> versionSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        DiagnosticsCapabilities::walk(w);
+        field(w, "versionSupport", versionSupport);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientSemanticTokensRequestFullDelta
+{
+public:
+    std::optional<bool> delta = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "delta", delta);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ClientSemanticTokensRequestOptions
+{
+public:
+    std::optional<std::variant<bool, QJsonObject>> range = { };
+    std::optional<std::variant<bool, ClientSemanticTokensRequestFullDelta>> full = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "full", full);
     }
 };
 
 class Q_LANGUAGESERVER_EXPORT SemanticTokensClientCapabilities
 {
 public:
-    std::optional<bool> dynamicRegistration = {};
-    QJsonObject requests = { };
+    std::optional<bool> dynamicRegistration = { };
+    ClientSemanticTokensRequestOptions requests = { };
     QList<QByteArray> tokenTypes = { };
     QList<QByteArray> tokenModifiers = { };
     QList<TokenFormat> formats = { };
@@ -1816,11 +2076,23 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientInlayHintResolveOptions
+{
+public:
+    QList<QByteArray> properties = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "properties", properties);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT InlayHintClientCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
-    std::optional<QJsonObject> resolveSupport = { };
+    std::optional<ClientInlayHintResolveOptions> resolveSupport = { };
 
     template <typename W>
     void walk(W &w)
@@ -1830,17 +2102,20 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT DiagnosticClientCapabilities
+class Q_LANGUAGESERVER_EXPORT DiagnosticClientCapabilities : public DiagnosticsCapabilities
 {
 public:
     std::optional<bool> dynamicRegistration = { };
     std::optional<bool> relatedDocumentSupport = { };
+    std::optional<bool> markupMessageSupport = { };
 
     template <typename W>
     void walk(W &w)
     {
+        DiagnosticsCapabilities::walk(w);
         field(w, "dynamicRegistration", dynamicRegistration);
         field(w, "relatedDocumentSupport", relatedDocumentSupport);
+        field(w, "markupMessageSupport", markupMessageSupport);
     }
 };
 
@@ -1859,32 +2134,33 @@ public:
 class Q_LANGUAGESERVER_EXPORT TextDocumentClientCapabilities
 {
 public:
-    std::optional<TextDocumentSyncClientCapabilities> synchronization = {};
-    std::optional<CompletionClientCapabilities> completion = {};
-    std::optional<HoverClientCapabilities> hover = {};
-    std::optional<SignatureHelpClientCapabilities> signatureHelp = {};
-    std::optional<DeclarationClientCapabilities> declaration = {};
-    std::optional<DefinitionClientCapabilities> definition = {};
-    std::optional<TypeDefinitionClientCapabilities> typeDefinition = {};
-    std::optional<ImplementationClientCapabilities> implementation = {};
-    std::optional<ReferenceClientCapabilities> references = {};
-    std::optional<DocumentHighlightClientCapabilities> documentHighlight = {};
-    std::optional<DocumentSymbolClientCapabilities> documentSymbol = {};
-    std::optional<CodeActionClientCapabilities> codeAction = {};
-    std::optional<CodeLensClientCapabilities> codeLens = {};
-    std::optional<DocumentLinkClientCapabilities> documentLink = {};
-    std::optional<DocumentColorClientCapabilities> colorProvider = {};
-    std::optional<DocumentFormattingClientCapabilities> formatting = {};
-    std::optional<DocumentRangeFormattingClientCapabilities> rangeFormatting = {};
-    std::optional<DocumentOnTypeFormattingClientCapabilities> onTypeFormatting = {};
+    std::optional<TextDocumentSyncClientCapabilities> synchronization = { };
+    std::optional<TextDocumentFilterClientCapabilities> filters = { };
+    std::optional<CompletionClientCapabilities> completion = { };
+    std::optional<HoverClientCapabilities> hover = { };
+    std::optional<SignatureHelpClientCapabilities> signatureHelp = { };
+    std::optional<DeclarationClientCapabilities> declaration = { };
+    std::optional<DefinitionClientCapabilities> definition = { };
+    std::optional<TypeDefinitionClientCapabilities> typeDefinition = { };
+    std::optional<ImplementationClientCapabilities> implementation = { };
+    std::optional<ReferenceClientCapabilities> references = { };
+    std::optional<DocumentHighlightClientCapabilities> documentHighlight = { };
+    std::optional<DocumentSymbolClientCapabilities> documentSymbol = { };
+    std::optional<CodeActionClientCapabilities> codeAction = { };
+    std::optional<CodeLensClientCapabilities> codeLens = { };
+    std::optional<DocumentLinkClientCapabilities> documentLink = { };
+    std::optional<DocumentColorClientCapabilities> colorProvider = { };
+    std::optional<DocumentFormattingClientCapabilities> formatting = { };
+    std::optional<DocumentRangeFormattingClientCapabilities> rangeFormatting = { };
+    std::optional<DocumentOnTypeFormattingClientCapabilities> onTypeFormatting = { };
     std::optional<RenameClientCapabilities> rename = { };
-    std::optional<FoldingRangeClientCapabilities> foldingRange = {};
-    std::optional<SelectionRangeClientCapabilities> selectionRange = {};
+    std::optional<FoldingRangeClientCapabilities> foldingRange = { };
+    std::optional<SelectionRangeClientCapabilities> selectionRange = { };
     std::optional<PublishDiagnosticsClientCapabilities> publishDiagnostics = { };
-    std::optional<CallHierarchyClientCapabilities> callHierarchy = {};
-    std::optional<SemanticTokensClientCapabilities> semanticTokens = {};
+    std::optional<CallHierarchyClientCapabilities> callHierarchy = { };
+    std::optional<SemanticTokensClientCapabilities> semanticTokens = { };
     std::optional<LinkedEditingRangeClientCapabilities> linkedEditingRange = { };
-    std::optional<MonikerClientCapabilities> moniker = {};
+    std::optional<MonikerClientCapabilities> moniker = { };
     std::optional<TypeHierarchyClientCapabilities> typeHierarchy = { };
     std::optional<InlineValueClientCapabilities> inlineValue = { };
     std::optional<InlayHintClientCapabilities> inlayHint = { };
@@ -1895,6 +2171,7 @@ public:
     void walk(W &w)
     {
         field(w, "synchronization", synchronization);
+        field(w, "filters", filters);
         field(w, "completion", completion);
         field(w, "hover", hover);
         field(w, "signatureHelp", signatureHelp);
@@ -1954,10 +2231,22 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientShowMessageActionItemOptions
+{
+public:
+    std::optional<bool> additionalPropertiesSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "additionalPropertiesSupport", additionalPropertiesSupport);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT ShowMessageRequestClientCapabilities
 {
 public:
-    std::optional<QJsonObject> messageActionItem = { };
+    std::optional<ClientShowMessageActionItemOptions> messageActionItem = { };
 
     template <typename W>
     void walk(W &w)
@@ -1994,10 +2283,25 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT StaleRequestSupportOptions
+{
+public:
+    bool cancel = { };
+    QList<QByteArray> retryOnContentModified = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "cancel", cancel);
+        field(w, "retryOnContentModified", retryOnContentModified);
+    }
+};
+
+using RegularExpressionEngineKind = QByteArray;
 class Q_LANGUAGESERVER_EXPORT RegularExpressionsClientCapabilities
 {
 public:
-    QByteArray engine = { };
+    RegularExpressionEngineKind engine = { };
     std::optional<QByteArray> version = { };
 
     template <typename W>
@@ -2027,7 +2331,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT GeneralClientCapabilities
 {
 public:
-    std::optional<QJsonObject> staleRequestSupport = { };
+    std::optional<StaleRequestSupportOptions> staleRequestSupport = { };
     std::optional<RegularExpressionsClientCapabilities> regularExpressions = { };
     std::optional<MarkdownClientCapabilities> markdown = { };
     std::optional<QList<PositionEncodingKind>> positionEncodings = { };
@@ -2064,10 +2368,119 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ClientInfo
+{
+public:
+    QByteArray name = { };
+    std::optional<QByteArray> version = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "name", name);
+        field(w, "version", version);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeDescription
+{
+public:
+    QByteArray href = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "href", href);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT MarkupContent
+{
+public:
+    MarkupKind kind = { };
+    QByteArray value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "value", value);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Location
+{
+public:
+    QByteArray uri = { };
+    Range range = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+        field(w, "range", range);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT DiagnosticRelatedInformation
+{
+public:
+    Location location = { };
+    QByteArray message = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "location", location);
+        field(w, "message", message);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT Diagnostic
+{
+public:
+    Range range = { };
+    std::optional<DiagnosticSeverity> severity = { };
+    std::optional<std::variant<int, QByteArray>> code = { };
+    std::optional<CodeDescription> codeDescription = { };
+    std::optional<QByteArray> source = { };
+    std::variant<QByteArray, MarkupContent> message = { };
+    std::optional<QList<DiagnosticTag>> tags = { };
+    std::optional<QList<DiagnosticRelatedInformation>> relatedInformation = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "severity", severity);
+        field(w, "code", code);
+        field(w, "codeDescription", codeDescription);
+        field(w, "source", source);
+        field(w, "message", message);
+        field(w, "tags", tags);
+        field(w, "relatedInformation", relatedInformation);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CodeActionDisabled
+{
+public:
+    QByteArray reason = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "reason", reason);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT Command
 {
 public:
     QByteArray title = { };
+    std::optional<QByteArray> tooltip = { };
     QByteArray command = { };
     std::optional<QList<QJsonValue>> arguments = { };
 
@@ -2075,6 +2488,7 @@ public:
     void walk(W &w)
     {
         field(w, "title", title);
+        field(w, "tooltip", tooltip);
         field(w, "command", command);
         field(w, "arguments", arguments);
     }
@@ -2087,10 +2501,11 @@ public:
     std::optional<CodeActionKind> kind = { };
     std::optional<QList<Diagnostic>> diagnostics = { };
     std::optional<bool> isPreferred = { };
-    std::optional<QJsonObject> disabled = { };
+    std::optional<CodeActionDisabled> disabled = { };
     std::optional<WorkspaceEdit> edit = { };
     std::optional<Command> command = { };
     std::optional<QJsonValue> data = { };
+    std::optional<QList<CodeActionTag>> tags = { };
 
     template <typename W>
     void walk(W &w)
@@ -2103,6 +2518,7 @@ public:
         field(w, "edit", edit);
         field(w, "command", command);
         field(w, "data", data);
+        field(w, "tags", tags);
     }
 };
 
@@ -2122,10 +2538,25 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT CodeActionKindDocumentation
+{
+public:
+    CodeActionKind kind = { };
+    Command command = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "command", command);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT CodeActionOptions : public WorkDoneProgressOptions
 {
 public:
     std::optional<QList<CodeActionKind>> codeActionKinds = { };
+    std::optional<QList<CodeActionKindDocumentation>> documentation = { };
     std::optional<bool> resolveProvider = { };
 
     template <typename W>
@@ -2133,6 +2564,7 @@ public:
     {
         WorkDoneProgressOptions::walk(w);
         field(w, "codeActionKinds", codeActionKinds);
+        field(w, "documentation", documentation);
         field(w, "resolveProvider", resolveProvider);
     }
 };
@@ -2188,7 +2620,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT CodeLensOptions : public WorkDoneProgressOptions
 {
 public:
-    std::optional<bool> resolveProvider = {};
+    std::optional<bool> resolveProvider = { };
 
     template <typename W>
     void walk(W &w)
@@ -2320,20 +2752,6 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT MarkupContent
-{
-public:
-    MarkupKind kind = { };
-    QByteArray value = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "value", value);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT InsertReplaceEdit
 {
 public:
@@ -2398,11 +2816,60 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT CompletionItemApplyKinds
+{
+public:
+    std::optional<ApplyKind> commitCharacters = { };
+    std::optional<ApplyKind> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "commitCharacters", commitCharacters);
+        field(w, "data", data);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT EditRangeWithInsertReplace
+{
+public:
+    Range insert = { };
+    Range replace = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "insert", insert);
+        field(w, "replace", replace);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT CompletionItemDefaults
+{
+public:
+    std::optional<QList<QByteArray>> commitCharacters = { };
+    std::optional<std::variant<Range, EditRangeWithInsertReplace>> editRange = { };
+    std::optional<InsertTextFormat> insertTextFormat = { };
+    std::optional<InsertTextMode> insertTextMode = { };
+    std::optional<QJsonValue> data = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "commitCharacters", commitCharacters);
+        field(w, "editRange", editRange);
+        field(w, "insertTextFormat", insertTextFormat);
+        field(w, "insertTextMode", insertTextMode);
+        field(w, "data", data);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT CompletionList
 {
 public:
     bool isIncomplete = { };
-    std::optional<QJsonObject> itemDefaults = { };
+    std::optional<CompletionItemDefaults> itemDefaults = { };
+    std::optional<CompletionItemApplyKinds> applyKind = { };
     QList<CompletionItem> items = { };
 
     template <typename W>
@@ -2410,7 +2877,20 @@ public:
     {
         field(w, "isIncomplete", isIncomplete);
         field(w, "itemDefaults", itemDefaults);
+        field(w, "applyKind", applyKind);
         field(w, "items", items);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT ServerCompletionItemOptions
+{
+public:
+    std::optional<bool> labelDetailsSupport = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "labelDetailsSupport", labelDetailsSupport);
     }
 };
 
@@ -2419,8 +2899,8 @@ class Q_LANGUAGESERVER_EXPORT CompletionOptions : public WorkDoneProgressOptions
 public:
     std::optional<QList<QByteArray>> triggerCharacters = { };
     std::optional<QList<QByteArray>> allCommitCharacters = { };
-    std::optional<bool> resolveProvider = {};
-    std::optional<QJsonObject> completionItem = { };
+    std::optional<bool> resolveProvider = { };
+    std::optional<ServerCompletionItemOptions> completionItem = { };
 
     template <typename W>
     void walk(W &w)
@@ -2513,6 +2993,26 @@ public:
     }
 };
 
+using Declaration = std::variant<Location, QList<Location>>;
+class Q_LANGUAGESERVER_EXPORT LocationLink
+{
+public:
+    std::optional<Range> originSelectionRange = { };
+    QByteArray targetUri = { };
+    Range targetRange = { };
+    Range targetSelectionRange = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "originSelectionRange", originSelectionRange);
+        field(w, "targetUri", targetUri);
+        field(w, "targetRange", targetRange);
+        field(w, "targetSelectionRange", targetSelectionRange);
+    }
+};
+
+using DeclarationLink = LocationLink;
 class Q_LANGUAGESERVER_EXPORT DeclarationOptions : public WorkDoneProgressOptions
 {
 public:
@@ -2552,6 +3052,8 @@ public:
     }
 };
 
+using Definition = std::variant<Location, QList<Location>>;
+using DefinitionLink = LocationLink;
 class Q_LANGUAGESERVER_EXPORT DefinitionOptions : public WorkDoneProgressOptions
 {
 public:
@@ -2747,7 +3249,7 @@ class Q_LANGUAGESERVER_EXPORT TextDocumentItem
 {
 public:
     QByteArray uri = { };
-    QByteArray languageId = { };
+    LanguageKind languageId = { };
     int version = { };
     QByteArray text = { };
 
@@ -2758,6 +3260,22 @@ public:
         field(w, "languageId", languageId);
         field(w, "version", version);
         field(w, "text", text);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentCellChangeStructure
+{
+public:
+    NotebookCellArrayChange array = { };
+    std::optional<QList<TextDocumentItem>> didOpen = { };
+    std::optional<QList<TextDocumentIdentifier>> didClose = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "array", array);
+        field(w, "didOpen", didOpen);
+        field(w, "didClose", didClose);
     }
 };
 
@@ -2774,11 +3292,71 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangePartial
+{
+public:
+    Range range = { };
+    std::optional<unsigned int> rangeLength = { };
+    QByteArray text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "rangeLength", rangeLength);
+        field(w, "text", text);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentChangeWholeDocument
+{
+public:
+    QByteArray text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "text", text);
+    }
+};
+
+using TextDocumentContentChangeEvent =
+        std::variant<TextDocumentContentChangePartial, TextDocumentContentChangeWholeDocument>;
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentCellContentChanges
+{
+public:
+    VersionedTextDocumentIdentifier document = { };
+    QList<TextDocumentContentChangeEvent> changes = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "document", document);
+        field(w, "changes", changes);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentCellChanges
+{
+public:
+    std::optional<NotebookDocumentCellChangeStructure> structure = { };
+    std::optional<QList<NotebookCell>> data = { };
+    std::optional<QList<NotebookDocumentCellContentChanges>> textContent = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "structure", structure);
+        field(w, "data", data);
+        field(w, "textContent", textContent);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT NotebookDocumentChangeEvent
 {
 public:
     std::optional<QJsonObject> metadata = { };
-    std::optional<QJsonObject> cells = { };
+    std::optional<NotebookDocumentCellChanges> cells = { };
 
     template <typename W>
     void walk(W &w)
@@ -2842,36 +3420,6 @@ public:
     }
 };
 
-using Pattern = QByteArray;
-class Q_LANGUAGESERVER_EXPORT WorkspaceFolder
-{
-public:
-    QByteArray uri = { };
-    QByteArray name = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "uri", uri);
-        field(w, "name", name);
-    }
-};
-
-class Q_LANGUAGESERVER_EXPORT RelativePattern
-{
-public:
-    std::variant<WorkspaceFolder, QByteArray> baseUri = { };
-    Pattern pattern = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "baseUri", baseUri);
-        field(w, "pattern", pattern);
-    }
-};
-
-using GlobPattern = std::variant<Pattern, RelativePattern>;
 class Q_LANGUAGESERVER_EXPORT FileSystemWatcher
 {
 public:
@@ -3093,6 +3641,72 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT FullDocumentDiagnosticReport
+{
+public:
+    static constexpr QByteArrayView kind = "full";
+    std::optional<QByteArray> resultId = { };
+    QList<Diagnostic> items = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "resultId", resultId);
+        field(w, "items", items);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT UnchangedDocumentDiagnosticReport
+{
+public:
+    static constexpr QByteArrayView kind = "unchanged";
+    QByteArray resultId = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "kind", kind);
+        field(w, "resultId", resultId);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RelatedFullDocumentDiagnosticReport
+    : public FullDocumentDiagnosticReport
+{
+public:
+    std::optional<
+            QMap<QByteArray,
+                 std::variant<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>>>
+            relatedDocuments = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        FullDocumentDiagnosticReport::walk(w);
+        field(w, "relatedDocuments", relatedDocuments);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT RelatedUnchangedDocumentDiagnosticReport
+    : public UnchangedDocumentDiagnosticReport
+{
+public:
+    std::optional<
+            QMap<QByteArray,
+                 std::variant<FullDocumentDiagnosticReport, UnchangedDocumentDiagnosticReport>>>
+            relatedDocuments = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        UnchangedDocumentDiagnosticReport::walk(w);
+        field(w, "relatedDocuments", relatedDocuments);
+    }
+};
+
+using DocumentDiagnosticReport =
+        std::variant<RelatedFullDocumentDiagnosticReport, RelatedUnchangedDocumentDiagnosticReport>;
 class Q_LANGUAGESERVER_EXPORT DocumentDiagnosticReportPartialResult
 {
 public:
@@ -3106,6 +3720,8 @@ public:
     }
 };
 
+using DocumentDiagnosticReportProgress =
+        std::variant<DocumentDiagnosticReport, DocumentDiagnosticReportPartialResult>;
 class Q_LANGUAGESERVER_EXPORT DocumentFormattingOptions : public WorkDoneProgressOptions
 {
 public:
@@ -3739,13 +4355,13 @@ class Q_LANGUAGESERVER_EXPORT _InitializeParams : public WorkDoneProgressParams
 {
 public:
     std::variant<std::nullptr_t, int> processId = { };
-    std::optional<QJsonObject> clientInfo = { };
+    std::optional<ClientInfo> clientInfo = { };
     std::optional<QByteArray> locale = { };
     std::optional<std::variant<std::nullptr_t, QByteArray>> rootPath = { };
     std::variant<std::nullptr_t, QByteArray> rootUri = { };
     ClientCapabilities capabilities = { };
     std::optional<QJsonValue> initializationOptions = { };
-    std::optional<TraceValues> trace = { };
+    std::optional<TraceValue> trace = { };
 
     template <typename W>
     void walk(W &w)
@@ -3818,10 +4434,51 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT NotebookCellLanguage
+{
+public:
+    QByteArray language = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "language", language);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilterWithNotebook
+{
+public:
+    std::variant<QByteArray, NotebookDocumentFilter> notebook = { };
+    std::optional<QList<NotebookCellLanguage>> cells = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebook", notebook);
+        field(w, "cells", cells);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT NotebookDocumentFilterWithCells
+{
+public:
+    std::optional<std::variant<QByteArray, NotebookDocumentFilter>> notebook = { };
+    QList<NotebookCellLanguage> cells = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "notebook", notebook);
+        field(w, "cells", cells);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT NotebookDocumentSyncOptions
 {
 public:
-    QList<QJsonObject> notebookSelector = { };
+    QList<std::variant<NotebookDocumentFilterWithNotebook, NotebookDocumentFilterWithCells>>
+            notebookSelector = { };
     std::optional<bool> save = { };
 
     template <typename W>
@@ -3985,12 +4642,24 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT SemanticTokensFullDelta
+{
+public:
+    std::optional<bool> delta = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "delta", delta);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT SemanticTokensOptions : public WorkDoneProgressOptions
 {
 public:
     SemanticTokensLegend legend = { };
     std::optional<std::variant<bool, QJsonObject>> range = { };
-    std::optional<std::variant<bool, QJsonObject>> full = { };
+    std::optional<std::variant<bool, SemanticTokensFullDelta>> full = { };
 
     template <typename W>
     void walk(W &w)
@@ -4140,6 +4809,48 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentOptions
+{
+public:
+    QList<QByteArray> schemes = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "schemes", schemes);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentRegistrationOptions
+    : public TextDocumentContentOptions,
+      public StaticRegistrationOptions
+{
+public:
+    template <typename W>
+    void walk(W &w)
+    {
+        TextDocumentContentOptions::walk(w);
+        StaticRegistrationOptions::walk(w);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceOptions
+{
+public:
+    std::optional<WorkspaceFoldersServerCapabilities> workspaceFolders = { };
+    std::optional<FileOperationOptions> fileOperations = { };
+    std::optional<std::variant<TextDocumentContentOptions, TextDocumentContentRegistrationOptions>>
+            textDocumentContent = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "workspaceFolders", workspaceFolders);
+        field(w, "fileOperations", fileOperations);
+        field(w, "textDocumentContent", textDocumentContent);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT ServerCapabilities
 {
 public:
@@ -4196,7 +4907,7 @@ public:
     std::optional<std::variant<DiagnosticOptions, DiagnosticRegistrationOptions>>
             diagnosticProvider = { };
     std::optional<std::variant<bool, InlineCompletionOptions>> inlineCompletionProvider = { };
-    std::optional<QJsonObject> workspace = { };
+    std::optional<WorkspaceOptions> workspace = { };
     std::optional<QJsonValue> experimental = { };
 
     template <typename W>
@@ -4241,11 +4952,25 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT ServerInfo
+{
+public:
+    QByteArray name = { };
+    std::optional<QByteArray> version = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "name", name);
+        field(w, "version", version);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT InitializeResult
 {
 public:
     ServerCapabilities capabilities = { };
-    std::optional<QJsonObject> serverInfo = { };
+    std::optional<ServerInfo> serverInfo = { };
 
     template <typename W>
     void walk(W &w)
@@ -4351,20 +5076,6 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT StringValue
-{
-public:
-    static constexpr QByteArrayView kind = "snippet";
-    QByteArray value = { };
-
-    template <typename W>
-    void walk(W &w)
-    {
-        field(w, "kind", kind);
-        field(w, "value", value);
-    }
-};
-
 class Q_LANGUAGESERVER_EXPORT InlineCompletionItem
 {
 public:
@@ -4425,6 +5136,52 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT InlineValueText
+{
+public:
+    Range range = { };
+    QByteArray text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "text", text);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT InlineValueVariableLookup
+{
+public:
+    Range range = { };
+    std::optional<QByteArray> variableName = { };
+    bool caseSensitiveLookup = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "variableName", variableName);
+        field(w, "caseSensitiveLookup", caseSensitiveLookup);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT InlineValueEvaluatableExpression
+{
+public:
+    Range range = { };
+    std::optional<QByteArray> expression = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "expression", expression);
+    }
+};
+
+using InlineValue =
+        std::variant<InlineValueText, InlineValueVariableLookup, InlineValueEvaluatableExpression>;
 class Q_LANGUAGESERVER_EXPORT InlineValueContext
 {
 public:
@@ -4482,6 +5239,18 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT LocationUriOnly
+{
+public:
+    QByteArray uri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT LogMessageParams
 {
 public:
@@ -4507,6 +5276,20 @@ public:
     {
         field(w, "message", message);
         field(w, "verbose", verbose);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT MarkedStringWithLanguage
+{
+public:
+    QByteArray language = { };
+    QByteArray value = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "language", language);
+        field(w, "value", value);
     }
 };
 
@@ -4568,6 +5351,18 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT PrepareRenameDefaultBehavior
+{
+public:
+    bool defaultBehavior = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "defaultBehavior", defaultBehavior);
+    }
+};
+
 class Q_LANGUAGESERVER_EXPORT PrepareRenameParams : public TextDocumentPositionParams,
                                                     public WorkDoneProgressParams
 {
@@ -4580,6 +5375,22 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT PrepareRenamePlaceholder
+{
+public:
+    Range range = { };
+    QByteArray placeholder = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "range", range);
+        field(w, "placeholder", placeholder);
+    }
+};
+
+using PrepareRenameResult =
+        std::variant<Range, PrepareRenamePlaceholder, PrepareRenameDefaultBehavior>;
 class Q_LANGUAGESERVER_EXPORT PreviousResultId
 {
 public:
@@ -4598,7 +5409,7 @@ class Q_LANGUAGESERVER_EXPORT WorkDoneProgressBegin
 {
 public:
     static constexpr QByteArrayView kind = "begin";
-    QByteArray title = {};
+    QByteArray title = { };
     std::optional<bool> cancellable = { };
     std::optional<QByteArray> message = { };
     std::optional<unsigned int> percentage = { };
@@ -4757,19 +5568,17 @@ public:
     }
 };
 
-class Q_LANGUAGESERVER_EXPORT RenameParams : public WorkDoneProgressParams
+class Q_LANGUAGESERVER_EXPORT RenameParams : public TextDocumentPositionParams,
+                                             public WorkDoneProgressParams
 {
 public:
-    TextDocumentIdentifier textDocument = { };
-    Position position = { };
     QByteArray newName = { };
 
     template <typename W>
     void walk(W &w)
     {
+        TextDocumentPositionParams::walk(w);
         WorkDoneProgressParams::walk(w);
-        field(w, "textDocument", textDocument);
-        field(w, "position", position);
         field(w, "newName", newName);
     }
 };
@@ -4790,7 +5599,7 @@ class Q_LANGUAGESERVER_EXPORT SelectionRangeParams : public WorkDoneProgressPara
                                                      public PartialResultParams
 {
 public:
-    TextDocumentIdentifier textDocument = {};
+    TextDocumentIdentifier textDocument = { };
     QList<Position> positions = { };
 
     template <typename W>
@@ -4851,7 +5660,7 @@ class Q_LANGUAGESERVER_EXPORT SemanticTokensDeltaParams : public WorkDoneProgres
                                                           public PartialResultParams
 {
 public:
-    TextDocumentIdentifier textDocument = {};
+    TextDocumentIdentifier textDocument = { };
     QByteArray previousResultId = { };
 
     template <typename W>
@@ -4923,7 +5732,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT SetTraceParams
 {
 public:
-    TraceValues value = { };
+    TraceValue value = { };
 
     template <typename W>
     void walk(W &w)
@@ -4998,7 +5807,7 @@ public:
     QByteArray label = { };
     std::optional<std::variant<QByteArray, MarkupContent>> documentation = { };
     std::optional<QList<ParameterInformation>> parameters = { };
-    std::optional<unsigned int> activeParameter = { };
+    std::optional<std::variant<std::nullptr_t, unsigned int>> activeParameter = { };
 
     template <typename W>
     void walk(W &w)
@@ -5015,7 +5824,7 @@ class Q_LANGUAGESERVER_EXPORT SignatureHelp
 public:
     QList<SignatureInformation> signatures = { };
     std::optional<unsigned int> activeSignature = { };
-    std::optional<unsigned int> activeParameter = { };
+    std::optional<std::variant<std::nullptr_t, unsigned int>> activeParameter = { };
 
     template <typename W>
     void walk(W &w)
@@ -5098,6 +5907,42 @@ public:
     {
         TextDocumentRegistrationOptions::walk(w);
         field(w, "syncKind", syncKind);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentParams
+{
+public:
+    QByteArray uri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentRefreshParams
+{
+public:
+    QByteArray uri = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "uri", uri);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT TextDocumentContentResult
+{
+public:
+    QByteArray text = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        field(w, "text", text);
     }
 };
 
@@ -5225,7 +6070,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WillSaveTextDocumentParams
 {
 public:
-    TextDocumentIdentifier textDocument = {};
+    TextDocumentIdentifier textDocument = { };
     TextDocumentSaveReason reason = { };
 
     template <typename W>
@@ -5277,6 +6122,40 @@ public:
     }
 };
 
+class Q_LANGUAGESERVER_EXPORT WorkspaceFullDocumentDiagnosticReport
+    : public FullDocumentDiagnosticReport
+{
+public:
+    QByteArray uri = { };
+    std::variant<std::nullptr_t, int> version = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        FullDocumentDiagnosticReport::walk(w);
+        field(w, "uri", uri);
+        field(w, "version", version);
+    }
+};
+
+class Q_LANGUAGESERVER_EXPORT WorkspaceUnchangedDocumentDiagnosticReport
+    : public UnchangedDocumentDiagnosticReport
+{
+public:
+    QByteArray uri = { };
+    std::variant<std::nullptr_t, int> version = { };
+
+    template <typename W>
+    void walk(W &w)
+    {
+        UnchangedDocumentDiagnosticReport::walk(w);
+        field(w, "uri", uri);
+        field(w, "version", version);
+    }
+};
+
+using WorkspaceDocumentDiagnosticReport = std::variant<WorkspaceFullDocumentDiagnosticReport,
+                                                       WorkspaceUnchangedDocumentDiagnosticReport>;
 class Q_LANGUAGESERVER_EXPORT WorkspaceDiagnosticReport
 {
 public:
@@ -5304,7 +6183,7 @@ public:
 class Q_LANGUAGESERVER_EXPORT WorkspaceSymbol : public BaseSymbolInformation
 {
 public:
-    std::variant<Location, QJsonObject> location = { };
+    std::variant<Location, LocationUriOnly> location = { };
     std::optional<QJsonValue> data = { };
 
     template <typename W>
@@ -5345,24 +6224,16 @@ public:
 
 namespace QTypedJson {
 
-template<>
-inline QString enumToString<QLspSpecification::TraceValue>(QLspSpecification::TraceValue value)
-{
-    switch (value) {
-    case QLspSpecification::TraceValue::Off:
-        return QLatin1String("off");
-    case QLspSpecification::TraceValue::Messages:
-        return QLatin1String("messages");
-    case QLspSpecification::TraceValue::Verbose:
-        return QLatin1String("verbose");
-    }
-    return QString();
-}
-
-template<>
+template <>
 inline QString enumToString<QLspSpecification::ErrorCodes>(QLspSpecification::ErrorCodes value)
 {
     return enumToIntString<QLspSpecification::ErrorCodes>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::ApplyKind>(QLspSpecification::ApplyKind value)
+{
+    return enumToIntString<QLspSpecification::ApplyKind>(value);
 }
 
 template <>
@@ -5380,6 +6251,8 @@ enumToString<QLspSpecification::CodeActionKind>(QLspSpecification::CodeActionKin
         return QLatin1String("refactor.extract");
     case QLspSpecification::CodeActionKind::RefactorInline:
         return QLatin1String("refactor.inline");
+    case QLspSpecification::CodeActionKind::RefactorMove:
+        return QLatin1String("refactor.move");
     case QLspSpecification::CodeActionKind::RefactorRewrite:
         return QLatin1String("refactor.rewrite");
     case QLspSpecification::CodeActionKind::Source:
@@ -5388,6 +6261,8 @@ enumToString<QLspSpecification::CodeActionKind>(QLspSpecification::CodeActionKin
         return QLatin1String("source.organizeImports");
     case QLspSpecification::CodeActionKind::SourceFixAll:
         return QLatin1String("source.fixAll");
+    case QLspSpecification::CodeActionKind::Notebook:
+        return QLatin1String("notebook");
     default:
         return QString::number(int(value));
     }
@@ -5407,6 +6282,8 @@ enumFromString<QLspSpecification::CodeActionKind>(const QString &string)
         return QLspSpecification::CodeActionKind::RefactorExtract;
     else if (string.compare(QLatin1String("refactor.inline"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::CodeActionKind::RefactorInline;
+    else if (string.compare(QLatin1String("refactor.move"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::CodeActionKind::RefactorMove;
     else if (string.compare(QLatin1String("refactor.rewrite"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::CodeActionKind::RefactorRewrite;
     else if (string.compare(QLatin1String("source"), Qt::CaseInsensitive) == 0)
@@ -5415,7 +6292,16 @@ enumFromString<QLspSpecification::CodeActionKind>(const QString &string)
         return QLspSpecification::CodeActionKind::SourceOrganizeImports;
     else if (string.compare(QLatin1String("source.fixAll"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::CodeActionKind::SourceFixAll;
+    else if (string.compare(QLatin1String("notebook"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::CodeActionKind::Notebook;
     return QLspSpecification::CodeActionKind{ };
+}
+
+template <>
+inline QString
+enumToString<QLspSpecification::CodeActionTag>(QLspSpecification::CodeActionTag value)
+{
+    return enumToIntString<QLspSpecification::CodeActionTag>(value);
 }
 
 template <>
@@ -5619,6 +6505,270 @@ inline QString
 enumToString<QLspSpecification::LSPErrorCodes>(QLspSpecification::LSPErrorCodes value)
 {
     return enumToIntString<QLspSpecification::LSPErrorCodes>(value);
+}
+
+template <>
+inline QString enumToString<QLspSpecification::LanguageKind>(QLspSpecification::LanguageKind value)
+{
+    switch (value) {
+    case QLspSpecification::LanguageKind::ABAP:
+        return QLatin1String("abap");
+    case QLspSpecification::LanguageKind::WindowsBat:
+        return QLatin1String("bat");
+    case QLspSpecification::LanguageKind::BibTeX:
+        return QLatin1String("bibtex");
+    case QLspSpecification::LanguageKind::Clojure:
+        return QLatin1String("clojure");
+    case QLspSpecification::LanguageKind::Coffeescript:
+        return QLatin1String("coffeescript");
+    case QLspSpecification::LanguageKind::C:
+        return QLatin1String("c");
+    case QLspSpecification::LanguageKind::CPP:
+        return QLatin1String("cpp");
+    case QLspSpecification::LanguageKind::CSharp:
+        return QLatin1String("csharp");
+    case QLspSpecification::LanguageKind::CSS:
+        return QLatin1String("css");
+    case QLspSpecification::LanguageKind::D:
+        return QLatin1String("d");
+    case QLspSpecification::LanguageKind::Delphi:
+        return QLatin1String("pascal");
+    case QLspSpecification::LanguageKind::Diff:
+        return QLatin1String("diff");
+    case QLspSpecification::LanguageKind::Dart:
+        return QLatin1String("dart");
+    case QLspSpecification::LanguageKind::Dockerfile:
+        return QLatin1String("dockerfile");
+    case QLspSpecification::LanguageKind::Elixir:
+        return QLatin1String("elixir");
+    case QLspSpecification::LanguageKind::Erlang:
+        return QLatin1String("erlang");
+    case QLspSpecification::LanguageKind::FSharp:
+        return QLatin1String("fsharp");
+    case QLspSpecification::LanguageKind::GitCommit:
+        return QLatin1String("git-commit");
+    case QLspSpecification::LanguageKind::GitRebase:
+        return QLatin1String("git-rebase");
+    case QLspSpecification::LanguageKind::Go:
+        return QLatin1String("go");
+    case QLspSpecification::LanguageKind::Groovy:
+        return QLatin1String("groovy");
+    case QLspSpecification::LanguageKind::Handlebars:
+        return QLatin1String("handlebars");
+    case QLspSpecification::LanguageKind::Haskell:
+        return QLatin1String("haskell");
+    case QLspSpecification::LanguageKind::HTML:
+        return QLatin1String("html");
+    case QLspSpecification::LanguageKind::Ini:
+        return QLatin1String("ini");
+    case QLspSpecification::LanguageKind::Java:
+        return QLatin1String("java");
+    case QLspSpecification::LanguageKind::JavaScript:
+        return QLatin1String("javascript");
+    case QLspSpecification::LanguageKind::JavaScriptReact:
+        return QLatin1String("javascriptreact");
+    case QLspSpecification::LanguageKind::JSON:
+        return QLatin1String("json");
+    case QLspSpecification::LanguageKind::LaTeX:
+        return QLatin1String("latex");
+    case QLspSpecification::LanguageKind::Less:
+        return QLatin1String("less");
+    case QLspSpecification::LanguageKind::Lua:
+        return QLatin1String("lua");
+    case QLspSpecification::LanguageKind::Makefile:
+        return QLatin1String("makefile");
+    case QLspSpecification::LanguageKind::Markdown:
+        return QLatin1String("markdown");
+    case QLspSpecification::LanguageKind::ObjectiveC:
+        return QLatin1String("objective-c");
+    case QLspSpecification::LanguageKind::ObjectiveCPP:
+        return QLatin1String("objective-cpp");
+    case QLspSpecification::LanguageKind::Pascal:
+        return QLatin1String("pascal");
+    case QLspSpecification::LanguageKind::Perl:
+        return QLatin1String("perl");
+    case QLspSpecification::LanguageKind::Perl6:
+        return QLatin1String("perl6");
+    case QLspSpecification::LanguageKind::PHP:
+        return QLatin1String("php");
+    case QLspSpecification::LanguageKind::Plaintext:
+        return QLatin1String("plaintext");
+    case QLspSpecification::LanguageKind::Powershell:
+        return QLatin1String("powershell");
+    case QLspSpecification::LanguageKind::Pug:
+        return QLatin1String("jade");
+    case QLspSpecification::LanguageKind::Python:
+        return QLatin1String("python");
+    case QLspSpecification::LanguageKind::R:
+        return QLatin1String("r");
+    case QLspSpecification::LanguageKind::Razor:
+        return QLatin1String("razor");
+    case QLspSpecification::LanguageKind::Ruby:
+        return QLatin1String("ruby");
+    case QLspSpecification::LanguageKind::Rust:
+        return QLatin1String("rust");
+    case QLspSpecification::LanguageKind::SCSS:
+        return QLatin1String("scss");
+    case QLspSpecification::LanguageKind::SASS:
+        return QLatin1String("sass");
+    case QLspSpecification::LanguageKind::Scala:
+        return QLatin1String("scala");
+    case QLspSpecification::LanguageKind::ShaderLab:
+        return QLatin1String("shaderlab");
+    case QLspSpecification::LanguageKind::ShellScript:
+        return QLatin1String("shellscript");
+    case QLspSpecification::LanguageKind::SQL:
+        return QLatin1String("sql");
+    case QLspSpecification::LanguageKind::Swift:
+        return QLatin1String("swift");
+    case QLspSpecification::LanguageKind::TypeScript:
+        return QLatin1String("typescript");
+    case QLspSpecification::LanguageKind::TypeScriptReact:
+        return QLatin1String("typescriptreact");
+    case QLspSpecification::LanguageKind::TeX:
+        return QLatin1String("tex");
+    case QLspSpecification::LanguageKind::VisualBasic:
+        return QLatin1String("vb");
+    case QLspSpecification::LanguageKind::XML:
+        return QLatin1String("xml");
+    case QLspSpecification::LanguageKind::XSL:
+        return QLatin1String("xsl");
+    case QLspSpecification::LanguageKind::YAML:
+        return QLatin1String("yaml");
+    default:
+        return QString::number(int(value));
+    }
+}
+
+template <>
+inline QLspSpecification::LanguageKind
+enumFromString<QLspSpecification::LanguageKind>(const QString &string)
+{
+    if (string.compare(QLatin1String("abap"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::ABAP;
+    else if (string.compare(QLatin1String("bat"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::WindowsBat;
+    else if (string.compare(QLatin1String("bibtex"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::BibTeX;
+    else if (string.compare(QLatin1String("clojure"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Clojure;
+    else if (string.compare(QLatin1String("coffeescript"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Coffeescript;
+    else if (string.compare(QLatin1String("c"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::C;
+    else if (string.compare(QLatin1String("cpp"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::CPP;
+    else if (string.compare(QLatin1String("csharp"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::CSharp;
+    else if (string.compare(QLatin1String("css"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::CSS;
+    else if (string.compare(QLatin1String("d"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::D;
+    else if (string.compare(QLatin1String("pascal"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Delphi;
+    else if (string.compare(QLatin1String("diff"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Diff;
+    else if (string.compare(QLatin1String("dart"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Dart;
+    else if (string.compare(QLatin1String("dockerfile"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Dockerfile;
+    else if (string.compare(QLatin1String("elixir"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Elixir;
+    else if (string.compare(QLatin1String("erlang"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Erlang;
+    else if (string.compare(QLatin1String("fsharp"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::FSharp;
+    else if (string.compare(QLatin1String("git-commit"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::GitCommit;
+    else if (string.compare(QLatin1String("git-rebase"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::GitRebase;
+    else if (string.compare(QLatin1String("go"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Go;
+    else if (string.compare(QLatin1String("groovy"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Groovy;
+    else if (string.compare(QLatin1String("handlebars"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Handlebars;
+    else if (string.compare(QLatin1String("haskell"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Haskell;
+    else if (string.compare(QLatin1String("html"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::HTML;
+    else if (string.compare(QLatin1String("ini"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Ini;
+    else if (string.compare(QLatin1String("java"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Java;
+    else if (string.compare(QLatin1String("javascript"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::JavaScript;
+    else if (string.compare(QLatin1String("javascriptreact"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::JavaScriptReact;
+    else if (string.compare(QLatin1String("json"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::JSON;
+    else if (string.compare(QLatin1String("latex"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::LaTeX;
+    else if (string.compare(QLatin1String("less"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Less;
+    else if (string.compare(QLatin1String("lua"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Lua;
+    else if (string.compare(QLatin1String("makefile"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Makefile;
+    else if (string.compare(QLatin1String("markdown"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Markdown;
+    else if (string.compare(QLatin1String("objective-c"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::ObjectiveC;
+    else if (string.compare(QLatin1String("objective-cpp"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::ObjectiveCPP;
+    else if (string.compare(QLatin1String("pascal"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Pascal;
+    else if (string.compare(QLatin1String("perl"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Perl;
+    else if (string.compare(QLatin1String("perl6"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Perl6;
+    else if (string.compare(QLatin1String("php"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::PHP;
+    else if (string.compare(QLatin1String("plaintext"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Plaintext;
+    else if (string.compare(QLatin1String("powershell"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Powershell;
+    else if (string.compare(QLatin1String("jade"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Pug;
+    else if (string.compare(QLatin1String("python"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Python;
+    else if (string.compare(QLatin1String("r"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::R;
+    else if (string.compare(QLatin1String("razor"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Razor;
+    else if (string.compare(QLatin1String("ruby"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Ruby;
+    else if (string.compare(QLatin1String("rust"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Rust;
+    else if (string.compare(QLatin1String("scss"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::SCSS;
+    else if (string.compare(QLatin1String("sass"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::SASS;
+    else if (string.compare(QLatin1String("scala"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Scala;
+    else if (string.compare(QLatin1String("shaderlab"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::ShaderLab;
+    else if (string.compare(QLatin1String("shellscript"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::ShellScript;
+    else if (string.compare(QLatin1String("sql"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::SQL;
+    else if (string.compare(QLatin1String("swift"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::Swift;
+    else if (string.compare(QLatin1String("typescript"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::TypeScript;
+    else if (string.compare(QLatin1String("typescriptreact"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::TypeScriptReact;
+    else if (string.compare(QLatin1String("tex"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::TeX;
+    else if (string.compare(QLatin1String("vb"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::VisualBasic;
+    else if (string.compare(QLatin1String("xml"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::XML;
+    else if (string.compare(QLatin1String("xsl"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::XSL;
+    else if (string.compare(QLatin1String("yaml"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::LanguageKind::YAML;
+    return QLspSpecification::LanguageKind{ };
 }
 
 template <>
@@ -5859,6 +7009,8 @@ enumToString<QLspSpecification::SemanticTokenTypes>(QLspSpecification::SemanticT
         return QLatin1String("operator");
     case QLspSpecification::SemanticTokenTypes::Decorator:
         return QLatin1String("decorator");
+    case QLspSpecification::SemanticTokenTypes::Label:
+        return QLatin1String("label");
     default:
         return QString::number(int(value));
     }
@@ -5914,6 +7066,8 @@ enumFromString<QLspSpecification::SemanticTokenTypes>(const QString &string)
         return QLspSpecification::SemanticTokenTypes::Operator;
     else if (string.compare(QLatin1String("decorator"), Qt::CaseInsensitive) == 0)
         return QLspSpecification::SemanticTokenTypes::Decorator;
+    else if (string.compare(QLatin1String("label"), Qt::CaseInsensitive) == 0)
+        return QLspSpecification::SemanticTokenTypes::Label;
     return QLspSpecification::SemanticTokenTypes{ };
 }
 
@@ -5971,14 +7125,14 @@ enumFromString<QLspSpecification::TokenFormat>(const QString &string)
 }
 
 template <>
-inline QString enumToString<QLspSpecification::TraceValues>(QLspSpecification::TraceValues value)
+inline QString enumToString<QLspSpecification::TraceValue>(QLspSpecification::TraceValue value)
 {
     switch (value) {
-    case QLspSpecification::TraceValues::Off:
+    case QLspSpecification::TraceValue::Off:
         return QLatin1String("off");
-    case QLspSpecification::TraceValues::Messages:
+    case QLspSpecification::TraceValue::Messages:
         return QLatin1String("messages");
-    case QLspSpecification::TraceValues::Verbose:
+    case QLspSpecification::TraceValue::Verbose:
         return QLatin1String("verbose");
     default:
         return QString::number(int(value));
@@ -5986,16 +7140,16 @@ inline QString enumToString<QLspSpecification::TraceValues>(QLspSpecification::T
 }
 
 template <>
-inline QLspSpecification::TraceValues
-enumFromString<QLspSpecification::TraceValues>(const QString &string)
+inline QLspSpecification::TraceValue
+enumFromString<QLspSpecification::TraceValue>(const QString &string)
 {
     if (string.compare(QLatin1String("off"), Qt::CaseInsensitive) == 0)
-        return QLspSpecification::TraceValues::Off;
+        return QLspSpecification::TraceValue::Off;
     else if (string.compare(QLatin1String("messages"), Qt::CaseInsensitive) == 0)
-        return QLspSpecification::TraceValues::Messages;
+        return QLspSpecification::TraceValue::Messages;
     else if (string.compare(QLatin1String("verbose"), Qt::CaseInsensitive) == 0)
-        return QLspSpecification::TraceValues::Verbose;
-    return QLspSpecification::TraceValues{ };
+        return QLspSpecification::TraceValue::Verbose;
+    return QLspSpecification::TraceValue{ };
 }
 
 template <>

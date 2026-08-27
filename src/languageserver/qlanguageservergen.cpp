@@ -91,6 +91,9 @@ QByteArray ProtocolBase::requestMethodToBaseCppName(const QByteArray &method)
               { QByteArray("workspace/semanticTokens/refresh"),
                 QByteArray("WorkspaceSemanticTokensRefresh") },
               { QByteArray("workspace/symbol"), QByteArray("WorkspaceSymbol") },
+              { QByteArray("workspace/textDocumentContent"), QByteArray("TextDocumentContent") },
+              { QByteArray("workspace/textDocumentContent/refresh"),
+                QByteArray("TextDocumentContentRefresh") },
               { QByteArray("workspace/willCreateFiles"), QByteArray("CreateFiles") },
               { QByteArray("workspace/willDeleteFiles"), QByteArray("DeleteFiles") },
               { QByteArray("workspace/willRenameFiles"), QByteArray("RenameFiles") },
@@ -673,8 +676,7 @@ void ProtocolGen::requestDocumentDiagnostic(
 void ProtocolGen::registerDocumentDiagnosticRequestHandler(
         const std::function<void(const QByteArray &, const DocumentDiagnosticParams &,
                                  LSPPartialResponse<DocumentDiagnosticReport,
-                                                    DocumentDiagnosticReportPartialResult> &&)>
-                &handler)
+                                                    DocumentDiagnosticReportProgress> &&)> &handler)
 {
     typedRpc()
             ->registerRequestHandler<QLspSpecification::Requests::DocumentDiagnosticParamsType,
@@ -2047,6 +2049,64 @@ void ProtocolGen::registerWorkspaceSymbolRequestHandler(
             ->registerRequestHandler<QLspSpecification::Requests::WorkspaceSymbolParamsType,
                                      QLspSpecification::Responses::WorkspaceSymbolResponseType>(
                     QByteArray(QLspSpecification::Requests::WorkspaceSymbolMethod), handler);
+}
+
+void ProtocolGen::requestTextDocumentContent(
+        const TextDocumentContentParams &params,
+        std::function<void(const TextDocumentContentResult &)> responseHandler,
+        ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::TextDocumentContentMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<TextDocumentContentResult>(response.data, responseHandler,
+                                                             errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerTextDocumentContentRequestHandler(
+        const std::function<void(const QByteArray &, const TextDocumentContentParams &,
+                                 LSPResponse<TextDocumentContentResult> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<QLspSpecification::Requests::TextDocumentContentParamsType,
+                                     QLspSpecification::Responses::TextDocumentContentResponseType>(
+                    QByteArray(QLspSpecification::Requests::TextDocumentContentMethod), handler);
+}
+
+void ProtocolGen::requestTextDocumentContentRefresh(const TextDocumentContentRefreshParams &params,
+                                                    std::function<void()> responseHandler,
+                                                    ResponseErrorHandler errorHandler)
+{
+    typedRpc()->sendRequest(
+            QByteArray(Requests::TextDocumentContentRefreshMethod),
+            [responseHandler = std::move(responseHandler),
+             errorHandler = std::move(errorHandler)](const QJsonRpcProtocol::Response &response) {
+                if (response.errorCode.isDouble())
+                    errorHandler(ResponseError{ response.errorCode.toInt(),
+                                                response.errorMessage.toUtf8(), response.data });
+                else
+                    decodeAndCall<std::nullptr_t>(response.data, responseHandler, errorHandler);
+            },
+            params);
+}
+
+void ProtocolGen::registerTextDocumentContentRefreshRequestHandler(
+        const std::function<void(const QByteArray &, const TextDocumentContentRefreshParams &,
+                                 LSPResponse<std::nullptr_t> &&)> &handler)
+{
+    typedRpc()
+            ->registerRequestHandler<
+                    QLspSpecification::Requests::TextDocumentContentRefreshParamsType,
+                    QLspSpecification::Responses::TextDocumentContentRefreshResponseType>(
+                    QByteArray(QLspSpecification::Requests::TextDocumentContentRefreshMethod),
+                    handler);
 }
 
 void ProtocolGen::requestCreateFiles(

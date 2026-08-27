@@ -35,6 +35,7 @@ class Q_LANGUAGESERVER_EXPORT ProtocolGen : public ProtocolBase
 {
 protected:
     ProtocolGen(std::unique_ptr<ProtocolGenPrivate> &&p);
+
 public:
     ~ProtocolGen();
 
@@ -191,7 +192,7 @@ public:
     void registerDocumentDiagnosticRequestHandler(
             const std::function<void(const QByteArray &, const DocumentDiagnosticParams &,
                                      LSPPartialResponse<DocumentDiagnosticReport,
-                                                        DocumentDiagnosticReportPartialResult> &&)>
+                                                        DocumentDiagnosticReportProgress> &&)>
                     &handler);
     void requestDocumentColor(
             const DocumentColorParams &,
@@ -594,6 +595,19 @@ public:
                                                          QList<WorkspaceSymbol>>,
                                             std::variant<QList<SymbolInformation>,
                                                          QList<WorkspaceSymbol>>> &&)> &handler);
+    void requestTextDocumentContent(
+            const TextDocumentContentParams &,
+            std::function<void(const TextDocumentContentResult &)> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerTextDocumentContentRequestHandler(
+            const std::function<void(const QByteArray &, const TextDocumentContentParams &,
+                                     LSPResponse<TextDocumentContentResult> &&)> &handler);
+    void requestTextDocumentContentRefresh(
+            const TextDocumentContentRefreshParams &, std::function<void()> responseHandler,
+            ResponseErrorHandler errorHandler = &ProtocolBase::defaultResponseErrorHandler);
+    void registerTextDocumentContentRefreshRequestHandler(
+            const std::function<void(const QByteArray &, const TextDocumentContentRefreshParams &,
+                                     LSPResponse<std::nullptr_t> &&)> &handler);
     void requestCreateFiles(
             const CreateFilesParams &,
             std::function<void(const std::variant<std::nullptr_t, WorkspaceEdit> &)>
