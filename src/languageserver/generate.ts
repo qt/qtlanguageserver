@@ -10,12 +10,20 @@
 
 The language server protocol is largely generated from the
 specification
-  src/languageserver/3rdparty/specification.md
-by the src/languageserver/generate.ts script.
-Use
+  src/languageserver/3rdparty/metaModel.json
+You can obtain the specification by searching for "meta model" on the
+LSP website, and by removing invisible characters for the qt sanity
+bot by doing
+\badcode
+iconv -f utf-8 -t ascii//IGNORE metaModelDirty.json > metaModel.json
+\endcode
+To generate the C++ classes open a terminal in this folder
+(src/languageserver) and run:
+\badcode
   npm install
-  tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false generate.ts && node generate.js
-to run it. Then git clang-format to reformat its output.
+  npm run generate
+\endcode
+
 It generates:
 
 src/languageserver/qlanguageserverspectypes_p.h:

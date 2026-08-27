@@ -5,7 +5,10 @@
     },
     "type": "module",
     "scripts": {
-        "generate":
-                "tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false ./generate.ts ./3rdparty/metaModel.ts"
+        "pregenerate":
+                "tsc --downlevelIteration --strictNullChecks --ignoreDeprecations 6.0 --noImplicitAny false ./generate.ts ./3rdparty/metaModel.ts",
+        "generate": "node ./generate.js",
+        "postgenerate":
+                "clang-format -i qlanguageservergen{_p.h,.cpp} qlanguageserverspec{,types}_p.h qlspnotifysignals{_p.h,.cpp}"
     }
 }
