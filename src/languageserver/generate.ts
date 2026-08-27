@@ -673,7 +673,6 @@ function generateAlias(alias: metaModel.TypeAlias, result: GeneratedClassOrAlias
     generatedAlias.code = "using " + alias.name + " = "
             + typeToCppType(alias.type, x => generateObjectLiteral(helper, x)) + ";\n";
     collectDependencies(alias.type, generatedAlias.dependencies);
-    result.forEach(x => generatedAlias.dependencies.push(x.name));
     result.push(generatedAlias);
 }
 function stringCompare(a: string, b: string): number
