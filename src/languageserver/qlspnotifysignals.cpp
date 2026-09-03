@@ -21,7 +21,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedCancelNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerLogTraceNotificationHandler(
@@ -32,7 +32,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedLogTraceNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerProgressNotificationHandler(
@@ -43,7 +43,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedProgressNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerSetTraceNotificationHandler(
@@ -54,7 +54,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedSetTraceNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerExitNotificationHandler(
@@ -65,7 +65,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedExitNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerInitializedNotificationHandler(
@@ -77,7 +77,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedInitializedNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidChangeNotebookDocumentNotificationHandler(
@@ -90,7 +90,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidChangeNotebookDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidCloseNotebookDocumentNotificationHandler(
@@ -103,7 +103,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidCloseNotebookDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidOpenNotebookDocumentNotificationHandler(
@@ -116,7 +116,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidOpenNotebookDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidSaveNotebookDocumentNotificationHandler(
@@ -129,7 +129,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidSaveNotebookDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerTelemetryEventNotificationHandler(
@@ -141,7 +141,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedTelemetryEventNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidChangeTextDocumentNotificationHandler(
@@ -153,7 +153,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidChangeTextDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidCloseTextDocumentNotificationHandler(
@@ -165,7 +165,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidCloseTextDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidOpenTextDocumentNotificationHandler(
@@ -177,7 +177,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidOpenTextDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidSaveTextDocumentNotificationHandler(
@@ -189,7 +189,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidSaveTextDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerPublishDiagnosticsNotificationHandler(
@@ -201,7 +201,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedPublishDiagnosticsNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerWillSaveTextDocumentNotificationHandler(
@@ -213,7 +213,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedWillSaveTextDocumentNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerLogMessageNotificationHandler(
@@ -224,7 +224,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedLogMessageNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerShowMessageNotificationHandler(
@@ -236,7 +236,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedShowMessageNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerWorkDoneProgressCancelNotificationHandler(
@@ -249,7 +249,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedWorkDoneProgressCancelNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidChangeConfigurationNotificationHandler(
@@ -262,7 +262,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidChangeConfigurationNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidChangeWatchedFilesNotificationHandler(
@@ -274,7 +274,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidChangeWatchedFilesNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDidChangeWorkspaceFoldersNotificationHandler(
@@ -287,7 +287,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDidChangeWorkspaceFoldersNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerCreateFilesNotificationHandler(
@@ -299,7 +299,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedCreateFilesNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerDeleteFilesNotificationHandler(
@@ -311,7 +311,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedDeleteFilesNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 
     protocol->registerRenameFilesNotificationHandler(
@@ -323,7 +323,7 @@ void QLspNotifySignals::registerHandlers(QLanguageServerProtocol *protocol)
                 if (isSignalConnected(notificationSignal))
                     emit receivedRenameFilesNotification(params);
                 else
-                    protocol->handleUndispatchedNotification(method, params);
+                    protocol->handleUndispatchedNotification(method);
             });
 }
 

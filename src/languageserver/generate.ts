@@ -991,7 +991,7 @@ protocol->register${name}NotificationHandler(
         if (isSignalConnected(notificationSignal))
             emit received${name}Notification(params);
         else
-            protocol->handleUndispatchedNotification(method, params);
+            protocol->handleUndispatchedNotification(method);
     });`;
 }
 
@@ -1067,30 +1067,6 @@ namespace Responses { using namespace Requests; }
 
 namespace Notifications {${createInGroupsWithComments(protoData.notifications, createNotification)}
 } // namespace Notifications
-
-// Variant over all possible request parameters, required by the generic handlers.
-// This variant is used like a generic argument type that can be constructed from
-// any argument type... except when it contains duplicate, in that case the
-// constructors are deleted. Therefore ensure that each variant type only occurs
-// once in the variant.
-using RequestParams = std::variant<${
-                                [...new Set(
-                                         protoData.requests
-                                                 .map(r => typeToCppType(<metaModel.Type>r.params,
-                                                                         undefined))
-                                                 .sort())]
-                                        .join(",\n    ")},
-    QJsonValue>;
-
-// Variant over all possible notification parameters, required by the generic handlers.
-// This can't contain duplicates, see comment on RequestParams.
-using NotificationParams = std::variant<${
-                                [...new Set(
-                                         protoData.notifications
-                                                 .map(r => typeToCppType(<metaModel.Type>r.params,
-                                                                         undefined))
-                                                 .sort())]
-                                        .join(",\n    ")}>;
 
 } // namespace QLspSpecification
 

@@ -30,11 +30,11 @@ void ProtocolBase::registerMethods(QJsonRpc::TypedRpc *typedRpc)
                 QJsonRpc::IdType id(req.id);
                 QByteArray method = req.method.toUtf8();
                 QJsonRpc::TypedResponse response(id, typedRpc, handler);
-                handleUndispatchedRequest(id, method, req.params, std::move(response));
+                handleUndispatchedRequest(id, method, std::move(response));
             },
             [this](const QJsonRpcProtocol::Notification &notif) {
                 QByteArray method = notif.method.toUtf8();
-                handleUndispatchedNotification(method, notif.params);
+                handleUndispatchedNotification(method);
             });
     typedRpc->setDefaultMessageHandler(defaultHandler); // typedRpc gets ownership
     typedRpc->setInvalidResponseHandler([this](const QJsonRpcProtocol::Response &response) {
@@ -45,11 +45,9 @@ void ProtocolBase::registerMethods(QJsonRpc::TypedRpc *typedRpc)
 
 void ProtocolBase::defaultUndispatchedRequestHandler(const QJsonRpc::IdType &id,
                                                      const QByteArray &method,
-                                                     const QLspSpecification::RequestParams &params,
                                                      QJsonRpc::TypedResponse &&response)
 {
     Q_UNUSED(id);
-    Q_UNUSED(params);
     QByteArray msg;
     QByteArray cppBaseName = requestMethodToBaseCppName(method);
     if (cppBaseName.isEmpty()) {
@@ -65,10 +63,8 @@ void ProtocolBase::defaultUndispatchedRequestHandler(const QJsonRpc::IdType &id,
     qCWarning(lspLog) << QString::fromUtf8(msg);
 }
 
-void ProtocolBase::defaultUndispatchedNotificationHandler(
-        const QByteArray &method, const QLspSpecification::NotificationParams &params)
+void ProtocolBase::defaultUndispatchedNotificationHandler(const QByteArray &method)
 {
-    Q_UNUSED(params);
     QByteArray msg;
     QByteArray cppBaseName = notificationMethodToBaseCppName(method);
     if (cppBaseName.isEmpty()) {
@@ -108,40 +104,15 @@ void ProtocolBase::registerResponseErrorHandler(const ResponseErrorHandler &hand
     d->errorHandler = handler;
 }
 
-void ProtocolBase::registerUndispatchedRequestHandler(const GenericRequestHandler &handler)
-{
-    Q_D(ProtocolBase);
-    Q_ASSERT(!d->undispachedRequestHandler || !handler);
-    d->undispachedRequestHandler = handler;
-}
-
-void ProtocolBase::registerUndispatchedNotificationHandler(
-        const GenericNotificationHandler &handler)
-{
-    Q_D(ProtocolBase);
-    Q_ASSERT(!d->undispachedNotificationHandler || !handler);
-    d->undispachedNotificationHandler = handler;
-}
-
 void ProtocolBase::handleUndispatchedRequest(const QJsonRpc::IdType &id, const QByteArray &method,
-                                             const QLspSpecification::RequestParams &params,
                                              QJsonRpc::TypedResponse &&response)
 {
-    Q_D(ProtocolBase);
-    if (d->undispachedRequestHandler)
-        d->undispachedRequestHandler(id, method, params, std::move(response));
-    else
-        defaultUndispatchedRequestHandler(id, method, params, std::move(response));
+    defaultUndispatchedRequestHandler(id, method, std::move(response));
 }
 
-void ProtocolBase::handleUndispatchedNotification(const QByteArray &method,
-                                                  const NotificationParams &params)
+void ProtocolBase::handleUndispatchedNotification(const QByteArray &method)
 {
-    Q_D(ProtocolBase);
-    if (d->undispachedNotificationHandler)
-        d->undispachedNotificationHandler(method, params);
-    else
-        defaultUndispatchedNotificationHandler(method, params);
+    defaultUndispatchedNotificationHandler(method);
 }
 
 void ProtocolBase::handleResponseError(const ResponseError &err)

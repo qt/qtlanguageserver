@@ -28,8 +28,6 @@ public:
     QLanguageServerJsonRpcTransport transport;
     QJsonRpc::TypedRpc typedRpc;
     ProtocolBase::ResponseErrorHandler errorHandler;
-    ProtocolBase::GenericRequestHandler undispachedRequestHandler;
-    ProtocolBase::GenericNotificationHandler undispachedNotificationHandler;
 };
 
 } // namespace QLspSpecification

@@ -54,11 +54,6 @@ class Q_LANGUAGESERVER_EXPORT ProtocolBase
     Q_DISABLE_COPY_MOVE(ProtocolBase)
 public:
     ~ProtocolBase();
-    using GenericRequestHandler = std::function<void(const QJsonRpc::IdType &, const QByteArray &,
-                                                     const QLspSpecification::RequestParams &,
-                                                     QJsonRpc::TypedResponse &&)>;
-    using GenericNotificationHandler =
-            std::function<void(const QByteArray &, const QLspSpecification::NotificationParams &)>;
     using ResponseErrorHandler = std::function<void(const QLspSpecification::ResponseError &)>;
 
     // generated, defined in qlanguageservergen.cpp
@@ -67,23 +62,18 @@ public:
     // generated, defined in qlanguageservergen.cpp
     static QByteArray notificationMethodToBaseCppName(const QByteArray &);
 
-    static void defaultUndispatchedRequestHandler(
-            const QJsonRpc::IdType &id, const QByteArray &method,
-            const QLspSpecification::RequestParams &params, QJsonRpc::TypedResponse &&response);
-    static void defaultUndispatchedNotificationHandler(
-            const QByteArray &method, const QLspSpecification::NotificationParams &params);
+    static void defaultUndispatchedRequestHandler(const QJsonRpc::IdType &id,
+                                                  const QByteArray &method,
+                                                  QJsonRpc::TypedResponse &&response);
+    static void defaultUndispatchedNotificationHandler(const QByteArray &method);
     static void defaultResponseErrorHandler(const QLspSpecification::ResponseError &err);
 
     void registerResponseErrorHandler(const ResponseErrorHandler &h);
-    void registerUndispatchedRequestHandler(const GenericRequestHandler &handler);
-    void registerUndispatchedNotificationHandler(const GenericNotificationHandler &handler);
 
     void handleResponseError(const ResponseError &err);
     void handleUndispatchedRequest(const QJsonRpc::IdType &id, const QByteArray &method,
-                                   const QLspSpecification::RequestParams &params,
                                    QJsonRpc::TypedResponse &&response);
-    void handleUndispatchedNotification(const QByteArray &method,
-                                        const QLspSpecification::NotificationParams &params);
+    void handleUndispatchedNotification(const QByteArray &method);
     QJsonRpc::TypedRpc *typedRpc();
 
 protected:

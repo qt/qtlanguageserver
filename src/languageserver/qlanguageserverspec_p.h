@@ -645,43 +645,6 @@ using RenameFilesParamsType = RenameFilesParams;
 
 } // namespace Notifications
 
-// Variant over all possible request parameters, required by the generic handlers.
-// This variant is used like a generic argument type that can be constructed from
-// any argument type... except when it contains duplicate, in that case the
-// constructors are deleted. Therefore ensure that each variant type only occurs
-// once in the variant.
-using RequestParams = std::variant<
-        ApplyWorkspaceEditParams, CallHierarchyIncomingCallsParams,
-        CallHierarchyOutgoingCallsParams, CallHierarchyPrepareParams, CodeAction, CodeActionParams,
-        CodeLens, CodeLensParams, ColorPresentationParams, CompletionItem, CompletionParams,
-        ConfigurationParams, CreateFilesParams, DeclarationParams, DefinitionParams,
-        DeleteFilesParams, DocumentColorParams, DocumentDiagnosticParams, DocumentFormattingParams,
-        DocumentHighlightParams, DocumentLink, DocumentLinkParams, DocumentOnTypeFormattingParams,
-        DocumentRangeFormattingParams, DocumentRangesFormattingParams, DocumentSymbolParams,
-        ExecuteCommandParams, FoldingRangeParams, HoverParams, ImplementationParams,
-        InitializeParams, InlayHint, InlayHintParams, InlineCompletionParams, InlineValueParams,
-        LinkedEditingRangeParams, MonikerParams, PrepareRenameParams, ReferenceParams,
-        RegistrationParams, RenameFilesParams, RenameParams, SelectionRangeParams,
-        SemanticTokensDeltaParams, SemanticTokensParams, SemanticTokensRangeParams,
-        ShowDocumentParams, ShowMessageRequestParams, SignatureHelpParams,
-        TextDocumentContentParams, TextDocumentContentRefreshParams, TypeDefinitionParams,
-        TypeHierarchyPrepareParams, TypeHierarchySubtypesParams, TypeHierarchySupertypesParams,
-        UnregistrationParams, WillSaveTextDocumentParams, WorkDoneProgressCreateParams,
-        WorkspaceDiagnosticParams, WorkspaceSymbol, WorkspaceSymbolParams, std::nullptr_t,
-        QJsonValue>;
-
-// Variant over all possible notification parameters, required by the generic handlers.
-// This can't contain duplicates, see comment on RequestParams.
-using NotificationParams = std::variant<
-        CancelParams, CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams,
-        DidChangeNotebookDocumentParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseNotebookDocumentParams, DidCloseTextDocumentParams,
-        DidOpenNotebookDocumentParams, DidOpenTextDocumentParams, DidSaveNotebookDocumentParams,
-        DidSaveTextDocumentParams, InitializedParams, LogMessageParams, LogTraceParams,
-        ProgressParams, PublishDiagnosticsParams, QJsonValue, RenameFilesParams, SetTraceParams,
-        ShowMessageParams, WillSaveTextDocumentParams, WorkDoneProgressCancelParams,
-        std::nullptr_t>;
-
 } // namespace QLspSpecification
 
 QT_END_NAMESPACE
